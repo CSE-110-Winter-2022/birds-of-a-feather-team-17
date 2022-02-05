@@ -14,4 +14,5 @@
     <string name="confirm">Confirm</string>
     <string name="submit">Submit</string>
     <string name="photo_url_hint">Enter your photo URL</string>
+    <string name="choose_a_profile_photo">Choose a profile photo</string>
 </resources>
