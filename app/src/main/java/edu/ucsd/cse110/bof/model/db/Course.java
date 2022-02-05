@@ -1,5 +1,6 @@
 package edu.ucsd.cse110.bof.model.db;
 
+import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
@@ -14,8 +15,8 @@ public class Course {
     @ColumnInfo(name = "student_id")
     public int studentId;
 
-    @ColumnInfo(name = "info")
-    public String info;
+//    @ColumnInfo(name = "info")
+//    public String info;
 
     public int year;
     String quarter, subject, courseNum;
@@ -27,11 +28,11 @@ public class Course {
         this.quarter = quarter;
         this.subject = subject;
         this.courseNum = courseNum;
-
-        createInfo();
     }
 
-    private void createInfo() {
-        info = ""+year+" "+quarter+" "+subject+" "+courseNum;
+    @NonNull
+    @Override
+    public String toString() {
+        return ""+year+" "+quarter+" "+subject+" "+courseNum;
     }
 }
