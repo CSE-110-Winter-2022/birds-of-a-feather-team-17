@@ -25,13 +25,8 @@ public class NameActivity extends AppCompatActivity {
 
         username = usernameInput.getText().toString();
 
-        //TODO: Save the name
-
         Intent intent = new Intent(this, PhotoActivity.class); //link to PhotoActivity
-
-        //Might need this for future
-        //intent.putExtra("name", "yadayada");
-
+        intent.putExtra("name", username);
         startActivity(intent);
     }
 }
