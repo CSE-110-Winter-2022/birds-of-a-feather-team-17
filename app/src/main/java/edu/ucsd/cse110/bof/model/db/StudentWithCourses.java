@@ -18,6 +18,11 @@ public class StudentWithCourses implements IStudent {
     public List<Course> courses;
 
     @Override
+    public int getId() {
+        return this.student.studentId;
+    }
+
+    @Override
     public String getName() {
         return this.student.name;
     }
