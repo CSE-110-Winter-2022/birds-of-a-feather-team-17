@@ -34,4 +34,20 @@ public class Course {
     private void createInfo() {
         info = ""+year+" "+quarter+" "+subject+" "+courseNum;
     }
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof Course)) {
+            return false;
+        }
+
+        Course other = (Course) o;
+
+        //should not check database ids when equality checking
+        return (other.year == this.year)
+                && (other.quarter.equals(this.quarter))
+                && (other.subject.equals(this.subject))
+                && (other.courseNum.equals(this.courseNum));
+    }
 }
