@@ -1,3 +1,17 @@
 <resources>
     <string name="app_name">BirdsOfAFeather</string>
+    <string name="title_activity_name">NameActivity</string>
+    <string name="prompt_email">Email</string>
+    <string name="prompt_password">Password</string>
+    <string name="action_sign_in">Sign in or register</string>
+    <string name="action_sign_in_short">Sign in</string>
+    <string name="welcome">"Welcome !"</string>
+    <string name="invalid_username">Not a valid username</string>
+    <string name="invalid_password">Password must be >5 characters</string>
+    <string name="login_failed">"Login failed"</string>
+    <string name="confirm_your_name">Confirm your name:</string>
+    <string name="autofilled_name">Michael Bay</string>
+    <string name="confirm">Confirm</string>
+    <string name="submit">Submit</string>
+    <string name="photo_url_hint">Enter your photo URL</string>
 </resources>
