@@ -9,6 +9,7 @@ import edu.ucsd.cse110.bof.model.IStudent;
 
 public class StudentWithCourses implements IStudent {
 
+
     @Embedded
     public Student student;
 
