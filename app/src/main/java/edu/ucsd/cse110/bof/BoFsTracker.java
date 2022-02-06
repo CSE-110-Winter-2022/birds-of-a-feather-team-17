@@ -9,27 +9,28 @@ import edu.ucsd.cse110.bof.model.db.Course;
 
 public class BoFsTracker {
     /**
-     * Checks the list of courses between two different IStudent
+     * Checks the list of courses between two different StudentWithCourses
      * objects and returns a new list containing only those courses that are
-     * common between them as Strings
+     * common between them
      *
-     * @param thisStu the user's IStudent object
-     * @param otherStu the IStudent object received over Bluetooth
-     * @return ArrayList containing all the common courses between the two
-     * IStudents, as Strings in no particular order
+     * @author Michael Tam
+     * @param thisStu the user's StudentWithCourses object
+     * @param otherStu the StudentWithCourses object received over Bluetooth
+     * @return ArrayList containing all the common Courses between the two
+     * StudentWithCourses, in no particular order
      */
-    public static List<String> getCommonCourses(IStudent thisStu,
+    public static List<Course> getCommonCourses(IStudent thisStu,
                                                 IStudent otherStu) {
-        ArrayList<String> commonCoursesList = new ArrayList<>();
+        ArrayList<Course> commonCoursesList = new ArrayList<>();
 
         //add all of the other student's courses to the HashSet
-        HashSet<String> otherStuCourses = new HashSet<>(otherStu.getCourses());
+        HashSet<Course> otherStuCourses = new HashSet<>(otherStu.getCourses());
 
         //check all of this user's courses
-        ArrayList<String> thisStuCourses =
-                (ArrayList<String>) thisStu.getCourses();
+        ArrayList<Course> thisStuCourses =
+                (ArrayList<Course>) thisStu.getCourses();
         for (int index = 0; index < thisStuCourses.size(); index++) {
-            String currCourse = thisStuCourses.get(index);
+            Course currCourse = thisStuCourses.get(index);
 
             //current course in thisStuCourses is already in HashSet,
             //this course is common between both people

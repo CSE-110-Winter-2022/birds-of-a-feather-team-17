@@ -9,14 +9,19 @@ import edu.ucsd.cse110.bof.model.IStudent;
 
 public class StudentWithCourses implements IStudent {
 
+
     @Embedded
     public Student student;
 
     @Relation(parentColumn = "id",
             entityColumn = "student_id",
-            entity = Course.class,
-            projection = {"info"})
-    public List<String> courses;
+            entity = Course.class)
+    public List<Course> courses;
+
+    @Override
+    public int getId() {
+        return this.student.studentId;
+    }
 
     @Override
     public String getName() {
@@ -29,7 +34,7 @@ public class StudentWithCourses implements IStudent {
     }
 
     @Override
-    public List<String> getCourses() {
+    public List<Course> getCourses() {
         return this.courses;
     }
 }

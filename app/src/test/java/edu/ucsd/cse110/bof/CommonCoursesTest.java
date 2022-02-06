@@ -45,25 +45,25 @@ public class CommonCoursesTest {
     public void onlyOneCommonClasses() {
         //define stu1 with classes list
         StudentWithCourses stu1 = new StudentWithCourses();
-        List<String> stu1Courses = new ArrayList<>();
-        stu1Courses.add(cse12SP21.info);
-        stu1Courses.add(cse100FA22.info);
+        List<Course> stu1Courses = new ArrayList<>();
+        stu1Courses.add(cse12SP21);
+        stu1Courses.add(cse100FA22);
         stu1.courses = stu1Courses;
 
         //define stu2 with classes list
         StudentWithCourses stu2 = new StudentWithCourses();
-        List<String> stu2Courses = new ArrayList<>();
-        stu2Courses.add(cse12SP21.info);
-        stu2Courses.add(cse110WI22.info);
+        List<Course> stu2Courses = new ArrayList<>();
+        stu2Courses.add(cse12SP21);
+        stu2Courses.add(cse110WI22);
         stu2.courses = stu2Courses;
 
         //get answer from method
-        List<String> commonClassesFromMethod =
+        List<Course> commonClassesFromMethod =
                 BoFsTracker.getCommonCourses(stu1, stu2);
 
         //actual answer
-        List<String> commonClasses = new ArrayList<>();
-        commonClasses.add(cse12SP21.info);
+        List<Course> commonClasses = new ArrayList<>();
+        commonClasses.add(cse12SP21);
 
         //check that answer from method matches actual answer
         assertEquals(commonClassesFromMethod.size(), 1);
@@ -75,24 +75,24 @@ public class CommonCoursesTest {
 
         //define stu1 with classes list
         StudentWithCourses stu1 = new StudentWithCourses();
-        List<String> stu1Courses = new ArrayList<>();
-        stu1Courses.add(cse12SP21.info);
-        stu1Courses.add(cse100FA22.info);
+        List<Course> stu1Courses = new ArrayList<>();
+        stu1Courses.add(cse12SP21);
+        stu1Courses.add(cse100FA22);
         stu1.courses = stu1Courses;
 
         //define stu2 with classes list
         StudentWithCourses stu2 = new StudentWithCourses();
-        List<String> stu2Courses = new ArrayList<>();
-        stu1Courses.add(cse110WI22.info);
-        stu2Courses.add(cse101WI22.info);
+        List<Course> stu2Courses = new ArrayList<>();
+        stu1Courses.add(cse110WI22);
+        stu2Courses.add(cse101WI22);
         stu2.courses = stu2Courses;
 
         //get answer from method
-        List<String> commonClassesFromMethod =
+        List<Course> commonClassesFromMethod =
                 BoFsTracker.getCommonCourses(stu1, stu2);
 
         //actual answer
-        List<String> commonClasses = new ArrayList<>();
+        List<Course> commonClasses = new ArrayList<>();
 
         //check that answer from method matches actual answer
         assertEquals(commonClassesFromMethod.size(), 0);
@@ -118,23 +118,23 @@ public class CommonCoursesTest {
 
         //define stu1 with classes list
         StudentWithCourses stu1 = new StudentWithCourses();
-        List<String> stu1Courses = new ArrayList<>();
-        stu1Courses.add(correctCse12SP21.info);
+        List<Course> stu1Courses = new ArrayList<>();
+        stu1Courses.add(correctCse12SP21);
         stu1.courses = stu1Courses;
 
         //define stu2 with classes list
         StudentWithCourses stu2 =
                 new StudentWithCourses();
-        List<String> stu2Courses = new ArrayList<>();
-        stu1Courses.add(typoCse12SP21.info);
+        List<Course> stu2Courses = new ArrayList<>();
+        stu1Courses.add(typoCse12SP21);
         stu2.courses = stu2Courses;
 
         //get answer from method
-        List<String> commonClassesFromMethod =
+        List<Course> commonClassesFromMethod =
                 BoFsTracker.getCommonCourses(stu1, stu2);
 
         //actual answer
-        List<String> commonClasses = new ArrayList<>();
+        List<Course> commonClasses = new ArrayList<>();
 
         //check that answer from method matches actual answer
         assertEquals(commonClassesFromMethod.size(), 0);
