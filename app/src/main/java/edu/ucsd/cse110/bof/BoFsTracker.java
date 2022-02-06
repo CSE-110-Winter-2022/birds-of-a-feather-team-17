@@ -13,7 +13,6 @@ public class BoFsTracker {
      * objects and returns a new list containing only those courses that are
      * common between them
      *
-     * @author Michael Tam
      * @param thisStu the user's StudentWithCourses object
      * @param otherStu the StudentWithCourses object received over Bluetooth
      * @return ArrayList containing all the common Courses between the two

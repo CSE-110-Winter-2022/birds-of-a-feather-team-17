@@ -7,7 +7,6 @@ import edu.ucsd.cse110.bof.model.db.Course;
 public interface IStudent {
     int getId();
     String getName();
-    int getId();
     String getPhotoUrl();
     List<Course> getCourses();
 }
