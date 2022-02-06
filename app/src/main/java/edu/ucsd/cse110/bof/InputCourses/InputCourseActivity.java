@@ -1,4 +1,4 @@
-package edu.ucsd.cse110.bof;
+package edu.ucsd.cse110.bof.InputCourses;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -11,6 +11,8 @@ import android.widget.TextView;
 
 import java.util.List;
 
+import edu.ucsd.cse110.bof.InputCourses.CoursesViewAdapter;
+import edu.ucsd.cse110.bof.R;
 import edu.ucsd.cse110.bof.model.IStudent;
 import edu.ucsd.cse110.bof.model.db.AppDatabase;
 import edu.ucsd.cse110.bof.model.db.Course;
