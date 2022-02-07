@@ -15,4 +15,7 @@
     <string name="submit">Submit</string>
     <string name="photo_url_hint">Enter your photo URL</string>
     <string name="choose_a_profile_photo">Choose a profile photo</string>
+    <string name="confirm_mocked_student">Confirm mocked student</string>
+    <string name="hint_student_csv">Enter name, &lt;br /&gt;photo url, and
+        &lt;br /&gt; classes as csv</string>
 </resources>
