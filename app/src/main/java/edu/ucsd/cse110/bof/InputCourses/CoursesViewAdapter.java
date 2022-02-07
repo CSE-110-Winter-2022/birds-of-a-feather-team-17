@@ -54,7 +54,7 @@ public class CoursesViewAdapter extends RecyclerView.Adapter<CoursesViewAdapter.
 
         public void setCourse(Course course) {
             this.course = course;
-            this.courseTextView.setText(course.info);
+            this.courseTextView.setText(course.toString());
         }
     }
 
