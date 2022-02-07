@@ -69,7 +69,7 @@ public class HomePageActivity extends AppCompatActivity {
         studentsRecyclerView.setAdapter(studentsViewAdapter);
     }
 
-    public void onStartClicked(View view) {
+    public void onStartSearchingClicked(View view) {
         //set up listener for finding BoFs
         realListener = new MessageListener() {
             IStudent receivedStudent = null;
