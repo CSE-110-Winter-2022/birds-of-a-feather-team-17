@@ -37,4 +37,9 @@ public class StudentWithCourses implements IStudent {
     public List<Course> getCourses() {
         return this.courses;
     }
+
+    @Override
+    public int getMatches() {
+        return this.student.numMatches;
+    }
 }

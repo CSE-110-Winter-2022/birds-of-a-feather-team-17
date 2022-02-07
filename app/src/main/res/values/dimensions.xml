@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="list_text_size">15sp</dimen>
+    <dimen name="list_item_height">64sp</dimen>
     <dimen name="enter_text_size">10sp</dimen>
     <dimen name="margin">16sp</dimen>
 </resources>

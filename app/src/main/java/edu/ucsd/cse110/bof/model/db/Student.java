@@ -17,4 +17,7 @@ public class Student {
     @ColumnInfo(name = "photo")
     public String photoURL;
 
+    @ColumnInfo(name = "matches")
+    public int numMatches;
+
 }
