@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import edu.ucsd.cse110.bof.login.LoginActivity;
+import edu.ucsd.cse110.bof.login.NameActivity;
 
 public class MainActivity extends AppCompatActivity {
 

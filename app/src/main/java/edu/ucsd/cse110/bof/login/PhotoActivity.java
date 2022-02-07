@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 
+import edu.ucsd.cse110.bof.InputCourses.InputCourseActivity;
 import edu.ucsd.cse110.bof.R;
 
 public class PhotoActivity extends AppCompatActivity {
@@ -32,10 +33,9 @@ public class PhotoActivity extends AppCompatActivity {
 
         //TODO: Create a student profile in DB with username and photoURL
 
-        /*
+
         //Link to InputCourseActivity
         Intent intent = new Intent(this, InputCourseActivity.class);
         startActivity(intent);
-         */
     }
 }
