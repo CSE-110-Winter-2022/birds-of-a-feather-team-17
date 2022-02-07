@@ -21,4 +21,7 @@
         <item>Spring</item>
         <item>Summer</item>
     </string-array>
+    <string name="confirm_mocked_student">Confirm mocked student</string>
+    <string name="hint_student_csv">Enter name, &lt;br /&gt;photo url, and
+        &lt;br /&gt; classes as csv</string>
 </resources>
