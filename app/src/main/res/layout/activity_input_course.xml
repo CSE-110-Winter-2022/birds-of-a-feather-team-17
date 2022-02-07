@@ -72,9 +72,9 @@
       android:id="@+id/input_subject"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:layout_marginStart="16dp"
+      android:layout_marginStart="5dp"
       android:layout_marginBottom="16dp"
-      android:ems="4"
+      android:ems="5"
       android:hint="Subject"
       android:inputType="text"
       android:textSize="@dimen/list_text_size"
@@ -104,7 +104,7 @@
 
   <Spinner
       android:id="@+id/fidget_spinner"
-      android:layout_width="130dp"
+      android:layout_width="125dp"
       android:layout_height="40dp"
       android:layout_marginStart="5dp"
       app:layout_constraintBottom_toBottomOf="@+id/input_year"
