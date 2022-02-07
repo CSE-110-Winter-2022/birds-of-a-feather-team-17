@@ -80,7 +80,7 @@ public class NearbyMessageMock extends AppCompatActivity {
     public void onConfirmMockedStudent(View view) {
         IStudent student = makeMockedStudent();
         this.messageListener = new FakedMessageListener(realListener,
-                student);
+                3, student);
 
     }
 

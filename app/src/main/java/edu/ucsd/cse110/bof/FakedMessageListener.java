@@ -19,7 +19,7 @@ public class FakedMessageListener extends MessageListener {
 
     //mocks sending IStudent as message
     public FakedMessageListener(MessageListener realMessageListener,
-                                IStudent student) {
+                                int frequency, IStudent student) {
         this.messageListener = realMessageListener;
         this.executor = Executors.newSingleThreadScheduledExecutor();
 
@@ -38,11 +38,11 @@ public class FakedMessageListener extends MessageListener {
         }
         byte[] finalStudentBytes = studentBytes;
 
-        executor.schedule(() -> {
+        executor.scheduleAtFixedRate(() -> {
             Message message = new
                     Message(finalStudentBytes);
             this.messageListener.onFound(message);
             this.messageListener.onLost(message);
-        }, 0, TimeUnit.SECONDS);
+        }, 0, frequency, TimeUnit.SECONDS);
     }
 }
