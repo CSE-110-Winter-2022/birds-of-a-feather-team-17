@@ -79,7 +79,7 @@ public class InputCourseActivity extends AppCompatActivity {
     }
 
     public void onAddCourseClicked(View view) {
-        int newCourseID = db.coursesDao().count() + 1;
+        int newCourseID = db.coursesDao().maxId() + 1;
 //        int studentID = student.getId();
         int studentID = 0;
         Spinner newQuarterTextView = findViewById(R.id.fidget_spinner);
