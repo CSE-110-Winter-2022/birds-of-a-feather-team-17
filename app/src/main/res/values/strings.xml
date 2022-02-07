@@ -15,4 +15,10 @@
     <string name="submit">Submit</string>
     <string name="photo_url_hint">Enter your photo URL</string>
     <string name="choose_a_profile_photo">Choose a profile photo</string>
+    <string-array name="quarters_array">
+        <item>Fall</item>
+        <item>Winter</item>
+        <item>Spring</item>
+        <item>Summer</item>
+    </string-array>
 </resources>
