@@ -15,6 +15,8 @@ import java.util.List;
 
 import edu.ucsd.cse110.bof.InputCourses.CoursesViewAdapter;
 import edu.ucsd.cse110.bof.R;
+import edu.ucsd.cse110.bof.homepage.HomePageActivity;
+import edu.ucsd.cse110.bof.login.PhotoActivity;
 import edu.ucsd.cse110.bof.model.IStudent;
 import edu.ucsd.cse110.bof.model.db.AppDatabase;
 import edu.ucsd.cse110.bof.model.db.Course;
@@ -71,8 +73,9 @@ public class InputCourseActivity extends AppCompatActivity {
     }
 
     public void onDoneClicked(View view) {
-        //start the next activity
-//        finish();
+        //move to home page
+        Intent intent = new Intent(this, HomePageActivity.class);
+        startActivity(intent);
     }
 
     public void onAddCourseClicked(View view) {
