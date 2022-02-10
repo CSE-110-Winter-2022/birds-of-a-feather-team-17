@@ -26,50 +26,50 @@ import edu.ucsd.cse110.bof.model.db.StudentsDao;
 @RunWith(AndroidJUnit4.class)
 public class CommonCoursesTest {
     static final Course cse12SP21 = new Course(
-            0,
+            1,
             2021,
             "SP",
             "CSE",
             "12");
     static final Course cse100FA22 = new Course(
-            0,
+            1,
             2022,
             "FA",
             "CSE",
             "100");
     static final Course cse110WI22 = new Course(
-            0,
+            1,
             2022,
             "WI",
             "CSE",
             "110");
     static final Course cse101WI22 = new Course(
-            0,
+            1,
             2022,
             "WI",
             "CSE",
             "101");
 
     static final Course cse12SP21_2 = new Course(
-            1,
+            2,
             2021,
             "SP",
             "CSE",
             "12");
     static final Course cse100FA22_2 = new Course(
-            1,
+            2,
             2022,
             "FA",
             "CSE",
             "100");
     static final Course cse110WI22_2 = new Course(
-            1,
+            2,
             2022,
             "WI",
             "CSE",
             "110");
     static final Course cse101WI22_2 = new Course(
-            1,
+            2,
             2022,
             "WI",
             "CSE",
@@ -102,9 +102,8 @@ public class CommonCoursesTest {
         studentsDao.insert(stu2);
         stu2Courses = new ArrayList<>();
 
-        System.out.println("Student 1 id: " + stu1.getStudentId());
-        System.out.println("Student 2 id: " + stu2.getStudentId());
-
+//        System.out.println("Stu1 name: "+studentsDao.get(1).getName());
+//        System.out.println("Stu2 name: "+studentsDao.get(2).getName());
     }
 
     @After
@@ -125,12 +124,12 @@ public class CommonCoursesTest {
         coursesDao.insert(cse110WI22_2);
         //stu2.courses = stu2Courses;
 
-        System.out.println("Class 1 id: " + cse12SP21.getCourseId());
-        System.out.println("Class 2 id: " + cse12SP21_2.getCourseId());
-
         //get answer from method
+        Student student1 = studentsDao.get(1);
+        Student student2 = studentsDao.get(2);
+
         List<Course> commonClassesFromMethod =
-                BoFsTracker.getCommonCourses(context, stu1, stu2);
+                BoFsTracker.getCommonCourses(context, student1, student2);
 
         //actual answer
         List<Course> commonClasses = new ArrayList<>();
@@ -156,8 +155,11 @@ public class CommonCoursesTest {
         //stu2.courses = stu2Courses;
 
         //get answer from method
+        Student student1 = studentsDao.get(1);
+        Student student2 = studentsDao.get(2);
+
         List<Course> commonClassesFromMethod =
-                BoFsTracker.getCommonCourses(context, stu1, stu2);
+                BoFsTracker.getCommonCourses(context, student1, student2);
 
         //actual answer
         List<Course> commonClasses = new ArrayList<>();
@@ -182,8 +184,11 @@ public class CommonCoursesTest {
         //stu2.courses = stu2Courses;
 
         //get answer from method
+        Student student1 = studentsDao.get(1);
+        Student student2 = studentsDao.get(2);
+
         List<Course> commonClassesFromMethod =
-                BoFsTracker.getCommonCourses(context, stu1, stu2);
+                BoFsTracker.getCommonCourses(context, student1, student2);
 
         //actual answer
         List<Course> commonClasses = new ArrayList<>();
@@ -192,20 +197,20 @@ public class CommonCoursesTest {
         Collections.sort(commonClasses, new BoFsTracker.SortbyYearAndQuarter());
 
         //check that answer from method matches actual answer
-        assertEquals(0,commonClassesFromMethod.size());
+        assertEquals(2,commonClassesFromMethod.size());
         assertEquals(commonClasses, commonClassesFromMethod);
     }
 
     @Test
     public void typoInCourseSubject() {
         Course correctCse12SP21 = new Course(
-                0,
+                1,
                 2021,
                 "SP",
                 "CSE",
                 "12");
         Course typoCse12SP21 = new Course(
-                0,
+                2,
                 2021,
                 "SP",
                 "CSe",
@@ -220,8 +225,11 @@ public class CommonCoursesTest {
         //stu2.courses = stu2Courses;
 
         //get answer from method
+        Student student1 = studentsDao.get(1);
+        Student student2 = studentsDao.get(2);
+
         List<Course> commonClassesFromMethod =
-                BoFsTracker.getCommonCourses(context, stu1, stu2);
+                BoFsTracker.getCommonCourses(context, student1, student2);
 
         //actual answer
         List<Course> commonClasses = new ArrayList<>();
