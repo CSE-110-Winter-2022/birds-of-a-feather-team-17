@@ -11,6 +11,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.BirdsOfAFeather">
         <activity
+            android:name=".NearbyMessageMock"
+            android:exported="false" />
+        <activity
             android:name=".InputCourses.InputCourseActivity"
             android:exported="false" />
         <activity

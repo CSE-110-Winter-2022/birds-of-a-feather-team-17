@@ -16,8 +16,8 @@ import edu.ucsd.cse110.bof.R;
 import edu.ucsd.cse110.bof.model.db.Course;
 
 public class CoursesViewAdapter extends RecyclerView.Adapter<CoursesViewAdapter.ViewHolder>{
-    private List<Course> courses;
-    private Consumer<Course> onCourseRemoved;
+    private final List<Course> courses;
+    private final Consumer<Course> onCourseRemoved;
 
     public CoursesViewAdapter(List<Course> courses, Consumer<Course> onCourseRemoved) {
         super();
@@ -36,7 +36,7 @@ public class CoursesViewAdapter extends RecyclerView.Adapter<CoursesViewAdapter.
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull CoursesViewAdapter.ViewHolder holder, int position) {
         holder.setCourse(courses.get(position));
     }
 

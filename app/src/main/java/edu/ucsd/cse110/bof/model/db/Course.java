@@ -5,12 +5,14 @@ import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
+import java.util.Objects;
+
 @Entity(tableName = "courses")
 public class Course {
 
-    @PrimaryKey
-    @ColumnInfo(name = "id")
-    public int courseId;
+    @PrimaryKey(autoGenerate = true)
+    @ColumnInfo(name = "course_id")
+    public int courseId = 0;
 
     @ColumnInfo(name = "student_id")
     public int studentId;
@@ -19,15 +21,33 @@ public class Course {
 //    public String info;
 
     public int year;
-    String quarter, subject, courseNum;
+    public String quarter, subject, courseNum;
 
-    public Course(int courseId, int studentId, int year, String quarter, String subject, String courseNum) {
-        this.courseId = courseId;
+    // Course constructor
+    public Course(int studentId, int year, String quarter, String subject, String courseNum) {
+        //this.courseId = courseId;     //automatically generated
         this.studentId = studentId;
         this.year = year;
         this.quarter = quarter;
         this.subject = subject;
         this.courseNum = courseNum;
+    }
+
+    // getters and setters
+    public int getCourseId() {
+        return courseId;
+    }
+
+    public void setCourseId(int courseId) {
+        this.courseId = courseId;
+    }
+
+    public int getStudentId() {
+        return studentId;
+    }
+
+    public void setStudentId(int studentId) {
+        this.studentId = studentId;
     }
 
     @NonNull
@@ -37,18 +57,17 @@ public class Course {
     }
 
 
+    //bottom two methods required to check common courses
     @Override
     public boolean equals(Object o) {
-        if (!(o instanceof Course)) {
-            return false;
-        }
+        if (this == o) return true;
+        if (!(o instanceof Course)) return false;
+        Course course = (Course) o;
+        return year == course.year && Objects.equals(quarter, course.quarter) && Objects.equals(subject, course.subject) && Objects.equals(courseNum, course.courseNum);
+    }
 
-        Course other = (Course) o;
-
-        //should not check database ids when equality checking
-        return (other.year == this.year)
-                && (other.quarter.equals(this.quarter))
-                && (other.subject.equals(this.subject))
-                && (other.courseNum.equals(this.courseNum));
+    @Override
+    public int hashCode() {
+        return Objects.hash(year, quarter, subject, courseNum);
     }
 }

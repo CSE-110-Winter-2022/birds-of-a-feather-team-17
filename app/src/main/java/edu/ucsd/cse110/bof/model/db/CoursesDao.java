@@ -14,14 +14,14 @@ public interface CoursesDao {
     @Query("SELECT * FROM courses where student_id=:studentId")
     List<Course> getForStudent(int studentId);
 
-    @Query("SELECT * FROM courses WHERE id=:id")
+    @Query("SELECT * FROM courses WHERE course_id=:id")
     Course get(int id);
 
     @Query("SELECT COUNT(*) from courses")
     int count();
 
-    @Query("SELECT MAX(id) from courses")
-    int maxId();
+//    @Query("SELECT MAX(course_id) from courses")
+//    int maxId();
 
     @Insert
     void insert(Course course);
