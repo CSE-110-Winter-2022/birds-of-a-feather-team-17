@@ -1,33 +1,45 @@
 package edu.ucsd.cse110.bof;
 
+import android.content.Context;
+
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 
 import edu.ucsd.cse110.bof.model.IStudent;
+import edu.ucsd.cse110.bof.model.db.AppDatabase;
 import edu.ucsd.cse110.bof.model.db.Course;
+import edu.ucsd.cse110.bof.model.db.CoursesDao;
 
 public class BoFsTracker {
     /**
-     * Checks the list of courses between two different StudentWithCourses
+     * Checks the list of courses between two different Student
      * objects and returns a new list containing only those courses that are
      * common between them
      *
-     * @param thisStu the user's StudentWithCourses object
-     * @param otherStu the StudentWithCourses object received over Bluetooth
+     * @param context the app's current context
+     * @param thisStu the user's Student object
+     * @param otherStu the Student object received over Bluetooth
      * @return ArrayList containing all the common Courses between the two
-     * StudentWithCourses, in no particular order
+     * Student, in order from oldest to newest
      */
-    public static List<Course> getCommonCourses(IStudent thisStu,
+    public static List<Course> getCommonCourses(Context context, IStudent thisStu,
                                                 IStudent otherStu) {
         ArrayList<Course> commonCoursesList = new ArrayList<>();
 
+        //fetch other student's courses from database
+        AppDatabase db = AppDatabase.singleton(context);
+        CoursesDao coursesDao = db.coursesDao();
+        ArrayList<Course> otherStuCoursesList = (ArrayList<Course>) coursesDao.getForStudent(otherStu.getStudentId());
+        ArrayList<Course> thisStuCourses = (ArrayList<Course>) coursesDao.getForStudent(thisStu.getStudentId());
+
+
         //add all of the other student's courses to the HashSet
-        HashSet<Course> otherStuCourses = new HashSet<>(otherStu.getCourses());
+        HashSet<Course> otherStuCourses = new HashSet<>(otherStuCoursesList);
 
         //check all of this user's courses
-        ArrayList<Course> thisStuCourses =
-                (ArrayList<Course>) thisStu.getCourses();
         for (int index = 0; index < thisStuCourses.size(); index++) {
             Course currCourse = thisStuCourses.get(index);
 
@@ -38,6 +50,44 @@ public class BoFsTracker {
             }
         }
 
+        //sort common courses
+        Collections.sort(commonCoursesList, new SortbyYearAndQuarter());
+
         return commonCoursesList;
+    }
+
+    static class SortbyYearAndQuarter implements Comparator<Course> {
+        //sort from oldest to newest courses
+        public int compare(Course a, Course b) {
+            int year1 = a.year;
+            int year2 = b.year;
+            String quarter1 = a.quarter;
+            String quarter2 = b.quarter;
+
+            if (year1 == year2) {
+                return compareQuarter(quarter1, quarter2);
+            }
+            else {
+                return year1-year2;
+            }
+        }
+        private int compareQuarter(String q1, String q2) {
+
+            //used as placeholder: FA comes before R; SP/SS1/SS2/SSS come after R
+            if (q2.equals("WI")) { q2 = "R"; }
+
+            if (q1.equals("FA")) {
+                //quarter 1 always older/equal to quarter 2
+                return -1;
+            }
+            else if (q1.equals("WI")) {
+                String temp = "R";
+                return temp.compareTo(q2);
+            }
+            else if (q1.equals("SP")) { return q1.compareTo(q2); }
+            else if (q1.equals("SS1")) {return q1.compareTo(q2);}
+            else if (q1.equals("SS2")) {return q1.compareTo(q2);}
+            else {return q1.compareTo(q2);}
+        }
     }
 }

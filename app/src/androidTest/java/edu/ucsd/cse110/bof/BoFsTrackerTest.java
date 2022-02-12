@@ -23,8 +23,11 @@ import edu.ucsd.cse110.bof.model.db.CoursesDao;
 import edu.ucsd.cse110.bof.model.db.Student;
 import edu.ucsd.cse110.bof.model.db.StudentsDao;
 
+
+
+//note: identical to CommonCoursesTest
 @RunWith(AndroidJUnit4.class)
-public class CommonCoursesTest {
+public class BoFsTrackerTest {
     static final Course cse12SP21 = new Course(
             1,
             2021,
