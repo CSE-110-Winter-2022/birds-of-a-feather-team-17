@@ -15,6 +15,7 @@
     <string name="submit">Submit</string>
     <string name="photo_url_hint">Enter your photo URL</string>
     <string name="choose_a_profile_photo">Choose a profile photo</string>
+    <string name="default_photo_url">https://t4.ftcdn.net/jpg/00/64/67/63/360_F_64676383_LdbmhiNM6Ypzb3FM4PPuFP9rHe7ri8Ju.jpg</string>
     <string-array name="quarters_array">
         <item>FA</item>
         <item>WI</item>
