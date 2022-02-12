@@ -14,7 +14,7 @@
             android:name=".homepage.HomePageActivity"
             android:exported="false" />
         <activity
-            android:name=".NearbyMessageMock"
+            android:name=".NearbyMessageMockActivity"
             android:exported="false" />
         <activity
             android:name=".InputCourses.InputCourseActivity"

@@ -3,19 +3,20 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/Michael/AndroidStudioProjects/birds-of-a-feather-team-17/app/src/main/res/layout/activity_home_page.xml" value="0.25" />
+        <entry key="..\:/Users/Michael/AndroidStudioProjects/birds-of-a-feather-team-17/app/src/main/res/layout/activity_input_course.xml" value="0.12411347517730496" />
+        <entry key="..\:/Users/Michael/AndroidStudioProjects/birds-of-a-feather-team-17/app/src/main/res/layout/activity_login.xml" value="0.36666666666666664" />
         <entry key="..\:/Users/Michael/AndroidStudioProjects/birds-of-a-feather-team-17/app/src/main/res/layout/activity_main.xml" value="0.11503623188405797" />
         <entry key="..\:/Users/Michael/AndroidStudioProjects/birds-of-a-feather-team-17/app/src/main/res/layout/activity_name.xml" value="0.33" />
-        <entry key="..\:/Users/Michael/AndroidStudioProjects/birds-of-a-feather-team-17/app/src/main/res/layout/activity_nearby_message_mock.xml" value="0.1094224924012158" />
+        <entry key="..\:/Users/Michael/AndroidStudioProjects/birds-of-a-feather-team-17/app/src/main/res/layout/activity_nearby_message_mock.xml" value="0.25" />
         <entry key="..\:/Users/Michael/AndroidStudioProjects/birds-of-a-feather-team-17/app/src/main/res/layout/activity_nearby_mock.xml" value="0.1" />
         <entry key="..\:/Users/Michael/AndroidStudioProjects/birds-of-a-feather-team-17/app/src/main/res/layout/activity_photo.xml" value="0.33" />
         <entry key="..\:/Users/Michael/AndroidStudioProjects/birds-of-a-feather-team-17/app/src/main/res/layout/input_course_row.xml" value="0.20677083333333332" />
-        <entry key="app/src/main/res/layout/activity_input_course.xml" value="0.33" />
-        <entry key="app/src/main/res/layout/activity_name.xml" value="0.1453900709219858" />
-        <entry key="app/src/main/res/layout/activity_nearby_message_mock.xml" value="0.1" />
-        <entry key="app/src/main/res/layout/input_course_row.xml" value="0.15" />
+        <entry key="..\:/Users/Michael/AndroidStudioProjects/birds-of-a-feather-team-17/app/src/main/res/layout/student_row.xml" value="0.1" />
       </map>
     </option>
   </component>
+  <component name="ExternalStorageConfigurationManager" enabled="true" />
   <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="11" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />
   </component>

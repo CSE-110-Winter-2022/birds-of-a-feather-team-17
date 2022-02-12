@@ -10,8 +10,10 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.ToggleButton;
 
 import com.google.android.gms.nearby.Nearby;
 import com.google.android.gms.nearby.messages.Message;
@@ -26,6 +28,7 @@ import java.util.List;
 
 import edu.ucsd.cse110.bof.BoFsTracker;
 import edu.ucsd.cse110.bof.InputCourses.CoursesViewAdapter;
+import edu.ucsd.cse110.bof.NearbyMessageMockActivity;
 import edu.ucsd.cse110.bof.R;
 import edu.ucsd.cse110.bof.model.IStudent;
 import edu.ucsd.cse110.bof.model.db.AppDatabase;
@@ -37,7 +40,7 @@ public class HomePageActivity extends AppCompatActivity {
     private IStudent thisStudent;
     private Context context;
 
-    List<IStudent> students;
+    List<IStudent> studentsFound;
 
     RecyclerView studentsRecyclerView;
     RecyclerView.LayoutManager studentsLayoutManager;
@@ -62,18 +65,33 @@ public class HomePageActivity extends AppCompatActivity {
 
 
         //set up RecyclerView
-        students = new ArrayList<>();
+        studentsFound = new ArrayList<>();
 
         studentsRecyclerView = findViewById(R.id.students_view);
 
         studentsLayoutManager = new LinearLayoutManager(this);
         studentsRecyclerView.setLayoutManager(studentsLayoutManager);
 
-        studentsViewAdapter = new StudentsViewAdapter(students);
+        studentsViewAdapter = new StudentsViewAdapter(studentsFound);
         studentsRecyclerView.setAdapter(studentsViewAdapter);
+
+        //set up toggle listener:
+        ToggleButton toggle = findViewById(R.id.search_button);
+        toggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    onStartSearchingClicked();
+                } else {
+                    onStopSearchingClicked();
+                }
+            }
+        });
     }
 
-    public void onStartSearchingClicked(View view) {
+    /**
+     * Creates the listener to start searching for BoFs,
+     */
+    public void onStartSearchingClicked() {
         //set up listener for finding BoFs
         realListener = new MessageListener() {
             IStudent receivedStudent = null;
@@ -90,7 +108,7 @@ public class HomePageActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
 
-                if (!students.contains(receivedStudent)) {
+                if (!studentsFound.contains(receivedStudent)) {
                     //use BoFsTracker to find common classes
                     ArrayList<Course> commonCourses = (ArrayList<Course>)
                             BoFsTracker.getCommonCourses(context, thisStudent,
@@ -98,7 +116,7 @@ public class HomePageActivity extends AppCompatActivity {
 
                     //if not empty list, add this student to list of students
                     if (commonCourses.size() != 0) {
-                        students.add(receivedStudent);
+                        studentsFound.add(receivedStudent);
 
                         //TODO: sort students by num of commonCourses
                     }
@@ -109,8 +127,15 @@ public class HomePageActivity extends AppCompatActivity {
         Nearby.getMessagesClient(this).subscribe(realListener);
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
+    public void onStopSearchingClicked() {
+        if (realListener != null) {
+            Nearby.getMessagesClient(this).unsubscribe(realListener);
+        }
     }
+
+    public void onGoToMockStudents(View view) {
+        Intent intent = new Intent(this, NearbyMessageMockActivity.class);
+        startActivity(intent);
+    }
+
 }

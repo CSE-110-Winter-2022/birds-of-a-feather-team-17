@@ -25,6 +25,10 @@
         <item>SSS</item>
     </string-array>
     <string name="confirm_mocked_student">Confirm mocked student</string>
-    <string name="hint_student_csv">Enter name, &lt;br /&gt;photo url, and
-        &lt;br /&gt; classes as csv</string>
+    <string
+        name="hint_student_csv">Enter name,photo url, and classes as csv</string>
+    <string name="start_searching">Start Searching</string>
+    <string name="stop_searching">Stop Searching</string>
+    <string name="mock_students">Mock Students</string>
+    <string name="go_back">Go Back</string>
 </resources>

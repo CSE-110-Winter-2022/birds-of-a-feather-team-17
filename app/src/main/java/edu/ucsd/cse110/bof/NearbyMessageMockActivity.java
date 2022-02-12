@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -20,11 +21,12 @@ import java.io.ObjectInputStream;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+import edu.ucsd.cse110.bof.homepage.HomePageActivity;
 import edu.ucsd.cse110.bof.model.IStudent;
 import edu.ucsd.cse110.bof.model.db.Course;
 import edu.ucsd.cse110.bof.model.db.Student;
 
-public class NearbyMessageMock extends AppCompatActivity {
+public class NearbyMessageMockActivity extends AppCompatActivity {
     private static final String TAG = "MockingReceiver";
     private MessageListener messageListener;
     private MessageListener realListener;
@@ -79,18 +81,16 @@ public class NearbyMessageMock extends AppCompatActivity {
         };
     }
 
-    //Assumes that the input has valid csv
+    /**
+     * Assumes that this input has valid csv, will create fake message
+     * listener to mock a student being nearby (sends the student every 3
+     * seconds)
+     */
     public void onConfirmMockedStudent(View view) {
         IStudent student = makeMockedStudent();
         this.messageListener = new FakedMessageListener(realListener,
                 3, student);
 
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        Nearby.getMessagesClient(this).subscribe(messageListener);
     }
 
     //should be moved into a separate class
@@ -125,5 +125,14 @@ public class NearbyMessageMock extends AppCompatActivity {
         //stu.courses = courses;
 
         return stu;
+    }
+
+    public void onGoBackClicked(View view) {
+        if (messageListener != null) {
+            Nearby.getMessagesClient(this).subscribe(messageListener);
+        }
+
+        Intent intent = new Intent(this, HomePageActivity.class);
+        startActivity(intent);
     }
 }

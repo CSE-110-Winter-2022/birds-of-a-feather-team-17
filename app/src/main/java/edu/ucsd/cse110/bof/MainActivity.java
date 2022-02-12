@@ -15,7 +15,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
+        //TODO: Should check if the student is made and, if so, move
+        // directly to homepage
         //Test code for starting in Login Activity
         Intent intent = new Intent(this, LoginActivity.class);
         this.startActivity(intent);
