@@ -24,18 +24,23 @@ public class PhotoActivity extends AppCompatActivity {
 
         //Retrieve username sent from NameActivity
         Bundle extras = getIntent().getExtras();
-        username = extras.getString("name");
+        username = extras.getString("student_name");
     }
 
     public void submitPhoto(View view) {
 
-        photoURL = photoInput.getText().toString();
-
-        //TODO: Create a student profile in DB with username and photoURL
-
+        //use default if user leaves input empty
+        if (photoInput.getText().toString().equals("")) {
+            photoURL = getResources().getString(R.string.default_photo_url);
+        }
+        else {
+            photoURL = photoInput.getText().toString();
+        }
 
         //Link to InputCourseActivity
         Intent intent = new Intent(this, InputCourseActivity.class);
+        intent.putExtra("student_name", username);
+        intent.putExtra("student_photo", photoURL);
         startActivity(intent);
     }
 }

@@ -27,11 +27,10 @@ public class NameActivity extends AppCompatActivity {
     }
 
     public void confirmName(View view) {
-
         username = usernameInput.getText().toString();
 
         Intent intent = new Intent(this, PhotoActivity.class); //link to PhotoActivity
-        intent.putExtra("name", username);
+        intent.putExtra("student_name", username);
         startActivity(intent);
     }
 }

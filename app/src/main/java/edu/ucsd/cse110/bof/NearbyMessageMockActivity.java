@@ -3,7 +3,8 @@ package edu.ucsd.cse110.bof;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.nfc.Tag;
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -20,9 +21,10 @@ import java.io.ObjectInputStream;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+import edu.ucsd.cse110.bof.homepage.HomePageActivity;
 import edu.ucsd.cse110.bof.model.IStudent;
 import edu.ucsd.cse110.bof.model.db.Course;
-import edu.ucsd.cse110.bof.model.db.StudentWithCourses;
+import edu.ucsd.cse110.bof.model.db.Student;
 
 public class NearbyMessageMockActivity extends AppCompatActivity {
     private static final String TAG = "MockingReceiver";
@@ -34,6 +36,9 @@ public class NearbyMessageMockActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_nearby_message_mock);
+
+        // retrieve context
+        Context context = this;
 
         mockStudentInput = findViewById(R.id.editName);
 
@@ -59,7 +64,7 @@ public class NearbyMessageMockActivity extends AppCompatActivity {
                     Log.d(TAG, "photoURL: " + student.getPhotoUrl());
                     Log.d(TAG, "Classes: ");
                     ArrayList<Course> courses =
-                            (ArrayList<Course>) student.getCourses();
+                            (ArrayList<Course>) student.getCourses(context);
                     for (Course course : courses) {
                         Log.d(TAG, course.toString());
                     }
@@ -76,18 +81,16 @@ public class NearbyMessageMockActivity extends AppCompatActivity {
         };
     }
 
-    //Assumes that the input has valid csv
+    /**
+     * Assumes that this input has valid csv, will create fake message
+     * listener to mock a student being nearby (sends the student every 3
+     * seconds)
+     */
     public void onConfirmMockedStudent(View view) {
         IStudent student = makeMockedStudent();
         this.messageListener = new FakedMessageListener(realListener,
                 3, student);
 
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        Nearby.getMessagesClient(this).subscribe(messageListener);
     }
 
     //should be moved into a separate class
@@ -96,11 +99,11 @@ public class NearbyMessageMockActivity extends AppCompatActivity {
         String csv = mockStudentInput.getText().toString();
         Scanner reader = new Scanner(csv).useDelimiter(",");
 
-        StudentWithCourses stu = new StudentWithCourses();
-        stu.student.name = reader.next();
+        Student stu = new Student();
+        stu.setName(reader.next());
         reader.nextLine();
 
-        stu.student.photoURL = reader.next();
+        stu.setPhotoUrl(reader.next());
         reader.nextLine();
 
         ArrayList<Course> courses = new ArrayList<>();
@@ -114,12 +117,22 @@ public class NearbyMessageMockActivity extends AppCompatActivity {
             subject = reader.next();
             courseNum = reader.next();
 
-            courses.add(new Course(0, 0, year,
+            courses.add(new Course( 0, year,
                     quarter, subject, courseNum));
         }
 
-        stu.courses = courses;
+        //TODO: fix logic
+        //stu.courses = courses;
 
         return stu;
+    }
+
+    public void onGoBackClicked(View view) {
+        if (messageListener != null) {
+            Nearby.getMessagesClient(this).subscribe(messageListener);
+        }
+
+        Intent intent = new Intent(this, HomePageActivity.class);
+        startActivity(intent);
     }
 }

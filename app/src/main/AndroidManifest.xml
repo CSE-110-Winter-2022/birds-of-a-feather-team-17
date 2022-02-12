@@ -11,13 +11,13 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.BirdsOfAFeather">
         <activity
+            android:name=".homepage.HomePageActivity"
+            android:exported="false" />
+        <activity
             android:name=".NearbyMessageMockActivity"
             android:exported="false" />
         <activity
             android:name=".profile.ProfileViewActivity"
-            android:exported="false" />
-        <activity
-            android:name=".homepage.HomePageActivity"
             android:exported="false" />
         <activity
             android:name=".InputCourses.InputCourseActivity"
