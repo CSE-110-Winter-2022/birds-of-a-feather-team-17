@@ -104,12 +104,16 @@ public class HomePageActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
 
-                if (!myBoFs.contains(receivedStudentWithCourses.getStudent())) {
-                    //use BoFsTracker to find common classes
+                List<Student> dbStudents = db.studentsDao().getAll();
 
+                //check that this student isn't in list nor in database
+                if (!myBoFs.contains(receivedStudentWithCourses.getStudent())
+                        && !dbStudents.contains((Student) receivedStudentWithCourses.getStudent())) {
                     Log.d(TAG,
                             "message is a studentWithCourses named "
                                     + receivedStudentWithCourses.getStudent().getName());
+
+                    //use BoFsTracker to find common classes
                     ArrayList<Course> commonCourses = (ArrayList<Course>)
                             BoFsTracker.getCommonCourses(
                                     thisStudent.getCourses(getApplicationContext()),
