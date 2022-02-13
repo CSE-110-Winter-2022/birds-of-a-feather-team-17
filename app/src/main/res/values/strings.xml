@@ -24,6 +24,15 @@
         <item>SS2</item>
         <item>SSS</item>
     </string-array>
+    <string-array name="years_array">
+        <item>2022</item>
+        <item>2021</item>
+        <item>2020</item>
+        <item>2019</item>
+        <item>2018</item>
+        <item>2017</item>
+        <item>2016</item>
+    </string-array>
     <string name="confirm_mocked_student">Confirm mocked student</string>
     <string
         name="hint_student_csv">Enter name,photo url, and classes as csv</string>
