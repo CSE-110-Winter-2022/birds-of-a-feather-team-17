@@ -47,6 +47,11 @@ public class StudentsViewAdapter extends RecyclerView.Adapter<StudentsViewAdapte
         holder.setStudent(students.get(position));
     }
 
+    //called from HomePageActivity when the list of students is updated
+    public void itemInserted() {
+        this.notifyItemInserted(this.students.size() - 1);
+    }
+
     @Override
     public int getItemCount() {
         return this.students.size();

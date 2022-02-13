@@ -11,4 +11,6 @@ public interface IStudent extends Serializable {
     String getPhotoUrl();
     List<Course> getCourses();
     int getMatches();
+
+    void setMatches(int size);
 }

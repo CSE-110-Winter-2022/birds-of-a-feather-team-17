@@ -26,6 +26,7 @@ import java.util.List;
 import edu.ucsd.cse110.bof.BoFsTracker;
 import edu.ucsd.cse110.bof.InputCourses.CoursesViewAdapter;
 import edu.ucsd.cse110.bof.R;
+import edu.ucsd.cse110.bof.StudentWithCourses;
 import edu.ucsd.cse110.bof.model.IStudent;
 import edu.ucsd.cse110.bof.model.db.AppDatabase;
 import edu.ucsd.cse110.bof.model.db.Course;
@@ -35,7 +36,7 @@ public class HomePageActivity extends AppCompatActivity {
     private AppDatabase db;
     private IStudent thisStudent;
 
-    List<IStudent> students;
+    List<IStudent> myBoFs;
 
     RecyclerView studentsRecyclerView;
     RecyclerView.LayoutManager studentsLayoutManager;
@@ -58,45 +59,58 @@ public class HomePageActivity extends AppCompatActivity {
 
 
         //set up RecyclerView
-        students = new ArrayList<>();
+
+        myBoFs = new ArrayList<>();
 
         studentsRecyclerView = findViewById(R.id.students_view);
 
         studentsLayoutManager = new LinearLayoutManager(this);
         studentsRecyclerView.setLayoutManager(studentsLayoutManager);
 
-        studentsViewAdapter = new StudentsViewAdapter(students);
+        studentsViewAdapter = new StudentsViewAdapter(myBoFs);
         studentsRecyclerView.setAdapter(studentsViewAdapter);
     }
 
     public void onStartSearchingClicked(View view) {
         //set up listener for finding BoFs
         realListener = new MessageListener() {
-            IStudent receivedStudent = null;
+            StudentWithCourses receivedStudentWithCourses = null;
             @Override
             public void onFound(@NonNull Message message) {
-                //make IStudent from byte array received
+                //make StudentWithCourses from byte array received
                 ByteArrayInputStream bis =
                         new ByteArrayInputStream(message.getContent());
                 ObjectInput stuObj = null;
                 try {
                     stuObj = new ObjectInputStream(bis);
-                    receivedStudent = (IStudent) stuObj.readObject();
+                    receivedStudentWithCourses =
+                            (StudentWithCourses) stuObj.readObject();
                 } catch (IOException | ClassNotFoundException e) {
                     e.printStackTrace();
                 }
 
-                if (!students.contains(receivedStudent)) {
+                if (!myBoFs.contains(receivedStudentWithCourses.getStudent())) {
                     //use BoFsTracker to find common classes
                     ArrayList<Course> commonCourses = (ArrayList<Course>)
-                            BoFsTracker.getCommonCourses(thisStudent,
-                                    receivedStudent);
+                            BoFsTracker.getCommonCourses(context,
+                                    db.coursesDao().getForStudent(),
+                                    receivedStudentWithCourses.getCourses());
 
                     //if not empty list, add this student to list of students
+                    //and the database
                     if (commonCourses.size() != 0) {
-                        students.add(receivedStudent);
+                        myBoFs.add(receivedStudentWithCourses.getStudent());
 
-                        //TODO: sort students by num of commonCourses
+                        receivedStudentWithCourses.getStudent().setMatches(commonCourses.size());
+                        db.studentsDao().insert((Student) receivedStudentWithCourses.getStudent());
+
+                        for (Course receivedCourse :
+                                receivedStudentWithCourses.getCourses()) {
+                            receivedCourse.setStudentId();//);
+                            db.coursesDao().insert(receivedCourse);
+                        }
+
+                        studentsViewAdapter.itemInserted();
                     }
                 }
             }

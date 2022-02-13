@@ -5,8 +5,11 @@ import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
+import java.io.Serializable;
+import java.util.Objects;
+
 @Entity(tableName = "courses")
-public class Course {
+public class Course implements Serializable {
 
     @PrimaryKey
     @ColumnInfo(name = "id")
@@ -14,9 +17,6 @@ public class Course {
 
     @ColumnInfo(name = "student_id")
     public int studentId;
-
-//    @ColumnInfo(name = "info")
-//    public String info;
 
     public int year;
     String quarter, subject, courseNum;

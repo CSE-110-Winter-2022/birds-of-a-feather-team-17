@@ -29,6 +29,7 @@ public class NearbyMessageMockActivity extends AppCompatActivity {
     private MessageListener messageListener;
     private MessageListener realListener;
     private EditText mockStudentInput;
+    private ArrayList<Course> mockStuCourses;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,9 +79,9 @@ public class NearbyMessageMockActivity extends AppCompatActivity {
 
     //Assumes that the input has valid csv
     public void onConfirmMockedStudent(View view) {
-        IStudent student = makeMockedStudent();
+        StudentWithCourses studentWithCourses = makeMockedStudent();
         this.messageListener = new FakedMessageListener(realListener,
-                3, student);
+                3, studentWithCourses);
 
     }
 
@@ -92,34 +93,32 @@ public class NearbyMessageMockActivity extends AppCompatActivity {
 
     //should be moved into a separate class
     //makes a student from the CSV
-    protected IStudent makeMockedStudent() {
+    protected StudentWithCourses makeMockedStudent() {
         String csv = mockStudentInput.getText().toString();
-        Scanner reader = new Scanner(csv).useDelimiter(",");
+        Scanner reader = new Scanner(csv).useDelimiter("[, \n]");
 
-        StudentWithCourses stu = new StudentWithCourses();
-        stu.student.name = reader.next();
+        IStudent mockStudent = new Student();
+        mockStudent.setName(reader.next());
         reader.nextLine();
 
-        stu.student.photoURL = reader.next();
+        mockStudent.setPhotoUrl(reader.next());
         reader.nextLine();
 
-        ArrayList<Course> courses = new ArrayList<>();
+        mockStuCourses = new ArrayList<>();
 
         int year;
         String quarter, subject, courseNum;
 
-        while (reader.hasNext()) {
-            year = reader.nextInt();
+        while (reader.hasNextLine()) {
+            year = Integer.parseInt(reader.next());
             quarter = reader.next();
             subject = reader.next();
             courseNum = reader.next();
 
-            courses.add(new Course(0, 0, year,
+            mockStuCourses.add(new Course( 1, year,
                     quarter, subject, courseNum));
         }
 
-        stu.courses = courses;
-
-        return stu;
+        return new StudentWithCourses(mockStudent, mockStuCourses);
     }
 }

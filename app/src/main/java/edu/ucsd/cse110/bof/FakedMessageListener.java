@@ -6,11 +6,14 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import edu.ucsd.cse110.bof.model.IStudent;
+import edu.ucsd.cse110.bof.model.db.Course;
+import edu.ucsd.cse110.bof.model.db.Student;
 
 public class FakedMessageListener extends MessageListener {
     private final MessageListener messageListener;
@@ -19,28 +22,28 @@ public class FakedMessageListener extends MessageListener {
 
     //mocks sending IStudent as message
     public FakedMessageListener(MessageListener realMessageListener,
-                                int frequency, IStudent student) {
+                                int frequency, StudentWithCourses studentWithCourses) {
         this.messageListener = realMessageListener;
         this.executor = Executors.newSingleThreadScheduledExecutor();
 
-        //make byte array for student
+        //make byte array for student and courses
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         ObjectOutputStream out = null;
-        byte[] studentBytes = new byte[0];
+        byte[] studentWithCoursesBytes = new byte[0];
         try {
             out = new ObjectOutputStream(bos);
-            out.writeObject(student);
+            out.writeObject(studentWithCourses);
             out.flush();
-            studentBytes = bos.toByteArray();
+            studentWithCoursesBytes = bos.toByteArray();
             bos.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
-        byte[] finalStudentBytes = studentBytes;
+        byte[] finalStudentWithCoursesBytes = studentWithCoursesBytes;
 
         executor.scheduleAtFixedRate(() -> {
             Message message = new
-                    Message(finalStudentBytes);
+                    Message(finalStudentWithCoursesBytes);
             this.messageListener.onFound(message);
             this.messageListener.onLost(message);
         }, 0, frequency, TimeUnit.SECONDS);
