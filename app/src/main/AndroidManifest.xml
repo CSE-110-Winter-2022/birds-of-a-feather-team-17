@@ -3,6 +3,7 @@
     package="edu.ucsd.cse110.bof">
     <uses-permission android:name="android.permission.INTERNET"/>
 
+
     <application
         android:allowBackup="true"
         android:fullBackupOnly="true"
@@ -12,7 +13,19 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.BirdsOfAFeather">
         <activity
+            android:name=".NearbyMessageMockActivity"
+            android:exported="false" />
+        <activity
+            android:name=".profile.ProfileViewActivity"
+            android:exported="false" />
+        <activity
             android:name=".homepage.HomePageActivity"
+            android:exported="false" />
+        <activity
+            android:name=".InputCourses.InputCourseActivity"
+            android:exported="false" />
+        <activity
+            android:name=".login.LoginActivity"
             android:exported="false" />
         <activity
             android:name=".login.PhotoActivity"

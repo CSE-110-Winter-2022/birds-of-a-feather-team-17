@@ -11,6 +11,7 @@ import java.util.Objects;
 @Entity(tableName = "courses")
 public class Course implements Serializable {
 
+
     @PrimaryKey
     @ColumnInfo(name = "id")
     public int courseId;

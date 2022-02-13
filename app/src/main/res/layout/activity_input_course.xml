@@ -44,29 +44,29 @@
       android:hint="Year"
       android:inputType="number"
       android:textSize="@dimen/list_text_size"
-      app:layout_constraintBottom_toTopOf="@+id/add_note_button"
+      app:layout_constraintBottom_toTopOf="@+id/add_course_button"
       app:layout_constraintEnd_toEndOf="parent"
       app:layout_constraintHorizontal_bias="0.0"
       app:layout_constraintStart_toStartOf="parent"
       app:layout_constraintTop_toTopOf="parent"
       app:layout_constraintVertical_bias="1.0" />
 
-  <EditText
-      android:id="@+id/input_quarter"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:layout_marginStart="16dp"
-      android:layout_marginBottom="16dp"
-      android:ems="5"
-      android:hint="Quarter"
-      android:inputType="text"
-      android:textSize="@dimen/list_text_size"
-      app:layout_constraintBottom_toTopOf="@+id/add_note_button"
-      app:layout_constraintEnd_toEndOf="parent"
-      app:layout_constraintHorizontal_bias="0.0"
-      app:layout_constraintStart_toEndOf="@+id/input_year"
-      app:layout_constraintTop_toTopOf="parent"
-      app:layout_constraintVertical_bias="1.0" />
+<!--  <EditText-->
+<!--      android:id="@+id/input_quarter"-->
+<!--      android:layout_width="wrap_content"-->
+<!--      android:layout_height="wrap_content"-->
+<!--      android:layout_marginStart="16dp"-->
+<!--      android:layout_marginBottom="16dp"-->
+<!--      android:ems="5"-->
+<!--      android:hint="Quarter"-->
+<!--      android:inputType="text"-->
+<!--      android:textSize="@dimen/list_text_size"-->
+<!--      app:layout_constraintBottom_toTopOf="@+id/add_course_button"-->
+<!--      app:layout_constraintEnd_toEndOf="parent"-->
+<!--      app:layout_constraintHorizontal_bias="0.0"-->
+<!--      app:layout_constraintStart_toEndOf="@+id/input_year"-->
+<!--      app:layout_constraintTop_toTopOf="parent"-->
+<!--      app:layout_constraintVertical_bias="1.0" />-->
 
   <EditText
       android:id="@+id/input_subject"
@@ -78,10 +78,10 @@
       android:hint="Subject"
       android:inputType="text"
       android:textSize="@dimen/list_text_size"
-      app:layout_constraintBottom_toTopOf="@+id/add_note_button"
+      app:layout_constraintBottom_toTopOf="@+id/add_course_button"
       app:layout_constraintEnd_toEndOf="parent"
       app:layout_constraintHorizontal_bias="0.0"
-      app:layout_constraintStart_toEndOf="@+id/input_quarter"
+      app:layout_constraintStart_toEndOf="@+id/fidget_spinner"
       app:layout_constraintTop_toTopOf="parent"
       app:layout_constraintVertical_bias="1.0" />
 
@@ -91,19 +91,28 @@
       android:layout_height="wrap_content"
       android:layout_marginStart="16dp"
       android:layout_marginBottom="16dp"
-      android:ems="5"
+      android:ems="4"
       android:hint="Course #"
       android:inputType="text"
       android:textSize="@dimen/list_text_size"
-      app:layout_constraintBottom_toTopOf="@+id/add_note_button"
+      app:layout_constraintBottom_toTopOf="@+id/add_course_button"
       app:layout_constraintEnd_toEndOf="parent"
       app:layout_constraintHorizontal_bias="0.0"
       app:layout_constraintStart_toEndOf="@+id/input_subject"
       app:layout_constraintTop_toTopOf="parent"
       app:layout_constraintVertical_bias="1.0" />
 
+  <Spinner
+      android:id="@+id/fidget_spinner"
+      android:layout_width="125dp"
+      android:layout_height="40dp"
+      android:layout_marginStart="5dp"
+      app:layout_constraintBottom_toBottomOf="@+id/input_year"
+      app:layout_constraintStart_toEndOf="@+id/input_year"
+      app:layout_constraintTop_toTopOf="@+id/input_year" />
+
   <Button
-      android:id="@+id/add_note_button"
+      android:id="@+id/add_course_button"
       android:layout_width="0dp"
       android:layout_height="wrap_content"
       android:layout_marginStart="16dp"

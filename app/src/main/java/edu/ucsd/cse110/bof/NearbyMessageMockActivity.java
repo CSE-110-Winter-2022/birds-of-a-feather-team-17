@@ -22,6 +22,7 @@ import java.util.Scanner;
 
 import edu.ucsd.cse110.bof.model.IStudent;
 import edu.ucsd.cse110.bof.model.db.Course;
+import edu.ucsd.cse110.bof.model.db.Student;
 import edu.ucsd.cse110.bof.model.db.StudentWithCourses;
 
 public class NearbyMessageMockActivity extends AppCompatActivity {
@@ -30,6 +31,7 @@ public class NearbyMessageMockActivity extends AppCompatActivity {
     private MessageListener realListener;
     private EditText mockStudentInput;
     private ArrayList<Course> mockStuCourses;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,7 +99,7 @@ public class NearbyMessageMockActivity extends AppCompatActivity {
         String csv = mockStudentInput.getText().toString();
         Scanner reader = new Scanner(csv).useDelimiter("[, \n]");
 
-        IStudent mockStudent = new Student();
+        Student mockStudent = new Student();
         mockStudent.setName(reader.next());
         reader.nextLine();
 

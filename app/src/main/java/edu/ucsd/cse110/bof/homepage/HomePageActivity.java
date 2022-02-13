@@ -26,7 +26,6 @@ import java.util.List;
 import edu.ucsd.cse110.bof.BoFsTracker;
 import edu.ucsd.cse110.bof.InputCourses.CoursesViewAdapter;
 import edu.ucsd.cse110.bof.R;
-import edu.ucsd.cse110.bof.StudentWithCourses;
 import edu.ucsd.cse110.bof.model.IStudent;
 import edu.ucsd.cse110.bof.model.db.AppDatabase;
 import edu.ucsd.cse110.bof.model.db.Course;
@@ -62,10 +61,12 @@ public class HomePageActivity extends AppCompatActivity {
 
         myBoFs = new ArrayList<>();
 
+
         studentsRecyclerView = findViewById(R.id.students_view);
 
         studentsLayoutManager = new LinearLayoutManager(this);
         studentsRecyclerView.setLayoutManager(studentsLayoutManager);
+
 
         studentsViewAdapter = new StudentsViewAdapter(myBoFs);
         studentsRecyclerView.setAdapter(studentsViewAdapter);
@@ -78,6 +79,7 @@ public class HomePageActivity extends AppCompatActivity {
             @Override
             public void onFound(@NonNull Message message) {
                 //make StudentWithCourses from byte array received
+
                 ByteArrayInputStream bis =
                         new ByteArrayInputStream(message.getContent());
                 ObjectInput stuObj = null;
@@ -85,6 +87,7 @@ public class HomePageActivity extends AppCompatActivity {
                     stuObj = new ObjectInputStream(bis);
                     receivedStudentWithCourses =
                             (StudentWithCourses) stuObj.readObject();
+
                 } catch (IOException | ClassNotFoundException e) {
                     e.printStackTrace();
                 }

@@ -17,6 +17,7 @@ public abstract class AppDatabase extends RoomDatabase {
 //                    .allowMainThreadQueries()
 //                    .build();
             singletonInstance = Room.databaseBuilder(context, AppDatabase.class, "students.db")
+                    .allowMainThreadQueries()
                     .build();
         }
 

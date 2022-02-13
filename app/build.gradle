@@ -45,6 +45,12 @@ dependencies {
     //Nearby messages API
     implementation 'com.google.android.gms:play-services-nearby:18.0.2'
 
+<<<<<<< HEAD
+=======
+    //Google Play Services
+    implementation 'com.google.android.gms:play-services-auth:20.1.0'
+
+>>>>>>> ed97222b9503ec63ecb8c8519ccf72cd2119c842
     implementation 'androidx.appcompat:appcompat:1.4.1'
     implementation 'com.google.android.material:material:1.5.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.3'
