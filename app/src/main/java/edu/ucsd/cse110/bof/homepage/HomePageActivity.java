@@ -76,13 +76,11 @@ public class HomePageActivity extends AppCompatActivity {
 
         //set up listener for search button:
         ToggleButton toggle = findViewById(R.id.search_button);
-        toggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) {
-                    onStartSearchingClicked();
-                } else {
-                    onStopSearchingClicked();
-                }
+        toggle.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (isChecked) {
+                onStartSearchingClicked();
+            } else {
+                onStopSearchingClicked();
             }
         });
 

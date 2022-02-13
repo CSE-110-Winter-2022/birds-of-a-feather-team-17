@@ -62,6 +62,7 @@ public class PhotoActivity extends AppCompatActivity {
         //Link to InputCourseActivity
         Intent intent = new Intent(this, InputCourseActivity.class);
         startActivity(intent);
+        finish();
 
     }
 }
