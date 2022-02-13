@@ -49,8 +49,14 @@ public class InputCourseActivity extends AppCompatActivity {
 
         setTitle("Birds of a Feather");
 
+        //get student info from photo activity
+        Intent intent = getIntent();
+        String studentName = intent.getStringExtra("student_name");
+        String studentPhoto = intent.getStringExtra("student_photo");
 
+        //insert user into database (student_id=1, first element in database)
         db = AppDatabase.singleton(this);
+        db.studentsDao().insert(new Student(studentName, studentPhoto));
 
         //fetch courses list from user (student_id=1 in database)
         List<Course> courses = db.coursesDao().getForStudent(1);
@@ -76,8 +82,8 @@ public class InputCourseActivity extends AppCompatActivity {
 
         //move to home page
         Intent intent = new Intent(this, HomePageActivity.class);
-        intent.putExtra("student_id", 1);
         startActivity(intent);
+        //finish();
     }
 
     public void onAddCourseClicked(View view) {
