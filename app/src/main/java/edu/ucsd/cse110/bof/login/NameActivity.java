@@ -39,5 +39,6 @@ public class NameActivity extends AppCompatActivity {
         Intent intent = new Intent(this, PhotoActivity.class); //link to PhotoActivity
         intent.putExtra("student_name", username);
         startActivity(intent);
+        finish();
     }
 }
