@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import edu.ucsd.cse110.bof.BoFsTracker;
+import edu.ucsd.cse110.bof.FakedMessageListener;
 import edu.ucsd.cse110.bof.InputCourses.CoursesViewAdapter;
 import edu.ucsd.cse110.bof.NearbyMessageMockActivity;
 import edu.ucsd.cse110.bof.R;
@@ -48,6 +49,7 @@ public class HomePageActivity extends AppCompatActivity {
 
     private static final String TAG = "HomePageReceiver";
     private MessageListener realListener;
+    private MessageListener fakedMessageListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,14 +59,14 @@ public class HomePageActivity extends AppCompatActivity {
 
         //set thisStudent
         Intent intent = getIntent();
-        int studentID = intent.getIntExtra("student_id", 0);
-        db = AppDatabase.singleton(this);
+        Context context = this;
+        int studentID = intent.getIntExtra("student_id", 1);
+        db = AppDatabase.singleton(context);
         thisStudent = db.studentsDao().get(studentID);
 
 
         //set up RecyclerView
         myBoFs = new ArrayList<>();
-
 
         studentsRecyclerView = findViewById(R.id.students_view);
 
@@ -73,19 +75,27 @@ public class HomePageActivity extends AppCompatActivity {
 
         studentsViewAdapter = new StudentsViewAdapter(myBoFs);
         studentsRecyclerView.setAdapter(studentsViewAdapter);
-    }
 
-    /**
-     * Creates the listener to start searching for BoFs,
-     */
-    public void onStartSearchingClicked() {
-        //set up listener for finding BoFs
+        //set up listener for search button:
+        ToggleButton toggle = findViewById(R.id.search_button);
+        toggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    onStartSearchingClicked();
+                } else {
+                    onStopSearchingClicked();
+                }
+            }
+        });
+
+        //set up actual listener for finding BoFs
         realListener = new MessageListener() {
             StudentWithCourses receivedStudentWithCourses = null;
             @Override
             public void onFound(@NonNull Message message) {
                 //make StudentWithCourses from byte array received
 
+                Log.d(TAG, "found a message");
                 ByteArrayInputStream bis =
                         new ByteArrayInputStream(message.getContent());
                 ObjectInput stuObj = null;
@@ -100,14 +110,19 @@ public class HomePageActivity extends AppCompatActivity {
 
                 if (!myBoFs.contains(receivedStudentWithCourses.getStudent())) {
                     //use BoFsTracker to find common classes
+
+                    Log.d(TAG,
+                            "message is a studentWithCourses named "
+                                    + receivedStudentWithCourses.getStudent().getName());
                     ArrayList<Course> commonCourses = (ArrayList<Course>)
                             BoFsTracker.getCommonCourses(
-                                    db.coursesDao().getForStudent(0),
+                                    thisStudent.getCourses(context),
                                     receivedStudentWithCourses.getCourses());
 
                     //if not empty list, add this student to list of students
                     //and the database
                     if (commonCourses.size() != 0) {
+                        Log.d(TAG,"studentWithCourses has a common class");
                         myBoFs.add(receivedStudentWithCourses.getStudent());
 
                         receivedStudentWithCourses.getStudent().setMatches(commonCourses.size());
@@ -123,19 +138,32 @@ public class HomePageActivity extends AppCompatActivity {
                 }
             }
         };
+
+        //set up mock listener for receiving mocked items
+        this.fakedMessageListener = new FakedMessageListener(this.realListener, 3,
+                        (StudentWithCourses) intent.getSerializableExtra("mockedStudent") );
+    }
+
+    /**
+     * Creates the listener to start searching for BoFs,
+     */
+    public void onStartSearchingClicked() {
+        Nearby.getMessagesClient(this).subscribe(realListener);
+        Nearby.getMessagesClient(this).subscribe(fakedMessageListener);
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        Nearby.getMessagesClient(this).subscribe(realListener);
     }
 
-//    public void onStopSearchingClicked() {
-//        if (realListener != null) {
-//            Nearby.getMessagesClient(this).unsubscribe(realListener);
-//        }
-//    }
+    public void onStopSearchingClicked() {
+        if (realListener != null) {
+            Nearby.getMessagesClient(this).unsubscribe(realListener);
+            Nearby.getMessagesClient(this).unsubscribe(fakedMessageListener);
+
+        }
+    }
 
     public void onGoToMockStudents(View view) {
         Intent intent = new Intent(this, NearbyMessageMockActivity.class);

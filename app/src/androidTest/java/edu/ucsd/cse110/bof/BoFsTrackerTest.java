@@ -191,7 +191,9 @@ public class BoFsTrackerTest {
         Student student2 = studentsDao.get(2);
 
         List<Course> commonClassesFromMethod =
-                BoFsTracker.getCommonCourses(context, student1, student2);
+                BoFsTracker.getCommonCourses(context,
+                        coursesDao.getForStudent(1),
+                        coursesDao.getForStudent(2));
 
         //actual answer
         List<Course> commonClasses = new ArrayList<>();
@@ -232,7 +234,9 @@ public class BoFsTrackerTest {
         Student student2 = studentsDao.get(2);
 
         List<Course> commonClassesFromMethod =
-                BoFsTracker.getCommonCourses(context, student1, student2);
+                BoFsTracker.getCommonCourses(context,
+                        coursesDao.getForStudent(1),
+                        coursesDao.getForStudent(2);
 
         //actual answer
         List<Course> commonClasses = new ArrayList<>();
