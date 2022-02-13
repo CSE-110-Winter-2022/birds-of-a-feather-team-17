@@ -10,6 +10,9 @@ import android.widget.EditText;
 import edu.ucsd.cse110.bof.InputCourses.InputCourseActivity;
 import edu.ucsd.cse110.bof.R;
 
+import android.webkit.URLUtil;
+import android.widget.Toast;
+
 public class PhotoActivity extends AppCompatActivity {
     private String photoURL;
     private EditText photoInput;
@@ -35,6 +38,12 @@ public class PhotoActivity extends AppCompatActivity {
         }
         else {
             photoURL = photoInput.getText().toString();
+
+            //TODO: test
+            if (!URLUtil.isValidUrl(photoURL)) {
+                Toast.makeText(this, "Invalid URL", Toast.LENGTH_SHORT).show();
+                return;
+            }
         }
 
         //Link to InputCourseActivity

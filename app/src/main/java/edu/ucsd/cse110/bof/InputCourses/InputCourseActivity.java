@@ -10,7 +10,9 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import java.util.HashSet;
 import java.util.List;
 
 import edu.ucsd.cse110.bof.InputCourses.CoursesViewAdapter;
@@ -76,6 +78,12 @@ public class InputCourseActivity extends AppCompatActivity {
     }
 
     public void onDoneClicked(View view) {
+        //at least 1 course is entered TODO: test
+        if (db.coursesDao().getForStudent(1).isEmpty()) {
+            Toast.makeText(this, "Enter a course",Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         //move to home page
         Intent intent = new Intent(this, HomePageActivity.class);
         startActivity(intent);
@@ -99,6 +107,15 @@ public class InputCourseActivity extends AppCompatActivity {
 
         //Make the course object and insert
         Course newCourse = new Course(studentID, newYearText, newQuarterText, newSubjectText, newCourseNumText);
+
+        //check not duplicate course TODO: test
+        List<Course> stuCoursesList = db.coursesDao().getForStudent(1);
+        HashSet<Course> stuCourses = new HashSet<>(stuCoursesList);
+        if (stuCourses.contains(newCourse)) {
+            Toast.makeText(this, "Duplicate course", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         db.coursesDao().insert(newCourse);
 
         //update the courseViewAdapter to show this new course

@@ -30,9 +30,10 @@ public class NameActivity extends AppCompatActivity {
     public void confirmName(View view) {
         username = usernameInput.getText().toString();
 
-        //no-blank string validity
-        while (username.equals("")) {
+        //no-blank string validity TODO: test
+        if (username.equals("")) {
             Toast.makeText(this,"Invalid name", Toast.LENGTH_SHORT).show();
+            return;
         }
 
         Intent intent = new Intent(this, PhotoActivity.class); //link to PhotoActivity
