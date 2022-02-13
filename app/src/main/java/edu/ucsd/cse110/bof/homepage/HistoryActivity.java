@@ -42,7 +42,7 @@ public class HistoryActivity extends AppCompatActivity {
         discoveredStudents = studentsDao.getAll();
 
         //remove self from list TODO: test
-        discoveredStudents.remove(0);
+        discoveredStudents.remove(studentsDao.get(1));
 
 
         //set title

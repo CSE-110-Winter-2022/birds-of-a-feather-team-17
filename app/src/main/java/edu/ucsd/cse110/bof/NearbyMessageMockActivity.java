@@ -5,7 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
 import android.content.Intent;
-import android.nfc.Tag
+import android.nfc.Tag;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -26,7 +26,7 @@ import edu.ucsd.cse110.bof.homepage.HomePageActivity;
 import edu.ucsd.cse110.bof.model.IStudent;
 import edu.ucsd.cse110.bof.model.db.Course;
 import edu.ucsd.cse110.bof.model.db.Student;
-import edu.ucsd.cse110.bof.model.db.StudentWithCourses;
+import edu.ucsd.cse110.bof.StudentWithCourses;
 
 public class NearbyMessageMockActivity extends AppCompatActivity {
     private static final String TAG = "MockingReceiver";

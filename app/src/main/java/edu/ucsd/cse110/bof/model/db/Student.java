@@ -65,8 +65,6 @@ public class Student implements IStudent {
 
     public void setMatches(int numMatches) { this.numMatches = numMatches; }
 
-    public void incrementMatches() { numMatches++; }
-
     // pass in a context to receive singleton database instance
     public List<Course> getCourses(Context context) {
         AppDatabase db = AppDatabase.singleton(context);

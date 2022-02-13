@@ -15,13 +15,13 @@ import java.util.List;
 
 import edu.ucsd.cse110.bof.InputCourses.CoursesViewAdapter;
 import edu.ucsd.cse110.bof.R;
+import edu.ucsd.cse110.bof.StudentWithCourses;
 import edu.ucsd.cse110.bof.homepage.HomePageActivity;
 import edu.ucsd.cse110.bof.login.PhotoActivity;
 import edu.ucsd.cse110.bof.model.IStudent;
 import edu.ucsd.cse110.bof.model.db.AppDatabase;
 import edu.ucsd.cse110.bof.model.db.Course;
 import edu.ucsd.cse110.bof.model.db.Student;
-import edu.ucsd.cse110.bof.model.db.StudentWithCourses;
 
 public class InputCourseActivity extends AppCompatActivity {
     private AppDatabase db;
@@ -59,7 +59,7 @@ public class InputCourseActivity extends AppCompatActivity {
         student.photoURL = studentPhoto;
          */
 
-        db.studentsDao().insert(new Student(studentName), studentPhoto);
+        db.studentsDao().insert(new Student(studentName, studentPhoto));
 
         List<Course> courses = db.coursesDao().getForStudent(studentID);
 

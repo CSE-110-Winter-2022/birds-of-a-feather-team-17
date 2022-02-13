@@ -30,6 +30,7 @@ import edu.ucsd.cse110.bof.BoFsTracker;
 import edu.ucsd.cse110.bof.InputCourses.CoursesViewAdapter;
 import edu.ucsd.cse110.bof.NearbyMessageMockActivity;
 import edu.ucsd.cse110.bof.R;
+import edu.ucsd.cse110.bof.StudentWithCourses;
 import edu.ucsd.cse110.bof.model.IStudent;
 import edu.ucsd.cse110.bof.model.db.AppDatabase;
 import edu.ucsd.cse110.bof.model.db.Course;
@@ -114,7 +115,6 @@ public class HomePageActivity extends AppCompatActivity {
 
                         for (Course receivedCourse :
                                 receivedStudentWithCourses.getCourses()) {
-                            receivedCourse.setStudentId();//);
                             db.coursesDao().insert(receivedCourse);
                         }
 
@@ -142,9 +142,8 @@ public class HomePageActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    public void onHistoryClicked() {
+    public void onHistoryClicked(View view) {
         Intent intent = new Intent(this, HistoryActivity.class);
         startActivity(intent);
     }
-
 }
