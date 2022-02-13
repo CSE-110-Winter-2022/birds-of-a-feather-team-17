@@ -27,7 +27,6 @@ import edu.ucsd.cse110.bof.model.db.Student;
 
 public class InputCourseActivity extends AppCompatActivity {
     private AppDatabase db;
-    private StudentWithCourses studentWithCourses;
 
     protected RecyclerView coursesRecyclerView;
     protected RecyclerView.LayoutManager coursesLayoutManager;
@@ -44,26 +43,11 @@ public class InputCourseActivity extends AppCompatActivity {
         quarter_spinner.setAdapter(adapter);
         setTitle("Birds of a Feather");
 
-        //get student info from photo activity
-        Intent intent = getIntent();
-        int studentID = intent.getIntExtra("student_id", 0);
-
-        String studentName = intent.getStringExtra("student_name");
-        String studentPhoto = intent.getStringExtra("student_photo");
 
         db = AppDatabase.singleton(this);
 
-        //Create new student
-        /*
-        student = db.studentsDao().get(studentID);
-        student.studentId = studentID;
-        student.name = studentName;
-        student.photoURL = studentPhoto;
-         */
-
-        db.studentsDao().insert(new Student(studentName, studentPhoto));
-
-        List<Course> courses = db.coursesDao().getForStudent(studentID);
+        //fetch courses list from user (student_id=1 in database)
+        List<Course> courses = db.coursesDao().getForStudent(1);
 
         coursesRecyclerView = findViewById(R.id.courses_view);
 
@@ -78,7 +62,7 @@ public class InputCourseActivity extends AppCompatActivity {
     }
 
     public void onDoneClicked(View view) {
-        //at least 1 course is entered TODO: test
+        //make sure at least 1 course is entered TODO: test
         if (db.coursesDao().getForStudent(1).isEmpty()) {
             Toast.makeText(this, "Enter a course",Toast.LENGTH_SHORT).show();
             return;
@@ -105,6 +89,12 @@ public class InputCourseActivity extends AppCompatActivity {
         int newYearText = Integer.parseInt(newYearTextView.getText().toString());
         String newSubjectText = newSubjectTextView.getText().toString();
         String newCourseNumText = newCourseNumTextView.getText().toString();
+
+        //null inputs
+        if (newQuarterText.isEmpty() || newSubjectText.isEmpty() || newCourseNumText.isEmpty()) {
+            Toast.makeText(this, "Enter valid course", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
         //Make the course object and insert
         Course newCourse = new Course(studentID, newYearText, newQuarterText, newSubjectText, newCourseNumText);
