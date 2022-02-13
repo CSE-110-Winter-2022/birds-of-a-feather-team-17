@@ -30,11 +30,12 @@ import edu.ucsd.cse110.bof.StudentWithCourses;
 
 public class NearbyMessageMockActivity extends AppCompatActivity {
     private static final String TAG = "MockingReceiver";
-    private MessageListener messageListener;
+    private MessageListener fakedMessageListener;
     private MessageListener realListener;
     private EditText mockStudentInput;
     private ArrayList<Course> mockStuCourses;
 
+    private StudentWithCourses studentWithCourses;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,9 +47,9 @@ public class NearbyMessageMockActivity extends AppCompatActivity {
 
         mockStudentInput = findViewById(R.id.editName);
 
-        //create the listener
+        //create the listener (for confirming that it runs)
         realListener = new MessageListener() {
-            IStudent student = null;
+            StudentWithCourses studentWithCourses = null;
             @Override
             public void onFound(@NonNull Message message) {
                 //make IStudent from byte array received
@@ -57,18 +58,20 @@ public class NearbyMessageMockActivity extends AppCompatActivity {
                 ObjectInput stuObj = null;
                 try {
                     stuObj = new ObjectInputStream(bis);
-                    student = (IStudent) stuObj.readObject();
+                    studentWithCourses = (StudentWithCourses) stuObj.readObject();
                 } catch (IOException | ClassNotFoundException e) {
                     e.printStackTrace();
                 }
 
                 //log the received student
-                if (student != null) {
-                    Log.d(TAG, "Received student: " + student.getName());
-                    Log.d(TAG, "photoURL: " + student.getPhotoUrl());
+                if (studentWithCourses != null) {
+                    Log.d(TAG,
+                            "Received student: " + studentWithCourses.getStudent().getName());
+                    Log.d(TAG,
+                            "photoURL: " + studentWithCourses.getStudent().getPhotoUrl());
                     Log.d(TAG, "Classes: ");
                     ArrayList<Course> courses =
-                            (ArrayList<Course>) student.getCourses(context);
+                            (ArrayList<Course>) studentWithCourses.getCourses();
                     for (Course course : courses) {
                         Log.d(TAG, course.toString());
                     }
@@ -80,7 +83,7 @@ public class NearbyMessageMockActivity extends AppCompatActivity {
 
             @Override
             public void onLost(@NonNull Message message) {
-                Log.d(TAG, "Lost sight of: " + student.getName());
+                Log.d(TAG, "Lost sight of: " + studentWithCourses.getStudent().getName());
             }
         };
     }
@@ -91,16 +94,12 @@ public class NearbyMessageMockActivity extends AppCompatActivity {
      * seconds)
      */
     public void onConfirmMockedStudent(View view) {
-        StudentWithCourses studentWithCourses = makeMockedStudent();
-        this.messageListener = new FakedMessageListener(realListener,
+        studentWithCourses = makeMockedStudent();
+        this.fakedMessageListener = new FakedMessageListener(realListener,
                 3, studentWithCourses);
 
-    }
+        Nearby.getMessagesClient(this).subscribe(fakedMessageListener);
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-        Nearby.getMessagesClient(this).subscribe(messageListener);
     }
 
     //should be moved into a separate class
@@ -135,12 +134,11 @@ public class NearbyMessageMockActivity extends AppCompatActivity {
     }
 
     public void onGoBackClicked(View view) {
-        if (messageListener != null) {
-            Nearby.getMessagesClient(this).subscribe(messageListener);
-        }
+        Intent intent = new Intent(this, HomePageActivity.class);
 
-//        Intent intent = new Intent(this, HomePageActivity.class);
-//        startActivity(intent);
+        //send mocked student to homepage as serializable
+        intent.putExtra("mockedStudent", this.studentWithCourses);
+        startActivity(intent);
         finish();
     }
 }

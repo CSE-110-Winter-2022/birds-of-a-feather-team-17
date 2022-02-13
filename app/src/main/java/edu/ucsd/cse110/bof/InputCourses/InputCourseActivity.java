@@ -78,6 +78,7 @@ public class InputCourseActivity extends AppCompatActivity {
     public void onDoneClicked(View view) {
         //move to home page
         Intent intent = new Intent(this, HomePageActivity.class);
+        intent.putExtra("student_id", 1);
         startActivity(intent);
     }
 
