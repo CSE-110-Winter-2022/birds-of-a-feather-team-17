@@ -106,12 +106,13 @@ public class HomePageActivity extends AppCompatActivity {
 
                 List<Student> dbStudents = db.studentsDao().getAll();
 
+                Log.d(TAG,
+                        "message is a studentWithCourses named "
+                                + receivedStudentWithCourses.getStudent().getName());
+
                 //check that this student isn't in list nor in database
-                if (!myBoFs.contains(receivedStudentWithCourses.getStudent())
-                        && !dbStudents.contains((Student) receivedStudentWithCourses.getStudent())) {
-                    Log.d(TAG,
-                            "message is a studentWithCourses named "
-                                    + receivedStudentWithCourses.getStudent().getName());
+                if (!myBoFs.contains(receivedStudentWithCourses.getStudent())) {
+                    Log.d(TAG, "student not in homepage list nor database");
 
                     //use BoFsTracker to find common classes
                     ArrayList<Course> commonCourses = (ArrayList<Course>)
@@ -119,20 +120,26 @@ public class HomePageActivity extends AppCompatActivity {
                                     thisStudent.getCourses(getApplicationContext()),
                                     receivedStudentWithCourses.getCourses());
 
-                    //if not empty list, add this student to list of students
-                    //and the database
                     if (commonCourses.size() != 0) {
                         Log.d(TAG,"studentWithCourses has a common class");
+
+                        //add this student to viewAdapter list
+                        receivedStudentWithCourses.getStudent().setMatches(commonCourses.size());
+                        receivedStudentWithCourses.setCourses(commonCourses);
                         myBoFs.add(receivedStudentWithCourses.getStudent());
 
-                        receivedStudentWithCourses.getStudent().setMatches(commonCourses.size());
-                        db.studentsDao().insert((Student) receivedStudentWithCourses.getStudent());
+                        //only add to db if not already in db
+                        if (!dbStudents.contains((Student) receivedStudentWithCourses.getStudent())) {
+                            db.studentsDao().insert((Student) receivedStudentWithCourses.getStudent());
 
-                        for (Course receivedCourse :
-                                receivedStudentWithCourses.getCourses()) {
-                            db.coursesDao().insert(receivedCourse);
+                            int insertedId = db.studentsDao().maxId();
+
+                            //only common courses need to be added to db
+                            for (Course receivedCourse : commonCourses) {
+                                receivedCourse.setStudentId(insertedId);
+                                db.coursesDao().insert(receivedCourse);
+                            }
                         }
-
                         studentsViewAdapter.itemInserted();
                     }
                 }
