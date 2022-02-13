@@ -59,10 +59,8 @@ public class HomePageActivity extends AppCompatActivity {
 
         //set thisStudent
         Intent intent = getIntent();
-        Context context = this;
-        int studentID = intent.getIntExtra("student_id", 1);
-        db = AppDatabase.singleton(context);
-        thisStudent = db.studentsDao().get(studentID);
+        db = AppDatabase.singleton(this);
+        thisStudent = db.studentsDao().get(1);
 
 
         //set up RecyclerView
@@ -116,7 +114,7 @@ public class HomePageActivity extends AppCompatActivity {
                                     + receivedStudentWithCourses.getStudent().getName());
                     ArrayList<Course> commonCourses = (ArrayList<Course>)
                             BoFsTracker.getCommonCourses(
-                                    thisStudent.getCourses(context),
+                                    thisStudent.getCourses(getApplicationContext()),
                                     receivedStudentWithCourses.getCourses());
 
                     //if not empty list, add this student to list of students
@@ -150,11 +148,6 @@ public class HomePageActivity extends AppCompatActivity {
     public void onStartSearchingClicked() {
         Nearby.getMessagesClient(this).subscribe(realListener);
         Nearby.getMessagesClient(this).subscribe(fakedMessageListener);
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
     }
 
     public void onStopSearchingClicked() {

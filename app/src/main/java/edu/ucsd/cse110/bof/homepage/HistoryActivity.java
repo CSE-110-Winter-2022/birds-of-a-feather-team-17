@@ -14,13 +14,12 @@ import java.util.List;
 import edu.ucsd.cse110.bof.R;
 import edu.ucsd.cse110.bof.model.IStudent;
 import edu.ucsd.cse110.bof.model.db.AppDatabase;
+import edu.ucsd.cse110.bof.model.db.Course;
 import edu.ucsd.cse110.bof.model.db.Student;
 import edu.ucsd.cse110.bof.model.db.StudentsDao;
 
 public class HistoryActivity extends AppCompatActivity {
     private AppDatabase db;
-    private StudentsDao studentsDao;
-    private Context context;
 
     List<Student> discoveredStudents;
 
@@ -34,16 +33,16 @@ public class HistoryActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_history);
 
-        context = this;
+        db = AppDatabase.singleton(this);
 
-        db = AppDatabase.singleton(context);
-        studentsDao = db.studentsDao();
+        //create list of discovered students (minus user (which has student_id=1))
+        List<Student> tempList = db.studentsDao().getAll();
+        int tempListSize = tempList.size();
 
-        discoveredStudents = studentsDao.getAll();
-
-        //remove self from list TODO: test
-        discoveredStudents.remove(studentsDao.get(1));
-
+        discoveredStudents = new ArrayList<>();
+        for (int i=1; i<tempListSize; i++) {
+            discoveredStudents.add(tempList.get(i));
+        }
 
         //set title
         setTitle("Discovered Students");
