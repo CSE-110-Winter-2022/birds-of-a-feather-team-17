@@ -138,4 +138,9 @@ public class HomePageActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    public void onHistoryClicked() {
+        Intent intent = new Intent(this, HistoryActivity.class);
+        startActivity(intent);
+    }
+
 }

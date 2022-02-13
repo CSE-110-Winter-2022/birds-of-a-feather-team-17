@@ -1,5 +1,7 @@
 package edu.ucsd.cse110.bof.model;
 
+import android.content.Context;
+
 import java.io.Serializable;
 import java.util.List;
 

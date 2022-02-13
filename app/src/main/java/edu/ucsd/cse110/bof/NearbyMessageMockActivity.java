@@ -132,7 +132,8 @@ public class NearbyMessageMockActivity extends AppCompatActivity {
             Nearby.getMessagesClient(this).subscribe(messageListener);
         }
 
-        Intent intent = new Intent(this, HomePageActivity.class);
-        startActivity(intent);
+//        Intent intent = new Intent(this, HomePageActivity.class);
+//        startActivity(intent);
+        finish();
     }
 }
