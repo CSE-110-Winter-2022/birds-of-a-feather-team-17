@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import edu.ucsd.cse110.bof.R;
 
@@ -28,6 +29,11 @@ public class NameActivity extends AppCompatActivity {
 
     public void confirmName(View view) {
         username = usernameInput.getText().toString();
+
+        //no-blank string validity
+        while (username.equals("")) {
+            Toast.makeText(this,"Invalid name", Toast.LENGTH_SHORT).show();
+        }
 
         Intent intent = new Intent(this, PhotoActivity.class); //link to PhotoActivity
         intent.putExtra("student_name", username);
