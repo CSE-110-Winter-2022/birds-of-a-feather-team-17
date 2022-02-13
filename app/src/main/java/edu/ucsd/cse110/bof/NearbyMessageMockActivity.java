@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.nfc.Tag
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -25,12 +26,15 @@ import edu.ucsd.cse110.bof.homepage.HomePageActivity;
 import edu.ucsd.cse110.bof.model.IStudent;
 import edu.ucsd.cse110.bof.model.db.Course;
 import edu.ucsd.cse110.bof.model.db.Student;
+import edu.ucsd.cse110.bof.model.db.StudentWithCourses;
 
 public class NearbyMessageMockActivity extends AppCompatActivity {
     private static final String TAG = "MockingReceiver";
     private MessageListener messageListener;
     private MessageListener realListener;
     private EditText mockStudentInput;
+    private ArrayList<Course> mockStuCourses;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,44 +91,47 @@ public class NearbyMessageMockActivity extends AppCompatActivity {
      * seconds)
      */
     public void onConfirmMockedStudent(View view) {
-        IStudent student = makeMockedStudent();
+        StudentWithCourses studentWithCourses = makeMockedStudent();
         this.messageListener = new FakedMessageListener(realListener,
-                3, student);
+                3, studentWithCourses);
 
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        Nearby.getMessagesClient(this).subscribe(messageListener);
     }
 
     //should be moved into a separate class
     //makes a student from the CSV
-    protected IStudent makeMockedStudent() {
+    protected StudentWithCourses makeMockedStudent() {
         String csv = mockStudentInput.getText().toString();
-        Scanner reader = new Scanner(csv).useDelimiter(",");
+        Scanner reader = new Scanner(csv).useDelimiter("[, \n]");
 
-        Student stu = new Student();
-        stu.setName(reader.next());
+        Student mockStudent = new Student();
+        mockStudent.setName(reader.next());
         reader.nextLine();
 
-        stu.setPhotoUrl(reader.next());
+        mockStudent.setPhotoUrl(reader.next());
         reader.nextLine();
 
-        ArrayList<Course> courses = new ArrayList<>();
+        mockStuCourses = new ArrayList<>();
 
         int year;
         String quarter, subject, courseNum;
 
-        while (reader.hasNext()) {
-            year = reader.nextInt();
+        while (reader.hasNextLine()) {
+            year = Integer.parseInt(reader.next());
             quarter = reader.next();
             subject = reader.next();
             courseNum = reader.next();
 
-            courses.add(new Course( 0, year,
+            mockStuCourses.add(new Course( 1, year,
                     quarter, subject, courseNum));
         }
 
-        //TODO: fix logic
-        //stu.courses = courses;
-
-        return stu;
+        return new StudentWithCourses(mockStudent, mockStuCourses);
     }
 
     public void onGoBackClicked(View view) {

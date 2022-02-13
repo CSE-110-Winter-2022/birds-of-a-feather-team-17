@@ -38,9 +38,8 @@ import edu.ucsd.cse110.bof.model.db.Student;
 public class HomePageActivity extends AppCompatActivity {
     private AppDatabase db;
     private IStudent thisStudent;
-    private Context context;
 
-    List<IStudent> studentsFound;
+    List<IStudent> myBoFs;
 
     RecyclerView studentsRecyclerView;
     RecyclerView.LayoutManager studentsLayoutManager;
@@ -55,37 +54,24 @@ public class HomePageActivity extends AppCompatActivity {
         setContentView(R.layout.activity_home_page);
         setTitle("Birds of a Feather");
 
-        context = this;
-
         //set thisStudent
         Intent intent = getIntent();
         int studentID = intent.getIntExtra("student_id", 0);
-        db = AppDatabase.singleton(context);
+        db = AppDatabase.singleton(this);
         thisStudent = db.studentsDao().get(studentID);
 
 
         //set up RecyclerView
-        studentsFound = new ArrayList<>();
+        myBoFs = new ArrayList<>();
+
 
         studentsRecyclerView = findViewById(R.id.students_view);
 
         studentsLayoutManager = new LinearLayoutManager(this);
         studentsRecyclerView.setLayoutManager(studentsLayoutManager);
 
-        studentsViewAdapter = new StudentsViewAdapter(studentsFound);
+        studentsViewAdapter = new StudentsViewAdapter(myBoFs);
         studentsRecyclerView.setAdapter(studentsViewAdapter);
-
-        //set up toggle listener:
-        ToggleButton toggle = findViewById(R.id.search_button);
-        toggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) {
-                    onStartSearchingClicked();
-                } else {
-                    onStopSearchingClicked();
-                }
-            }
-        });
     }
 
     /**
@@ -94,44 +80,62 @@ public class HomePageActivity extends AppCompatActivity {
     public void onStartSearchingClicked() {
         //set up listener for finding BoFs
         realListener = new MessageListener() {
-            IStudent receivedStudent = null;
+            StudentWithCourses receivedStudentWithCourses = null;
             @Override
             public void onFound(@NonNull Message message) {
-                //make IStudent from byte array received
+                //make StudentWithCourses from byte array received
+
                 ByteArrayInputStream bis =
                         new ByteArrayInputStream(message.getContent());
                 ObjectInput stuObj = null;
                 try {
                     stuObj = new ObjectInputStream(bis);
-                    receivedStudent = (IStudent) stuObj.readObject();
+                    receivedStudentWithCourses =
+                            (StudentWithCourses) stuObj.readObject();
+
                 } catch (IOException | ClassNotFoundException e) {
                     e.printStackTrace();
                 }
 
-                if (!studentsFound.contains(receivedStudent)) {
+                if (!myBoFs.contains(receivedStudentWithCourses.getStudent())) {
                     //use BoFsTracker to find common classes
                     ArrayList<Course> commonCourses = (ArrayList<Course>)
-                            BoFsTracker.getCommonCourses(context, thisStudent,
-                                    receivedStudent);
+                            BoFsTracker.getCommonCourses(
+                                    db.coursesDao().getForStudent(0),
+                                    receivedStudentWithCourses.getCourses());
 
                     //if not empty list, add this student to list of students
+                    //and the database
                     if (commonCourses.size() != 0) {
-                        studentsFound.add(receivedStudent);
+                        myBoFs.add(receivedStudentWithCourses.getStudent());
 
-                        //TODO: sort students by num of commonCourses
+                        receivedStudentWithCourses.getStudent().setMatches(commonCourses.size());
+                        db.studentsDao().insert((Student) receivedStudentWithCourses.getStudent());
+
+                        for (Course receivedCourse :
+                                receivedStudentWithCourses.getCourses()) {
+                            receivedCourse.setStudentId();//);
+                            db.coursesDao().insert(receivedCourse);
+                        }
+
+                        studentsViewAdapter.itemInserted();
                     }
                 }
             }
         };
+    }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
         Nearby.getMessagesClient(this).subscribe(realListener);
     }
 
-    public void onStopSearchingClicked() {
-        if (realListener != null) {
-            Nearby.getMessagesClient(this).unsubscribe(realListener);
-        }
-    }
+//    public void onStopSearchingClicked() {
+//        if (realListener != null) {
+//            Nearby.getMessagesClient(this).unsubscribe(realListener);
+//        }
+//    }
 
     public void onGoToMockStudents(View view) {
         Intent intent = new Intent(this, NearbyMessageMockActivity.class);

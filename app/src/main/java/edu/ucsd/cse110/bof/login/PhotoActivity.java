@@ -42,5 +42,6 @@ public class PhotoActivity extends AppCompatActivity {
         intent.putExtra("student_name", username);
         intent.putExtra("student_photo", photoURL);
         startActivity(intent);
+
     }
 }

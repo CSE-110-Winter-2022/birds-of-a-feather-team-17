@@ -13,16 +13,19 @@ import android.widget.TextView;
 
 import java.util.List;
 
+import edu.ucsd.cse110.bof.InputCourses.CoursesViewAdapter;
 import edu.ucsd.cse110.bof.R;
 import edu.ucsd.cse110.bof.homepage.HomePageActivity;
 import edu.ucsd.cse110.bof.login.PhotoActivity;
+import edu.ucsd.cse110.bof.model.IStudent;
 import edu.ucsd.cse110.bof.model.db.AppDatabase;
 import edu.ucsd.cse110.bof.model.db.Course;
 import edu.ucsd.cse110.bof.model.db.Student;
+import edu.ucsd.cse110.bof.model.db.StudentWithCourses;
 
 public class InputCourseActivity extends AppCompatActivity {
     private AppDatabase db;
-    private Student student;
+    private StudentWithCourses studentWithCourses;
 
     protected RecyclerView coursesRecyclerView;
     protected RecyclerView.LayoutManager coursesLayoutManager;
@@ -32,6 +35,7 @@ public class InputCourseActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_input_course);
+
         Spinner quarter_spinner = findViewById(R.id.fidget_spinner);
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.quarters_array, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -40,8 +44,6 @@ public class InputCourseActivity extends AppCompatActivity {
 
         //get student info from photo activity
         Intent intent = getIntent();
-
-        //FIXME: is studentID also automatically generated when inserting?
         int studentID = intent.getIntExtra("student_id", 0);
 
         String studentName = intent.getStringExtra("student_name");
@@ -57,8 +59,7 @@ public class InputCourseActivity extends AppCompatActivity {
         student.photoURL = studentPhoto;
          */
 
-        student = new Student(studentName, studentPhoto);
-        db.studentsDao().insert(student);
+        db.studentsDao().insert(new Student(studentName), studentPhoto);
 
         List<Course> courses = db.coursesDao().getForStudent(studentID);
 
@@ -70,16 +71,19 @@ public class InputCourseActivity extends AppCompatActivity {
         coursesViewAdapter = new CoursesViewAdapter(courses, (course) -> {
             db.coursesDao().delete(course);
         });
+
         coursesRecyclerView.setAdapter(coursesViewAdapter);
     }
 
     public void onDoneClicked(View view) {
+        //move to home page
         Intent intent = new Intent(this, HomePageActivity.class);
         startActivity(intent);
     }
 
     public void onAddCourseClicked(View view) {
-        int studentID = student.getStudentId();
+        //user's studentID is 1, first one inserted into database
+        int studentID = 1;
 
         //find inputs
         Spinner newQuarterTextView = findViewById(R.id.fidget_spinner);
@@ -97,7 +101,7 @@ public class InputCourseActivity extends AppCompatActivity {
         Course newCourse = new Course(studentID, newYearText, newQuarterText, newSubjectText, newCourseNumText);
         db.coursesDao().insert(newCourse);
 
-        //update the courseViewAdapter to show this new course.
+        //update the courseViewAdapter to show this new course
         coursesViewAdapter.addCourse(newCourse);
     }
 }
