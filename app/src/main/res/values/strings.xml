@@ -16,9 +16,20 @@
     <string name="photo_url_hint">Enter your photo URL</string>
     <string name="choose_a_profile_photo">Choose a profile photo</string>
     <string-array name="quarters_array">
-        <item>Fall</item>
-        <item>Winter</item>
-        <item>Spring</item>
-        <item>Summer</item>
+        <item>FA</item>
+        <item>WI</item>
+        <item>SP</item>
+        <item>SS1</item>
+        <item>SS2</item>
+        <item>SSS</item>
+    </string-array>
+    <string-array name="years_array">
+        <item>2016</item>
+        <item>2017</item>
+        <item>2018</item>
+        <item>2019</item>
+        <item>2020</item>
+        <item>2021</item>
+        <item>2022</item>
     </string-array>
 </resources>

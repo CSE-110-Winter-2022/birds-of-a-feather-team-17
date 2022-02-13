@@ -35,9 +35,15 @@ public class InputCourseActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_input_course);
         Spinner quarter_spinner = findViewById(R.id.fidget_spinner);
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.quarters_array, android.R.layout.simple_spinner_item);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        quarter_spinner.setAdapter(adapter);
+        ArrayAdapter<CharSequence> quarter_adapter = ArrayAdapter.createFromResource(this, R.array.quarters_array, android.R.layout.simple_spinner_item);
+        quarter_adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        quarter_spinner.setAdapter(quarter_adapter);
+
+        Spinner year_spinner = findViewById(R.id.input_year);
+        ArrayAdapter<CharSequence> year_adapter = ArrayAdapter.createFromResource(this, R.array.years_array, android.R.layout.simple_spinner_item);
+        year_adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        year_spinner.setAdapter(year_adapter);
+
         setTitle("Birds of a Feather");
 
         //get student info from photo activity
@@ -80,11 +86,11 @@ public class InputCourseActivity extends AppCompatActivity {
 //        int studentID = student.getId();
         int studentID = 0;
         Spinner newQuarterTextView = findViewById(R.id.fidget_spinner);
-        TextView newYearTextView = findViewById(R.id.input_year);
+        Spinner newYearTextView = findViewById(R.id.input_year);
         TextView newSubjectTextView = findViewById(R.id.input_subject);
         TextView newCourseNumTextView = findViewById(R.id.input_course_number);
         String newQuarterText = newQuarterTextView.getSelectedItem().toString();
-        int newYearText = Integer.parseInt(newYearTextView.getText().toString());
+        int newYearText = Integer.parseInt(newYearTextView.getSelectedItem().toString());
         String newSubjectText = newSubjectTextView.getText().toString();
         String newCourseNumText = newCourseNumTextView.getText().toString();
 
