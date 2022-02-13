@@ -11,7 +11,9 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import java.util.HashSet;
 import java.util.List;
 
 import edu.ucsd.cse110.bof.InputCourses.CoursesViewAdapter;
@@ -26,7 +28,6 @@ import edu.ucsd.cse110.bof.model.db.Student;
 
 public class InputCourseActivity extends AppCompatActivity {
     private AppDatabase db;
-    private StudentWithCourses studentWithCourses;
 
     protected RecyclerView coursesRecyclerView;
     protected RecyclerView.LayoutManager coursesLayoutManager;
@@ -56,21 +57,12 @@ public class InputCourseActivity extends AppCompatActivity {
 
         db = AppDatabase.singleton(this);
 
-        //Create new student
-        /*
-        student = db.studentsDao().get(studentID);
-        student.studentId = studentID;
-        student.name = studentName;
-        student.photoURL = studentPhoto;
-         */
-
         Log.d(TAG, "Received user's name: " + studentName);
         Log.d(TAG, "Received user's photoURL: " + studentPhoto);
 
         db.studentsDao().insert(new Student(studentName, studentPhoto));
 
         List<Course> courses = db.coursesDao().getForStudent(USER_ID);
-
 
         coursesRecyclerView = findViewById(R.id.courses_view);
 
@@ -85,6 +77,12 @@ public class InputCourseActivity extends AppCompatActivity {
     }
 
     public void onDoneClicked(View view) {
+        //make sure at least 1 course is entered TODO: test
+        if (db.coursesDao().getForStudent(1).isEmpty()) {
+            Toast.makeText(this, "Enter a course",Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         //move to home page
         Intent intent = new Intent(this, HomePageActivity.class);
         intent.putExtra("student_id", USER_ID);
@@ -104,9 +102,23 @@ public class InputCourseActivity extends AppCompatActivity {
         String newSubjectText = newSubjectTextView.getText().toString();
         String newCourseNumText = newCourseNumTextView.getText().toString();
 
+        //null inputs
+        if (newQuarterText.isEmpty() || newSubjectText.isEmpty() || newCourseNumText.isEmpty()) {
+            Toast.makeText(this, "Enter valid course", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         //Make the course object and insert
-        Course newCourse = new Course(USER_ID, newYearText, newQuarterText,
-                newSubjectText, newCourseNumText);
+        Course newCourse = new Course(USER_ID, newYearText, newQuarterText, newSubjectText, newCourseNumText);
+
+        //check not duplicate course TODO: test
+        List<Course> stuCoursesList = db.coursesDao().getForStudent(1);
+        HashSet<Course> stuCourses = new HashSet<>(stuCoursesList);
+        if (stuCourses.contains(newCourse)) {
+            Toast.makeText(this, "Duplicate course", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         db.coursesDao().insert(newCourse);
 
         //update the courseViewAdapter to show this new course

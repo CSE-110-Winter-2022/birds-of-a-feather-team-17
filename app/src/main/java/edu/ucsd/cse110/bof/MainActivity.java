@@ -16,6 +16,8 @@ import edu.ucsd.cse110.bof.model.db.AppDatabase;
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "StartPage";
 
+    private AppDatabase db;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -24,7 +26,7 @@ public class MainActivity extends AppCompatActivity {
         AppDatabase db = AppDatabase.singleton(this);
         IStudent user = db.studentsDao().get(1);
         if (user != null) {
-            Log.d(TAG, "Found user, going to HomePage");
+            Log.d(TAG, "Found user " + user.getName() + ", going to HomePage");
             Intent intent = new Intent(this, HomePageActivity.class);
             this.startActivity(intent);
         }
@@ -33,7 +35,5 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent(this, LoginActivity.class);
             this.startActivity(intent);
         }
-
-        finish();
     }
 }

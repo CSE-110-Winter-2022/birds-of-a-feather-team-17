@@ -31,6 +31,7 @@ public class Student implements IStudent {
     public Student(String name, String photoURL) {
         this.name = name;
         this.photoURL = photoURL;
+        this.numMatches = 0;
     }
 
     // Student default constructor
