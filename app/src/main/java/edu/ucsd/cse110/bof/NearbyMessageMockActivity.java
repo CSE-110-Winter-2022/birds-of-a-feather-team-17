@@ -125,6 +125,7 @@ public class NearbyMessageMockActivity extends AppCompatActivity {
             quarter = reader.next();
             subject = reader.next();
             courseNum = reader.next();
+            reader.nextLine();
 
             mockStuCourses.add(new Course( 1, year,
                     quarter, subject, courseNum));

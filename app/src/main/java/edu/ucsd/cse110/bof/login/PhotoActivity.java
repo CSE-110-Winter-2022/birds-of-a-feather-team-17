@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 
@@ -14,6 +15,7 @@ public class PhotoActivity extends AppCompatActivity {
     private String photoURL;
     private EditText photoInput;
     private String username;
+    private static final String TAG = "PhotoActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,10 +27,11 @@ public class PhotoActivity extends AppCompatActivity {
         //Retrieve username sent from NameActivity
         Bundle extras = getIntent().getExtras();
         username = extras.getString("student_name");
+
+        Log.d(TAG, "Received user's name: " + username);
     }
 
     public void submitPhoto(View view) {
-
         //use default if user leaves input empty
         if (photoInput.getText().toString().equals("")) {
             photoURL = getResources().getString(R.string.default_photo_url);

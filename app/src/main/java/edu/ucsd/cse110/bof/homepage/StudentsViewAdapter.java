@@ -1,5 +1,7 @@
 package edu.ucsd.cse110.bof.homepage;
 
+import static java.util.Locale.US;
+
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -14,18 +16,23 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+import javax.net.ssl.HttpsURLConnection;
 
 import edu.ucsd.cse110.bof.R;
 import edu.ucsd.cse110.bof.model.IStudent;
 
-public class StudentsViewAdapter extends RecyclerView.Adapter<StudentsViewAdapter.ViewHolder>{
+public class StudentsViewAdapter extends RecyclerView.Adapter<StudentsViewAdapter.ViewHolder> {
 
     private final List<? extends IStudent> students;
+
 
     public StudentsViewAdapter(List<? extends IStudent> students) {
         super();
@@ -47,8 +54,17 @@ public class StudentsViewAdapter extends RecyclerView.Adapter<StudentsViewAdapte
         holder.setStudent(students.get(position));
     }
 
-    //called from HomePageActivity when the list of students is updated
+    //called from HomePageActivity when the list of students is updated,
+    //sort list based on numMatches, then update
     public void itemInserted() {
+        students.sort(new Comparator<IStudent>() {
+            @Override
+            //reverse order based on number of matching courses
+            public int compare(IStudent o1, IStudent o2) {
+                return Integer.compare(o2.getMatches(), o1.getMatches());
+            }
+        });
+
         this.notifyItemInserted(this.students.size() - 1);
     }
 
@@ -59,13 +75,17 @@ public class StudentsViewAdapter extends RecyclerView.Adapter<StudentsViewAdapte
 
     public static class ViewHolder
             extends RecyclerView.ViewHolder {
-        //implements View.OnClickListener {
+            //implements View.OnClickListener {
         private final TextView studentNameView;
         private final TextView studentMatchesView;
         private final ImageView studentPhotoView;
+
+        private ExecutorService backgroundThreadExecutor =
+                Executors.newSingleThreadExecutor();
+
         private IStudent student;
 
-        ViewHolder(View itemView) {
+        public ViewHolder(View itemView) {
             super(itemView);
             this.studentNameView = itemView.findViewById(R.id.student_row_name);
             this.studentMatchesView = itemView.findViewById(R.id.student_row_matches);
@@ -76,33 +96,41 @@ public class StudentsViewAdapter extends RecyclerView.Adapter<StudentsViewAdapte
         public void setStudent(IStudent student) {
             this.student = student;
             this.studentNameView.setText(student.getName());
-            this.studentMatchesView.setText(student.getMatches());
+            this.studentMatchesView.setText(String.format(US, "%d",
+                    student.getMatches()));
 
-            URL photo_url = null;
-            try {
-                photo_url = new URL(student.getPhotoUrl());
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-            }
-            Bitmap photo_bmp = null;
-            try {
-                photo_bmp = BitmapFactory.decodeStream(Objects.requireNonNull(photo_url).openConnection().getInputStream());
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            backgroundThreadExecutor.submit(() -> {
+                URL photo_url = null;
+                try {
+                    photo_url = new URL(student.getPhotoUrl());
+                } catch (MalformedURLException e) {
+                    e.printStackTrace();
+                }
+                Bitmap photoBitmap = null;
+                try {
+                    HttpsURLConnection connection =
+                            (HttpsURLConnection) Objects.requireNonNull(photo_url).openConnection();
+                    connection.setDoInput(true);
+                    photoBitmap = BitmapFactory.decodeStream(connection.getInputStream());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
 
-            this.studentPhotoView.setImageBitmap(photo_bmp);
+
+                this.studentPhotoView.setImageBitmap(photoBitmap);
+            });
         }
 
-//        @Override
-//        public void onClick(View view) {
-//            Context context = view.getContext();
-//            Intent intent = new Intent(context, PersonDetailActivity.class);
-//            //intent.putExtra("student_name", this.student.getName());
-//            //intent.putExtra("student_notes", this.student.getNotes().toArray(new String[0]));
-//
-//            intent.putExtra("student_id", this.student.getId());
-//            context.startActivity(intent);
-//        }
+        /*
+        @Override
+        public void onClick(View view) {
+            Context context = view.getContext();
+            Intent intent = new Intent(context, StudentDetailActivity.class);
+
+            intent.putExtra("student_id", this.student.getStudentId());
+            context.startActivity(intent);
+        }
+
+         */
     }
 }

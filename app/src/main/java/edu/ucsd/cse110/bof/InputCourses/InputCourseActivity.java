@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
@@ -31,6 +32,11 @@ public class InputCourseActivity extends AppCompatActivity {
     protected RecyclerView.LayoutManager coursesLayoutManager;
     protected CoursesViewAdapter coursesViewAdapter;
 
+    private static final String TAG = "InputCourseActivity";
+
+    //user's studentID is 1, first one inserted into database
+    private static final int USER_ID = 1;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,7 +50,6 @@ public class InputCourseActivity extends AppCompatActivity {
 
         //get student info from photo activity
         Intent intent = getIntent();
-        int studentID = intent.getIntExtra("student_id", 0);
 
         String studentName = intent.getStringExtra("student_name");
         String studentPhoto = intent.getStringExtra("student_photo");
@@ -59,9 +64,13 @@ public class InputCourseActivity extends AppCompatActivity {
         student.photoURL = studentPhoto;
          */
 
+        Log.d(TAG, "Received user's name: " + studentName);
+        Log.d(TAG, "Received user's photoURL: " + studentPhoto);
+
         db.studentsDao().insert(new Student(studentName, studentPhoto));
 
-        List<Course> courses = db.coursesDao().getForStudent(studentID);
+        List<Course> courses = db.coursesDao().getForStudent(USER_ID);
+
 
         coursesRecyclerView = findViewById(R.id.courses_view);
 
@@ -78,14 +87,11 @@ public class InputCourseActivity extends AppCompatActivity {
     public void onDoneClicked(View view) {
         //move to home page
         Intent intent = new Intent(this, HomePageActivity.class);
-        intent.putExtra("student_id", 1);
+        intent.putExtra("student_id", USER_ID);
         startActivity(intent);
     }
 
     public void onAddCourseClicked(View view) {
-        //user's studentID is 1, first one inserted into database
-        int studentID = 1;
-
         //find inputs
         Spinner newQuarterTextView = findViewById(R.id.fidget_spinner);
         TextView newYearTextView = findViewById(R.id.input_year);
@@ -99,7 +105,8 @@ public class InputCourseActivity extends AppCompatActivity {
         String newCourseNumText = newCourseNumTextView.getText().toString();
 
         //Make the course object and insert
-        Course newCourse = new Course(studentID, newYearText, newQuarterText, newSubjectText, newCourseNumText);
+        Course newCourse = new Course(USER_ID, newYearText, newQuarterText,
+                newSubjectText, newCourseNumText);
         db.coursesDao().insert(newCourse);
 
         //update the courseViewAdapter to show this new course
