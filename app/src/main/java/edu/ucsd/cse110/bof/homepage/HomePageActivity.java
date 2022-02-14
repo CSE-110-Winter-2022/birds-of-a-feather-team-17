@@ -1,5 +1,9 @@
 package edu.ucsd.cse110.bof.homepage;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -7,12 +11,14 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import com.google.android.gms.nearby.Nearby;
@@ -23,6 +29,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectInputStream;
+import java.sql.SQLOutput;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -50,6 +57,25 @@ public class HomePageActivity extends AppCompatActivity {
     private static final String TAG = "HomePageReceiver";
     private MessageListener realListener;
     private MessageListener fakedMessageListener;
+
+    ActivityResultLauncher<Intent> activityLauncher = registerForActivityResult(
+                    new ActivityResultContracts.StartActivityForResult(),
+                    new ActivityResultCallback<ActivityResult>() {
+                        @Override
+                        public void onActivityResult(ActivityResult result) {
+                            if (result.getResultCode() == 0) {
+                                Intent intent = result.getData();
+
+                                if (intent != null) {
+                                    mockCSV = intent.getStringExtra("mockCSV");
+                                }
+                            }
+                        }
+    });
+
+
+    private StudentWithCourses mockedStudent = null;
+    private String mockCSV = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,6 +109,8 @@ public class HomePageActivity extends AppCompatActivity {
                 onStopSearchingClicked();
             }
         });
+
+
 
         //set up actual listener for finding BoFs
         realListener = new MessageListener() {
@@ -151,7 +179,7 @@ public class HomePageActivity extends AppCompatActivity {
 
         //set up mock listener for receiving mocked items
         this.fakedMessageListener = new FakedMessageListener(this.realListener, 3,
-                        (StudentWithCourses) intent.getSerializableExtra("mockedStudent") );
+                        mockedStudent);
     }
 
     /**
@@ -172,7 +200,9 @@ public class HomePageActivity extends AppCompatActivity {
 
     public void onGoToMockStudents(View view) {
         Intent intent = new Intent(this, NearbyMessageMockActivity.class);
-        startActivity(intent);
+        //startActivity(intent);
+
+        activityLauncher.launch(intent);
     }
 
     public void onHistoryClicked(View view) {

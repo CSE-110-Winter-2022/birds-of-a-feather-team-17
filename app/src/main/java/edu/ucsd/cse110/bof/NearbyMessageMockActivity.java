@@ -133,11 +133,10 @@ public class NearbyMessageMockActivity extends AppCompatActivity {
     }
 
     public void onGoBackClicked(View view) {
-        Intent intent = new Intent(this, HomePageActivity.class);
+        Intent intent = new Intent();
+        intent.putExtra("mockCSV", mockStudentInput.getText().toString());
+        setResult(0, intent);
 
-        //send mocked student to homepage as serializable
-        intent.putExtra("mockedStudent", this.studentWithCourses);
-        startActivity(intent);
-        finish();
+        NearbyMessageMockActivity.super.onBackPressed();
     }
 }
