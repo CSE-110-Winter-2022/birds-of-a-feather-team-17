@@ -30,10 +30,9 @@ import edu.ucsd.cse110.bof.StudentWithCourses;
 
 public class NearbyMessageMockActivity extends AppCompatActivity {
     private static final String TAG = "MockingReceiver";
-    private MessageListener fakedMessageListener;
-    private MessageListener realListener;
+//    private MessageListener fakedMessageListener;
+//    private MessageListener realListener;
     private EditText mockStudentInput;
-    private ArrayList<Course> mockStuCourses;
 
     private StudentWithCourses studentWithCourses;
 
@@ -42,50 +41,48 @@ public class NearbyMessageMockActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_nearby_message_mock);
 
-        // retrieve context
-        Context context = this;
 
         mockStudentInput = findViewById(R.id.editName);
 
-        //create the listener (for confirming that it runs)
-        realListener = new MessageListener() {
-            StudentWithCourses studentWithCourses = null;
-            @Override
-            public void onFound(@NonNull Message message) {
-                //make IStudent from byte array received
-                ByteArrayInputStream bis =
-                        new ByteArrayInputStream(message.getContent());
-                ObjectInput stuObj = null;
-                try {
-                    stuObj = new ObjectInputStream(bis);
-                    studentWithCourses = (StudentWithCourses) stuObj.readObject();
-                } catch (IOException | ClassNotFoundException e) {
-                    e.printStackTrace();
-                }
-
-                //log the received student
-                if (studentWithCourses != null) {
-                    Log.d(TAG,
-                            "Received student: " + studentWithCourses.getStudent().getName());
-                    Log.d(TAG,
-                            "photoURL: " + studentWithCourses.getStudent().getPhotoUrl());
-                    Log.d(TAG, "Classes: ");
-                    ArrayList<Course> courses =
-                            (ArrayList<Course>) studentWithCourses.getCourses();
-                    for (Course course : courses) {
-                        Log.d(TAG, course.toString());
-                    }
-                }
-                else {
-                    Log.d(TAG, "error");
-                }
-            }
-
-            @Override
-            public void onLost(@NonNull Message message) {
-                Log.d(TAG, "Lost sight of: " + studentWithCourses.getStudent().getName());
-            }
-        };
+//        //create the listener (for confirming that it runs)
+//        realListener = new MessageListener() {
+//            StudentWithCourses studentWithCourses = null;
+//            @Override
+//            public void onFound(@NonNull Message message) {
+//                //make IStudent from byte array received
+//                ByteArrayInputStream bis =
+//                        new ByteArrayInputStream(message.getContent());
+//                ObjectInput stuObj = null;
+//                try {
+//                    stuObj = new ObjectInputStream(bis);
+//                    studentWithCourses = (StudentWithCourses) stuObj.readObject();
+//                } catch (IOException | ClassNotFoundException e) {
+//                    e.printStackTrace();
+//                }
+//
+//                //log the received student
+//                if (studentWithCourses != null) {
+//                    Log.d(TAG,
+//                            "Received student: " + studentWithCourses.getStudent().getName());
+//                    Log.d(TAG,
+//                            "photoURL: " + studentWithCourses.getStudent().getPhotoUrl());
+//                    Log.d(TAG, "Classes: ");
+//                    ArrayList<Course> courses =
+//                            (ArrayList<Course>) studentWithCourses.getCourses();
+//                    for (Course course : courses) {
+//                        Log.d(TAG, course.toString());
+//                    }
+//                }
+//                else {
+//                    Log.d(TAG, "error");
+//                }
+//            }
+//
+//            @Override
+//            public void onLost(@NonNull Message message) {
+//                Log.d(TAG, "Lost sight of: " + studentWithCourses.getStudent().getName());
+//            }
+//        };
     }
 
     /**
@@ -95,10 +92,26 @@ public class NearbyMessageMockActivity extends AppCompatActivity {
      */
     public void onConfirmMockedStudent(View view) {
         studentWithCourses = makeMockedStudent();
-        this.fakedMessageListener = new FakedMessageListener(realListener,
-                3, studentWithCourses);
+//        this.fakedMessageListener = new FakedMessageListener(realListener,
+//                3, studentWithCourses);
+//        Nearby.getMessagesClient(this).subscribe(fakedMessageListener);
 
-        Nearby.getMessagesClient(this).subscribe(fakedMessageListener);
+        // log the received student
+        if (studentWithCourses != null) {
+            Log.d(TAG,
+                    "Received student: " + studentWithCourses.getStudent().getName());
+            Log.d(TAG,
+                    "photoURL: " + studentWithCourses.getStudent().getPhotoUrl());
+            Log.d(TAG, "Classes: ");
+            ArrayList<Course> courses =
+                    (ArrayList<Course>) studentWithCourses.getCourses();
+            for (Course course : courses) {
+                Log.d(TAG, course.toString());
+            }
+        }
+        else {
+            Log.d(TAG, "error making mocked student!");
+        }
 
     }
 
@@ -115,7 +128,7 @@ public class NearbyMessageMockActivity extends AppCompatActivity {
         mockStudent.setPhotoUrl(reader.next());
         reader.nextLine();
 
-        mockStuCourses = new ArrayList<>();
+        ArrayList<Course> mockStuCourses = new ArrayList<>();
 
         int year;
         String quarter, subject, courseNum;
@@ -127,7 +140,7 @@ public class NearbyMessageMockActivity extends AppCompatActivity {
             courseNum = reader.next();
             //reader.nextLine();
 
-            mockStuCourses.add(new Course(0, 1, year,
+            mockStuCourses.add(new Course(0, 0, year,
                     quarter, subject, courseNum));
         }
 

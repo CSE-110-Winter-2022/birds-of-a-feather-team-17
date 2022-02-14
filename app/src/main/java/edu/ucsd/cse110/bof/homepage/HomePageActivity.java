@@ -28,6 +28,7 @@ import java.io.ObjectInput;
 import java.io.ObjectInputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import edu.ucsd.cse110.bof.BoFsTracker;
 import edu.ucsd.cse110.bof.FakedMessageListener;
@@ -42,9 +43,9 @@ import edu.ucsd.cse110.bof.model.db.Student;
 
 public class HomePageActivity extends AppCompatActivity {
     private AppDatabase db;
-    private IStudent thisStudent;
+    private Student thisStudent;
 
-    List<IStudent> myBoFs;
+    List<Student> myBoFs;
 
     RecyclerView studentsRecyclerView;
     RecyclerView.LayoutManager studentsLayoutManager;
@@ -79,15 +80,15 @@ public class HomePageActivity extends AppCompatActivity {
         studentsViewAdapter = new StudentsViewAdapter(myBoFs);
         studentsRecyclerView.setAdapter(studentsViewAdapter);
 
-        //set up listener for search button:
-        ToggleButton toggle = findViewById(R.id.search_button);
-        toggle.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            if (isChecked) {
-                onStartSearchingClicked();
-            } else {
-                onStopSearchingClicked();
-            }
-        });
+//        //set up listener for search button:
+//        ToggleButton toggle = findViewById(R.id.search_button);
+//        toggle.setOnCheckedChangeListener((buttonView, isChecked) -> {
+//            if (isChecked) {
+//                onStartSearchingClicked();
+//            } else {
+//                onStopSearchingClicked();
+//            }
+//        });
 
         //set up actual listener for finding BoFs
         realListener = new MessageListener() {
@@ -96,7 +97,7 @@ public class HomePageActivity extends AppCompatActivity {
             public void onFound(@NonNull Message message) {
                 //make StudentWithCourses from byte array received
 
-                Log.d(TAG, "found a message");
+                Log.d(TAG, "found a mocked student");
                 ByteArrayInputStream bis =
                         new ByteArrayInputStream(message.getContent());
                 ObjectInput stuObj = null;
@@ -151,33 +152,45 @@ public class HomePageActivity extends AppCompatActivity {
                             }
                         }
 
-                        studentsViewAdapter.itemInserted();
+                        studentsViewAdapter.addStudent(receivedStudentWithCourses.getStudent());
                     }
                 }
             }
         };
 
         //set up mock listener for receiving mocked items
-        //this.fakedMessageListener = new FakedMessageListener(this.realListener, 3, mockedResult);
+//        this.fakedMessageListener = new FakedMessageListener(this.realListener, 3, mockedResult);
         this.fakedMessageListener = new FakedMessageListener(this.realListener, 3,
                         (StudentWithCourses) intent.getSerializableExtra("mockedStudent") );
     }
 
-    /**
-     * Creates the listener to start searching for BoFs,
-     */
-    public void onStartSearchingClicked() {
+    @Override
+    protected void onStart() {
+        super.onStart();
         Nearby.getMessagesClient(this).subscribe(realListener);
-        Nearby.getMessagesClient(this).subscribe(fakedMessageListener);
     }
 
-    public void onStopSearchingClicked() {
-        if (realListener != null) {
-            Nearby.getMessagesClient(this).unsubscribe(realListener);
-            Nearby.getMessagesClient(this).unsubscribe(fakedMessageListener);
-
-        }
+    @Override
+    protected void onStop() {
+        super.onStop();
+        Nearby.getMessagesClient(this).unsubscribe(realListener);
     }
+
+    //    /**
+//     * Creates the listener to start searching for BoFs,
+//     */
+//    public void onStartSearchingClicked() {
+//        Nearby.getMessagesClient(this).subscribe(realListener);
+//        Nearby.getMessagesClient(this).subscribe(fakedMessageListener);
+//    }
+//
+//    public void onStopSearchingClicked() {
+//        if (realListener != null) {
+//            Nearby.getMessagesClient(this).unsubscribe(realListener);
+//            Nearby.getMessagesClient(this).unsubscribe(fakedMessageListener);
+//
+//        }
+//    }
 
     public void onGoToMockStudents(View view) {
         Intent intent = new Intent(this, NearbyMessageMockActivity.class);
@@ -193,9 +206,10 @@ public class HomePageActivity extends AppCompatActivity {
 //
 //            if (resultCode == Activity.RESULT_OK) {
 //                // Get mocked StudentWithCourses data from NearbyMessageMockActivity
-//                mockedResult = (StudentWithCourses) data.getSerializableExtra("mockedStudent");
+//                mockedResult = (StudentWithCourses) Objects.requireNonNull(data).getSerializableExtra("mockedStudent");
 //
-//                Toast.makeText(this, "Mocked student successful", Toast.LENGTH_SHORT).show();
+//                //Toast.makeText(this, "Mocked student successful", Toast.LENGTH_SHORT).show();
+//
 //            } else {
 //                Toast.makeText(this, "Mocked student unsuccessful", Toast.LENGTH_SHORT).show();
 //            }

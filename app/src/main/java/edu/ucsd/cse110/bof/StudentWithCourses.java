@@ -8,17 +8,18 @@ import java.util.List;
 
 import edu.ucsd.cse110.bof.model.IStudent;
 import edu.ucsd.cse110.bof.model.db.Course;
+import edu.ucsd.cse110.bof.model.db.Student;
 
 public class StudentWithCourses implements Serializable {
-    private IStudent student;
+    private Student student;
     private List<Course> courses;
 
-    public StudentWithCourses(IStudent student, List<Course> courses) {
+    public StudentWithCourses(Student student, List<Course> courses) {
         this.student = student;
         this.courses = courses;
     }
 
-    public IStudent getStudent() {
+    public Student getStudent() {
         return student;
     }
 

@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.Image;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -31,7 +32,6 @@ import edu.ucsd.cse110.bof.viewProfile.CoursesListViewAdapter;
 public class StudentDetailActivity extends AppCompatActivity {
 
     private AppDatabase db;
-    int studentID;
     private IStudent student;
     private List<Course> courses;
     private String studentImageURL;
@@ -42,6 +42,8 @@ public class StudentDetailActivity extends AppCompatActivity {
     protected RecyclerView.LayoutManager coursesLayoutManager;
     protected CoursesListViewAdapter coursesListViewAdapter;
     //private List<Course> courses = db.coursesDao().getForStudent(studentID);
+    private static final String TAG = "StudentDetailReceiver";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
@@ -49,7 +51,7 @@ public class StudentDetailActivity extends AppCompatActivity {
         setContentView(R.layout.activity_view_profile);
 
         Intent intent = getIntent();
-        studentID = intent.getIntExtra("student_id", 0); //get student id
+        int studentID = intent.getIntExtra("student_id", 1); //get student id
 
         //get courses and student info from data base using studentID
         db = AppDatabase.singleton(this);
@@ -58,6 +60,9 @@ public class StudentDetailActivity extends AppCompatActivity {
         //get student and their courses
         student = db.studentsDao().get(studentID);
         courses = db.coursesDao().getForStudent(studentID);
+
+        Log.d(TAG, "received student with id: "+student.getStudentId());
+        Log.d(TAG, "and name : "+student.getName());
 
 
 

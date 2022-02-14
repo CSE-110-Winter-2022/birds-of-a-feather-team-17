@@ -29,13 +29,14 @@ import javax.net.ssl.HttpsURLConnection;
 
 import edu.ucsd.cse110.bof.R;
 import edu.ucsd.cse110.bof.model.IStudent;
+import edu.ucsd.cse110.bof.model.db.Student;
 import edu.ucsd.cse110.bof.viewProfile.StudentDetailActivity;
 
 public class StudentsViewAdapter extends RecyclerView.Adapter<StudentsViewAdapter.ViewHolder> {
 
-    private final List<? extends IStudent> students;
+    private final List<Student> students;
 
-    public StudentsViewAdapter(List<? extends IStudent> students) {
+    public StudentsViewAdapter(List<Student> students) {
         super();
         this.students = students;
     }
@@ -57,15 +58,10 @@ public class StudentsViewAdapter extends RecyclerView.Adapter<StudentsViewAdapte
 
     //called from HomePageActivity when the list of students is updated,
     //sort list based on numMatches, then update
-    public void itemInserted() {
-        students.sort(new Comparator<IStudent>() {
-            @Override
-            //reverse order based on number of matching courses
-            public int compare(IStudent o1, IStudent o2) {
-                return Integer.compare(o2.getMatches(), o1.getMatches());
-            }
-        });
-
+    public void addStudent(Student student) {
+        //reverse order based on number of matching courses
+        this.students.add(student);
+        students.sort((Comparator<IStudent>) (o1, o2) -> Integer.compare(o2.getMatches(), o1.getMatches()));
         this.notifyItemInserted(this.students.size() - 1);
     }
 
@@ -90,7 +86,7 @@ public class StudentsViewAdapter extends RecyclerView.Adapter<StudentsViewAdapte
             this.studentNameView = itemView.findViewById(R.id.student_row_name);
             this.studentMatchesView = itemView.findViewById(R.id.student_row_matches);
             this.studentPhotoView = itemView.findViewById(R.id.student_row_photo);
-            //itemView.setOnClickListener(this);
+            itemView.setOnClickListener(this);
         }
 
         public void setStudent(IStudent student) {
@@ -122,10 +118,8 @@ public class StudentsViewAdapter extends RecyclerView.Adapter<StudentsViewAdapte
 
         @Override
         public void onClick(View view) {
-           Context context = view.getContext();
+            Context context = view.getContext();
             Intent intent = new Intent(context, StudentDetailActivity.class);
-            //intent.putExtra("student_name", this.student.getName());
-            //intent.putExtra("student_notes", this.student.getNotes().toArray(new String[0]));
 
             intent.putExtra("student_id", this.student.getStudentId());
             context.startActivity(intent);
