@@ -123,7 +123,7 @@ public class HomePageActivity extends AppCompatActivity {
             public void onFound(@NonNull Message message) {
                 //make StudentWithCourses from byte array received
 
-                Log.d(TAG, "found a message");
+                Log.d(TAG, "found a (nonnull) message: "+message);
                 ByteArrayInputStream bis =
                         new ByteArrayInputStream(message.getContent());
                 ObjectInput stuObj = null;
@@ -180,6 +180,8 @@ public class HomePageActivity extends AppCompatActivity {
                             }
                         }
 
+                        Log.d(TAG, "preparing to add new mocked student to recycler view");
+
                         studentsViewAdapter.addStudent(receivedStudentWithCourses.getStudent());
 
                         Log.d(TAG, "added new mocked student to recycler view");
@@ -188,41 +190,29 @@ public class HomePageActivity extends AppCompatActivity {
             }
         };
 
-//        //set up mock listener for receiving mocked items
-//        this.fakedMessageListener = new FakedMessageListener(this.realListener, 3, mockedStudent);
-////        this.fakedMessageListener = new FakedMessageListener(this.realListener, 3,
-////                        (StudentWithCourses) intent.getSerializableExtra("mockedStudent") );
     }
-
-//    @Override
-//    protected void onStart() {
-//        super.onStart();
-//        Nearby.getMessagesClient(this).subscribe(realListener);
-//    }
-//
-//    @Override
-//    protected void onStop() {
-//        super.onStop();
-//        Nearby.getMessagesClient(this).unsubscribe(realListener);
-//    }
 
     /**
      * Creates the listener to start searching for BoFs,
      */
     public void onStartSearchingClicked() {
         //set up mock listener for receiving mocked items
-        this.fakedMessageListener = new FakedMessageListener(this.realListener, 3,
-                mockedStudent);
-
-        Nearby.getMessagesClient(this).subscribe(realListener);
-        //Nearby.getMessagesClient(this).subscribe(fakedMessageListener);
+        if (mockedStudent!=null) {
+            this.fakedMessageListener = new FakedMessageListener(this.realListener, 3,
+                    mockedStudent);
+            //Nearby.getMessagesClient(this).subscribe(realListener);
+            Nearby.getMessagesClient(this).subscribe(fakedMessageListener);
+        }
+        else {
+            Log.d(TAG, "No students found/mocked");
+            Toast.makeText(this, "No students found", Toast.LENGTH_SHORT).show();
+        }
     }
 
     public void onStopSearchingClicked() {
-        if (realListener != null) {
-            Nearby.getMessagesClient(this).unsubscribe(realListener);
-            //Nearby.getMessagesClient(this).unsubscribe(fakedMessageListener);
-
+        if (fakedMessageListener != null) {
+            //Nearby.getMessagesClient(this).unsubscribe(realListener);
+            Nearby.getMessagesClient(this).unsubscribe(fakedMessageListener);
         }
     }
 

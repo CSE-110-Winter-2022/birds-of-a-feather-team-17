@@ -27,13 +27,6 @@ public class BoFsTracker {
     public static List<Course> getCommonCourses(List<Course> thisStuCourses, List<Course> otherStuCoursesList) {
         ArrayList<Course> commonCoursesList = new ArrayList<>();
 
-//        //fetch other student's courses from database
-//        AppDatabase db = AppDatabase.singleton(context);
-//        CoursesDao coursesDao = db.coursesDao();
-//        ArrayList<Course> otherStuCoursesList = (ArrayList<Course>) coursesDao.getForStudent(otherStu.getStudentId());
-//        ArrayList<Course> thisStuCourses = (ArrayList<Course>) coursesDao.getForStudent(thisStu.getStudentId());
-
-
         //add all of the other student's courses to the HashSet
         HashSet<Course> otherStuCourses = new HashSet<>(otherStuCoursesList);
 

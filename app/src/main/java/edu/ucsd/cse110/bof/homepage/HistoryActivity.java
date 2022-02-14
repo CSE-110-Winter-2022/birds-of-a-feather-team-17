@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.view.View;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 import edu.ucsd.cse110.bof.R;
@@ -43,6 +44,9 @@ public class HistoryActivity extends AppCompatActivity {
         for (int i=1; i<tempListSize; i++) {
             discoveredStudents.add(tempList.get(i));
         }
+        //sort discoveredStudents by numMatches (greater has priority)
+        discoveredStudents.sort((Comparator<IStudent>) (o1, o2) ->
+                Integer.compare(o2.getMatches(), o1.getMatches()));
 
         //set title
         setTitle("Discovered Students");

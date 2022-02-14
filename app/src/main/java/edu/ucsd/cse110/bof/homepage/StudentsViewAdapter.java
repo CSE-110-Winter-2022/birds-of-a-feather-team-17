@@ -62,8 +62,12 @@ public class StudentsViewAdapter extends RecyclerView.Adapter<StudentsViewAdapte
     public void addStudent(Student student) {
         this.students.add(student);
         //reverse order based on number of matching courses
+
+        //TODO: test notifyItemInserted logic
         students.sort((Comparator<IStudent>) (o1, o2) -> Integer.compare(o2.getMatches(), o1.getMatches()));
-        this.notifyItemInserted(this.students.size() - 1);
+        int insertedIndex = students.indexOf(student);
+        //this.notifyItemInserted(this.students.size() - 1);
+        this.notifyItemInserted(insertedIndex);
     }
 
     @Override
