@@ -17,8 +17,14 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
+import java.util.Objects;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+import javax.net.ssl.HttpsURLConnection;
 
 import edu.ucsd.cse110.bof.InputCourses.CoursesViewAdapter;
 import edu.ucsd.cse110.bof.R;
@@ -43,6 +49,9 @@ public class StudentDetailActivity extends AppCompatActivity {
     protected CoursesListViewAdapter coursesListViewAdapter;
     //private List<Course> courses = db.coursesDao().getForStudent(studentID);
 
+    private ExecutorService backgroundThreadExecutor =
+            Executors.newSingleThreadExecutor();
+
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
@@ -66,10 +75,11 @@ public class StudentDetailActivity extends AppCompatActivity {
         studentName = findViewById(R.id.profile_name);
         studentName.setText(student.getName());
 
+
         //set image
         studentImage = findViewById(R.id.student_profile_img); //finds imageview
         studentImageURL = student.getPhotoUrl(); //gets image url
-        studentImage.setImageBitmap(getBitmapFromURL(studentImageURL)); //sets image using method
+        setBitmapFromURL(studentImage, studentImageURL); //sets image using method
 
 
         //finds recycler for courses list
@@ -89,19 +99,28 @@ public class StudentDetailActivity extends AppCompatActivity {
         finish();
     }
 
-    public static Bitmap getBitmapFromURL(String src) {
-        try {
-            URL url = new URL(src);
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setDoInput(true);
-            connection.connect();
-            InputStream input = connection.getInputStream();
-            Bitmap myBitmap = BitmapFactory.decodeStream(input);
-            return myBitmap;
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
+    public void setBitmapFromURL(ImageView studentImage, String studentURL) {
+
+        //sets image using method
+        backgroundThreadExecutor.submit(() -> {
+            URL photo_url = null;
+            try {
+                photo_url = new URL(studentURL);
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            }
+            Bitmap photoBitmap = null;
+            try {
+                HttpsURLConnection connection =
+                        (HttpsURLConnection) Objects.requireNonNull(photo_url).openConnection();
+                connection.setDoInput(true);
+                photoBitmap = BitmapFactory.decodeStream(connection.getInputStream());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            studentImage.setImageBitmap(photoBitmap);
+        });
     }
 
 }

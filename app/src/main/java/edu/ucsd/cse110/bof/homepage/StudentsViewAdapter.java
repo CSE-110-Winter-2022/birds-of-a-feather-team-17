@@ -96,7 +96,7 @@ public class StudentsViewAdapter extends RecyclerView.Adapter<StudentsViewAdapte
             this.studentNameView = itemView.findViewById(R.id.student_row_name);
             this.studentMatchesView = itemView.findViewById(R.id.student_row_matches);
             this.studentPhotoView = itemView.findViewById(R.id.student_row_photo);
-            //itemView.setOnClickListener(this);
+            itemView.setOnClickListener(this);
         }
 
         public void setStudent(IStudent student) {
@@ -131,8 +131,6 @@ public class StudentsViewAdapter extends RecyclerView.Adapter<StudentsViewAdapte
         public void onClick(View view) {
            Context context = view.getContext();
             Intent intent = new Intent(context, StudentDetailActivity.class);
-            //intent.putExtra("student_name", this.student.getName());
-            //intent.putExtra("student_notes", this.student.getNotes().toArray(new String[0]));
             intent.putExtra("student_id", this.student.getStudentId());
             context.startActivity(intent);
         }

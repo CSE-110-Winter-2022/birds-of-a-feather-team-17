@@ -78,8 +78,6 @@ public class HomePageActivity extends AppCompatActivity {
                                     mockCSV = intent.getStringExtra("mockCSV");
 
                                     mockedStudent = mockedStudentFactory.makeMockedStudent(mockCSV);
-
-
                                 }
                             }
                         }
@@ -150,6 +148,7 @@ public class HomePageActivity extends AppCompatActivity {
                             db.studentsDao().insert((Student) receivedStudentWithCourses.getStudent());
 
                             int insertedId = db.studentsDao().maxId();
+                            ((Student) receivedStudentWithCourses.getStudent()).setStudentId(insertedId);
                             int insertedCourseId = db.coursesDao().maxId();
 
                             //only common courses need to be added to db
@@ -226,6 +225,9 @@ public class HomePageActivity extends AppCompatActivity {
      */
 
     public void onGoToMockStudents(View view) {
+        if (fakedMessageListener != null) {
+            Nearby.getMessagesClient(this).unsubscribe(fakedMessageListener);
+        }
         Intent intent = new Intent(this, NearbyMessageMockActivity.class);
 
         activityLauncher.launch(intent);
