@@ -35,7 +35,7 @@ import edu.ucsd.cse110.bof.viewProfile.StudentDetailActivity;
 
 public class StudentsViewAdapter extends RecyclerView.Adapter<StudentsViewAdapter.ViewHolder> {
 
-    private final List<IStudent> students;
+    private final List<Student> students;
 
     public StudentsViewAdapter(List<Student> students) {
         super();

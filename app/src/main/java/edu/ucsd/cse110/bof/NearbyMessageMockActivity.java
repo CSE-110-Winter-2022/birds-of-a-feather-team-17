@@ -95,10 +95,10 @@ public class NearbyMessageMockActivity extends AppCompatActivity {
         csv = mockStudentInput.getText().toString();
         StudentWithCourses studentWithCourses = mockedStudentFactory
                 .makeMockedStudent(csv);
-        MessageListener fakedMessageListener = new FakedMessageListener(realListener,
-                3, studentWithCourses);
-
-        Nearby.getMessagesClient(this).subscribe(fakedMessageListener);
+//        MessageListener fakedMessageListener = new FakedMessageListener(realListener,
+//                3, studentWithCourses);
+//
+//        Nearby.getMessagesClient(this).subscribe(fakedMessageListener);
         mockStudentInput.setText("");
     }
 

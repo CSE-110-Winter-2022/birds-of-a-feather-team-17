@@ -36,7 +36,7 @@ public class MockedStudentFactory {
             quarter = reader.next();
             subject = reader.next();
             courseNum = reader.next();
-            reader.nextLine();
+            //reader.nextLine();
 
             mockStuCourses.add(new Course(1, 1, year,
                     quarter, subject, courseNum));
