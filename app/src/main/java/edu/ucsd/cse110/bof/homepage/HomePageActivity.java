@@ -105,15 +105,15 @@ public class HomePageActivity extends AppCompatActivity {
         studentsViewAdapter = new StudentsViewAdapter(myBoFs);
         studentsRecyclerView.setAdapter(studentsViewAdapter);
 
-//        //set up listener for search button:
-//        ToggleButton toggle = findViewById(R.id.search_button);
-//        toggle.setOnCheckedChangeListener((buttonView, isChecked) -> {
-//            if (isChecked) {
-//                onStartSearchingClicked();
-//            } else {
-//                onStopSearchingClicked();
-//            }
-//        });
+        //set up listener for search button:
+        ToggleButton toggle = findViewById(R.id.search_button);
+        toggle.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (isChecked) {
+                onStartSearchingClicked();
+            } else {
+                onStopSearchingClicked();
+            }
+        });
 
         mockedStudentFactory = new MockedStudentFactory();
 
@@ -181,48 +181,50 @@ public class HomePageActivity extends AppCompatActivity {
                         }
 
                         studentsViewAdapter.addStudent(receivedStudentWithCourses.getStudent());
+
+                        Log.d(TAG, "added new mocked student to recycler view");
                     }
                 }
             }
         };
 
-        //set up mock listener for receiving mocked items
-        this.fakedMessageListener = new FakedMessageListener(this.realListener, 3, mockedStudent);
-//        this.fakedMessageListener = new FakedMessageListener(this.realListener, 3,
-//                        (StudentWithCourses) intent.getSerializableExtra("mockedStudent") );
+//        //set up mock listener for receiving mocked items
+//        this.fakedMessageListener = new FakedMessageListener(this.realListener, 3, mockedStudent);
+////        this.fakedMessageListener = new FakedMessageListener(this.realListener, 3,
+////                        (StudentWithCourses) intent.getSerializableExtra("mockedStudent") );
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-        Nearby.getMessagesClient(this).subscribe(realListener);
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        Nearby.getMessagesClient(this).unsubscribe(realListener);
-    }
+//    @Override
+//    protected void onStart() {
+//        super.onStart();
+//        Nearby.getMessagesClient(this).subscribe(realListener);
+//    }
+//
+//    @Override
+//    protected void onStop() {
+//        super.onStop();
+//        Nearby.getMessagesClient(this).unsubscribe(realListener);
+//    }
 
     /**
      * Creates the listener to start searching for BoFs,
      */
-//    public void onStartSearchingClicked() {
-//        //set up mock listener for receiving mocked items
-//        this.fakedMessageListener = new FakedMessageListener(this.realListener, 3,
-//                mockedStudent);
-//
-//        Nearby.getMessagesClient(this).subscribe(realListener);
-//        Nearby.getMessagesClient(this).subscribe(fakedMessageListener);
-//    }
-//
-//    public void onStopSearchingClicked() {
-//        if (realListener != null) {
-//            Nearby.getMessagesClient(this).unsubscribe(realListener);
-//            Nearby.getMessagesClient(this).unsubscribe(fakedMessageListener);
-//
-//        }
-//    }
+    public void onStartSearchingClicked() {
+        //set up mock listener for receiving mocked items
+        this.fakedMessageListener = new FakedMessageListener(this.realListener, 3,
+                mockedStudent);
+
+        Nearby.getMessagesClient(this).subscribe(realListener);
+        //Nearby.getMessagesClient(this).subscribe(fakedMessageListener);
+    }
+
+    public void onStopSearchingClicked() {
+        if (realListener != null) {
+            Nearby.getMessagesClient(this).unsubscribe(realListener);
+            //Nearby.getMessagesClient(this).unsubscribe(fakedMessageListener);
+
+        }
+    }
 
     public void onGoToMockStudents(View view) {
         Intent intent = new Intent(this, NearbyMessageMockActivity.class);
