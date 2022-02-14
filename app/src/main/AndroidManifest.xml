@@ -23,9 +23,6 @@
             android:name=".NearbyMessageMockActivity"
             android:exported="false" />
         <activity
-            android:name=".profile.ProfileViewActivity"
-            android:exported="false" />
-        <activity
             android:name=".InputCourses.InputCourseActivity"
             android:exported="false" />
         <activity
