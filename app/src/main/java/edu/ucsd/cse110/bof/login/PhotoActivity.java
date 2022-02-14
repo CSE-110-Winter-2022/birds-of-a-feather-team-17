@@ -20,12 +20,18 @@ public class PhotoActivity extends AppCompatActivity {
     private String photoURL;
     private EditText photoInput;
     private String username;
+
+    private AppDatabase db;
+
     private static final String TAG = "PhotoActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_photo);
+
+        db = AppDatabase.singleton(this);
+
 
         photoInput = (EditText)findViewById(R.id.editPhotoURL);
 
@@ -51,10 +57,16 @@ public class PhotoActivity extends AppCompatActivity {
             }
         }
 
+        Log.d(TAG, "Received user's name: " + username);
+        Log.d(TAG, "Received user's photoURL: " + photoURL);
+
+        //insert user into database (student_id=1, first element in database)
+        db.studentsDao().insert(new Student(username, photoURL));
+
         //Link to InputCourseActivity
         Intent intent = new Intent(this, InputCourseActivity.class);
-        intent.putExtra("student_name", username);
-        intent.putExtra("student_photo", photoURL);
+//        intent.putExtra("student_name", username);
+//        intent.putExtra("student_photo", photoURL);
         startActivity(intent);
         finish();
 

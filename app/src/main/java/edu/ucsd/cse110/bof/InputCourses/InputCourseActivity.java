@@ -55,19 +55,8 @@ public class InputCourseActivity extends AppCompatActivity {
 
         setTitle("Birds of a Feather");
 
-        //get student info from photo activity
-        Intent intent = getIntent();
-        String studentName = intent.getStringExtra("student_name");
-        String studentPhoto = intent.getStringExtra("student_photo");
-
-        //insert user into database (student_id=1, first element in database)
         db = AppDatabase.singleton(this);
-        db.studentsDao().insert(new Student(studentName, studentPhoto));
 
-        Log.d(TAG, "Received user's name: " + studentName);
-        Log.d(TAG, "Received user's photoURL: " + studentPhoto);
-
-        db.studentsDao().insert(new Student(studentName, studentPhoto));
 
         List<Course> courses = db.coursesDao().getForStudent(USER_ID);
 
@@ -85,7 +74,7 @@ public class InputCourseActivity extends AppCompatActivity {
 
     public void onDoneClicked(View view) {
         //make sure at least 1 course is entered TODO: test
-        if (db.coursesDao().getForStudent(1).isEmpty()) {
+        if (db.coursesDao().getForStudent(USER_ID).isEmpty()) {
             Toast.makeText(this, "Enter a course",Toast.LENGTH_SHORT).show();
             return;
         }
@@ -120,7 +109,7 @@ public class InputCourseActivity extends AppCompatActivity {
         Course newCourse = new Course(USER_ID, newYearText, newQuarterText, newSubjectText, newCourseNumText);
 
         //check not duplicate course TODO: test
-        List<Course> stuCoursesList = db.coursesDao().getForStudent(1);
+        List<Course> stuCoursesList = db.coursesDao().getForStudent(USER_ID);
         HashSet<Course> stuCourses = new HashSet<>(stuCoursesList);
         if (stuCourses.contains(newCourse)) {
             Toast.makeText(this, "Duplicate course", Toast.LENGTH_SHORT).show();
