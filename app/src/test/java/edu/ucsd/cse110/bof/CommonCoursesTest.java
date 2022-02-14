@@ -25,25 +25,30 @@ import edu.ucsd.cse110.bof.model.db.StudentsDao;
 
 @RunWith(AndroidJUnit4.class)
 public class CommonCoursesTest {
+    public static int courseId = 1;
     static final Course cse12SP21 = new Course(
+            courseId++,
             1,
             2021,
             "SP",
             "CSE",
             "12");
     static final Course cse100FA22 = new Course(
+            courseId++,
             1,
             2022,
             "FA",
             "CSE",
             "100");
     static final Course cse110WI22 = new Course(
+            courseId++,
             1,
             2022,
             "WI",
             "CSE",
             "110");
     static final Course cse101WI22 = new Course(
+            courseId++,
             1,
             2022,
             "WI",
@@ -51,24 +56,28 @@ public class CommonCoursesTest {
             "101");
 
     static final Course cse12SP21_2 = new Course(
+            courseId++,
             2,
             2021,
             "SP",
             "CSE",
             "12");
     static final Course cse100FA22_2 = new Course(
+            courseId++,
             2,
             2022,
             "FA",
             "CSE",
             "100");
     static final Course cse110WI22_2 = new Course(
+            courseId++,
             2,
             2022,
             "WI",
             "CSE",
             "110");
     static final Course cse101WI22_2 = new Course(
+            courseId++,
             2,
             2022,
             "WI",
@@ -197,12 +206,14 @@ public class CommonCoursesTest {
     @Test
     public void typoInCourseSubject() {
         Course correctCse12SP21 = new Course(
+                courseId++,
                 1,
                 2021,
                 "SP",
                 "CSE",
                 "12");
         Course typoCse12SP21 = new Course(
+                courseId++,
                 2,
                 2021,
                 "SP",

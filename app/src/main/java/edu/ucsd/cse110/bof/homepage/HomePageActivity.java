@@ -136,6 +136,9 @@ public class HomePageActivity extends AppCompatActivity {
 
                         //add this student to viewAdapter list
                         receivedStudentWithCourses.getStudent().setMatches(commonCourses.size());
+
+                        //myBoFs.add(receivedStudentWithCourses.getStudent());
+
                         receivedStudentWithCourses.setCourses(commonCourses);
 
                         //only add to db if not already in db
@@ -153,7 +156,8 @@ public class HomePageActivity extends AppCompatActivity {
                                 db.coursesDao().insert(receivedCourse);
                             }
                         }
-                        studentsViewAdapter.itemInserted();
+
+                        studentsViewAdapter.itemInserted(receivedStudentWithCourses.getStudent());
                     }
                 }
             }
