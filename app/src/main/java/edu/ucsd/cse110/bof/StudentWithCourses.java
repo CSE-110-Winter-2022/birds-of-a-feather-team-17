@@ -25,5 +25,9 @@ public class StudentWithCourses implements Serializable {
     public List<Course> getCourses() {
         return courses;
     }
+
+    public void setCourses(List<Course> courses) {
+        this.courses = courses;
+    }
 }
 

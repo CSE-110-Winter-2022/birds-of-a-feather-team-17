@@ -33,6 +33,11 @@ public class InputCourseActivity extends AppCompatActivity {
     protected RecyclerView.LayoutManager coursesLayoutManager;
     protected CoursesViewAdapter coursesViewAdapter;
 
+    private static final String TAG = "InputCourseActivity";
+
+    //user's studentID is 1, first one inserted into database
+    private static final int USER_ID = 1;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,45 +55,38 @@ public class InputCourseActivity extends AppCompatActivity {
 
         setTitle("Birds of a Feather");
 
-        //get student info from photo activity
-        Intent intent = getIntent();
-        String studentName = intent.getStringExtra("student_name");
-        String studentPhoto = intent.getStringExtra("student_photo");
-
-        //insert user into database (student_id=1, first element in database)
         db = AppDatabase.singleton(this);
-        db.studentsDao().insert(new Student(studentName, studentPhoto));
 
-        //fetch courses list from user (student_id=1 in database)
-        List<Course> courses = db.coursesDao().getForStudent(1);
+        //fetch courses for user
+        List<Course> courses = db.coursesDao().getForStudent(USER_ID);
 
         coursesRecyclerView = findViewById(R.id.courses_view);
 
         coursesLayoutManager = new LinearLayoutManager(this);
         coursesRecyclerView.setLayoutManager(coursesLayoutManager);
 
-        coursesViewAdapter = new CoursesViewAdapter(courses,
-                (course) -> db.coursesDao().delete(course));
+        coursesViewAdapter = new CoursesViewAdapter(courses, (course) -> {
+            db.coursesDao().delete(course);
+        });
 
         coursesRecyclerView.setAdapter(coursesViewAdapter);
     }
 
     public void onDoneClicked(View view) {
         //make sure at least 1 course is entered TODO: test
-        if (db.coursesDao().getForStudent(1).isEmpty()) {
+        if (db.coursesDao().getForStudent(USER_ID).isEmpty()) {
             Toast.makeText(this, "Enter a course",Toast.LENGTH_SHORT).show();
             return;
         }
 
         //move to home page
         Intent intent = new Intent(this, HomePageActivity.class);
+        intent.putExtra("student_id", USER_ID);
         startActivity(intent);
         //finish();
     }
 
     public void onAddCourseClicked(View view) {
-        //user's studentID is 1, first one inserted into database
-        int studentID = 1;
         int courseID = db.coursesDao().maxId() + 1;
 
         //find inputs
@@ -110,10 +108,10 @@ public class InputCourseActivity extends AppCompatActivity {
         }
 
         //Make the course object and insert
-        Course newCourse = new Course(courseID, studentID, newYearText, newQuarterText, newSubjectText, newCourseNumText);
+        Course newCourse = new Course(courseID, USER_ID, newYearText, newQuarterText, newSubjectText, newCourseNumText);
 
         //check not duplicate course TODO: test
-        List<Course> stuCoursesList = db.coursesDao().getForStudent(1);
+        List<Course> stuCoursesList = db.coursesDao().getForStudent(USER_ID);
         HashSet<Course> stuCourses = new HashSet<>(stuCoursesList);
         if (stuCourses.contains(newCourse)) {
             Toast.makeText(this, "Duplicate course", Toast.LENGTH_SHORT).show();

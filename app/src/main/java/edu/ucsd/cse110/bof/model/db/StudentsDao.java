@@ -17,6 +17,9 @@ public interface StudentsDao {
     @Query("SELECT * FROM students WHERE student_id=:id")
     Student get(int id);
 
+    @Query("SELECT MAX(student_id) FROM students")
+    int maxId();
+
     @Query("SELECT COUNT(*) from students")
     int count();
 

@@ -7,6 +7,7 @@ import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
 import java.util.List;
+import java.util.Objects;
 
 import edu.ucsd.cse110.bof.model.IStudent;
 
@@ -72,5 +73,18 @@ public class Student implements IStudent {
         CoursesDao coursesDao = db.coursesDao();
 
         return coursesDao.getForStudent(this.studentId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, photoURL);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Student student = (Student) o;
+        return name.equals(student.name) && photoURL.equals(student.photoURL);
     }
 }

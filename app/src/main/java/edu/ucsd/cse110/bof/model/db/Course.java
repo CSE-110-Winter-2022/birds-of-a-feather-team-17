@@ -23,7 +23,7 @@ public class Course implements Serializable {
 
     // Course constructor
     public Course(int courseId, int studentId, int year, String quarter, String subject, String courseNum) {
-        this.courseId = courseId;     //automatically generated
+        this.courseId = courseId;
         this.studentId = studentId;
         this.year = year;
         this.quarter = quarter;
