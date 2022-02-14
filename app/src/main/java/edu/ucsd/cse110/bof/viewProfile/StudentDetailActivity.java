@@ -94,7 +94,10 @@ public class StudentDetailActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
 
-            studentImage.setImageBitmap(photoBitmap);
+            final Bitmap myBitmap = photoBitmap;
+            runOnUiThread(() -> {
+                studentImage.setImageBitmap(myBitmap);
+            });
         });
 
 
