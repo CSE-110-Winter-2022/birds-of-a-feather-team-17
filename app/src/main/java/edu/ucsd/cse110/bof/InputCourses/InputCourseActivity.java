@@ -44,23 +44,20 @@ public class InputCourseActivity extends AppCompatActivity {
         setContentView(R.layout.activity_input_course);
 
         Spinner quarter_spinner = findViewById(R.id.fidget_spinner);
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.quarters_array, android.R.layout.simple_spinner_item);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        quarter_spinner.setAdapter(adapter);
+        ArrayAdapter<CharSequence> quarter_adapter = ArrayAdapter.createFromResource(this, R.array.quarters_array, android.R.layout.simple_spinner_item);
+        quarter_adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        quarter_spinner.setAdapter(quarter_adapter);
+
+        Spinner year_spinner = findViewById(R.id.input_year);
+        ArrayAdapter<CharSequence> year_adapter = ArrayAdapter.createFromResource(this, R.array.years_array, android.R.layout.simple_spinner_item);
+        year_adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        year_spinner.setAdapter(year_adapter);
+
         setTitle("Birds of a Feather");
-
-        //get student info from photo activity
-        Intent intent = getIntent();
-
-        String studentName = intent.getStringExtra("student_name");
-        String studentPhoto = intent.getStringExtra("student_photo");
 
         db = AppDatabase.singleton(this);
 
-        Log.d(TAG, "Received user's name: " + studentName);
-        Log.d(TAG, "Received user's photoURL: " + studentPhoto);
-
-        db.studentsDao().insert(new Student(studentName, studentPhoto));
+        //fetch courses for user
 
         List<Course> courses = db.coursesDao().getForStudent(USER_ID);
 
@@ -78,7 +75,7 @@ public class InputCourseActivity extends AppCompatActivity {
 
     public void onDoneClicked(View view) {
         //make sure at least 1 course is entered TODO: test
-        if (db.coursesDao().getForStudent(1).isEmpty()) {
+        if (db.coursesDao().getForStudent(USER_ID).isEmpty()) {
             Toast.makeText(this, "Enter a course",Toast.LENGTH_SHORT).show();
             return;
         }
@@ -87,20 +84,24 @@ public class InputCourseActivity extends AppCompatActivity {
         Intent intent = new Intent(this, HomePageActivity.class);
         intent.putExtra("student_id", USER_ID);
         startActivity(intent);
+        //finish();
     }
 
     public void onAddCourseClicked(View view) {
+
+        int courseID = db.coursesDao().maxId() + 1;
+
         //find inputs
         Spinner newQuarterTextView = findViewById(R.id.fidget_spinner);
-        TextView newYearTextView = findViewById(R.id.input_year);
+        Spinner newYearTextView = findViewById(R.id.input_year);
         TextView newSubjectTextView = findViewById(R.id.input_subject);
         TextView newCourseNumTextView = findViewById(R.id.input_course_number);
 
         //get info from inputs
         String newQuarterText = newQuarterTextView.getSelectedItem().toString();
-        int newYearText = Integer.parseInt(newYearTextView.getText().toString());
-        String newSubjectText = newSubjectTextView.getText().toString();
-        String newCourseNumText = newCourseNumTextView.getText().toString();
+        int newYearText = Integer.parseInt(newYearTextView.getSelectedItem().toString());
+        String newSubjectText = newSubjectTextView.getText().toString().toUpperCase();
+        String newCourseNumText = newCourseNumTextView.getText().toString().toUpperCase();
 
         //null inputs
         if (newQuarterText.isEmpty() || newSubjectText.isEmpty() || newCourseNumText.isEmpty()) {
@@ -109,10 +110,11 @@ public class InputCourseActivity extends AppCompatActivity {
         }
 
         //Make the course object and insert
-        Course newCourse = new Course(USER_ID, newYearText, newQuarterText, newSubjectText, newCourseNumText);
+        Course newCourse = new Course(courseID, USER_ID, newYearText, newQuarterText, newSubjectText, newCourseNumText);
+
 
         //check not duplicate course TODO: test
-        List<Course> stuCoursesList = db.coursesDao().getForStudent(1);
+        List<Course> stuCoursesList = db.coursesDao().getForStudent(USER_ID);
         HashSet<Course> stuCourses = new HashSet<>(stuCoursesList);
         if (stuCourses.contains(newCourse)) {
             Toast.makeText(this, "Duplicate course", Toast.LENGTH_SHORT).show();

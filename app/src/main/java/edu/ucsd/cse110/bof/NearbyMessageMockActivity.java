@@ -127,7 +127,8 @@ public class NearbyMessageMockActivity extends AppCompatActivity {
             courseNum = reader.next();
             reader.nextLine();
 
-            mockStuCourses.add(new Course( 1, year,
+
+            mockStuCourses.add(new Course(0, 1, year,
                     quarter, subject, courseNum));
         }
 
@@ -135,10 +136,13 @@ public class NearbyMessageMockActivity extends AppCompatActivity {
     }
 
     public void onGoBackClicked(View view) {
-        Intent intent = new Intent(this, HomePageActivity.class);
+        //Intent intent = new Intent();
+        Intent intent = new Intent(this,HomePageActivity.class);
 
         //send mocked student to homepage as serializable
         intent.putExtra("mockedStudent", this.studentWithCourses);
+//        setResult(RESULT_OK, intent);
+//        finish();
         startActivity(intent);
         finish();
     }

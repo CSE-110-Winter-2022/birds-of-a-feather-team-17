@@ -28,6 +28,7 @@ import javax.net.ssl.HttpsURLConnection;
 
 import edu.ucsd.cse110.bof.R;
 import edu.ucsd.cse110.bof.model.IStudent;
+import edu.ucsd.cse110.bof.viewProfile.StudentDetailActivity;
 
 public class StudentsViewAdapter extends RecyclerView.Adapter<StudentsViewAdapter.ViewHolder> {
 
@@ -74,8 +75,7 @@ public class StudentsViewAdapter extends RecyclerView.Adapter<StudentsViewAdapte
     }
 
     public static class ViewHolder
-            extends RecyclerView.ViewHolder {
-            //implements View.OnClickListener {
+            extends RecyclerView.ViewHolder implements View.OnClickListener {
         private final TextView studentNameView;
         private final TextView studentMatchesView;
         private final ImageView studentPhotoView;
@@ -116,21 +116,19 @@ public class StudentsViewAdapter extends RecyclerView.Adapter<StudentsViewAdapte
                     e.printStackTrace();
                 }
 
-
                 this.studentPhotoView.setImageBitmap(photoBitmap);
             });
         }
 
-        /*
+
         @Override
         public void onClick(View view) {
-            Context context = view.getContext();
+           Context context = view.getContext();
             Intent intent = new Intent(context, StudentDetailActivity.class);
-
+            //intent.putExtra("student_name", this.student.getName());
+            //intent.putExtra("student_notes", this.student.getNotes().toArray(new String[0]));
             intent.putExtra("student_id", this.student.getStudentId());
             context.startActivity(intent);
         }
-
-         */
     }
 }

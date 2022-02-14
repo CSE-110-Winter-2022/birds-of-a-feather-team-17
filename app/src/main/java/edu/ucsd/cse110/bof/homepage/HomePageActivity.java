@@ -1,10 +1,12 @@
 package edu.ucsd.cse110.bof.homepage;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -13,6 +15,7 @@ import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import com.google.android.gms.nearby.Nearby;
@@ -51,6 +54,8 @@ public class HomePageActivity extends AppCompatActivity {
     private MessageListener realListener;
     private MessageListener fakedMessageListener;
 
+    private StudentWithCourses mockedResult;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -76,13 +81,11 @@ public class HomePageActivity extends AppCompatActivity {
 
         //set up listener for search button:
         ToggleButton toggle = findViewById(R.id.search_button);
-        toggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) {
-                    onStartSearchingClicked();
-                } else {
-                    onStopSearchingClicked();
-                }
+        toggle.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (isChecked) {
+                onStartSearchingClicked();
+            } else {
+                onStopSearchingClicked();
             }
         });
 
@@ -106,12 +109,17 @@ public class HomePageActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
 
-                if (!myBoFs.contains(receivedStudentWithCourses.getStudent())) {
-                    //use BoFsTracker to find common classes
+                List<Student> dbStudents = db.studentsDao().getAll();
 
-                    Log.d(TAG,
-                            "message is a studentWithCourses named "
-                                    + receivedStudentWithCourses.getStudent().getName());
+                Log.d(TAG,
+                        "message is a studentWithCourses named "
+                                + receivedStudentWithCourses.getStudent().getName());
+
+                //check that this student isn't in list nor in database
+                if (!myBoFs.contains(receivedStudentWithCourses.getStudent())) {
+                    Log.d(TAG, "student not in homepage list nor database");
+
+                    //use BoFsTracker to find common classes
                     ArrayList<Course> commonCourses = (ArrayList<Course>)
                             BoFsTracker.getCommonCourses(
                                     thisStudent.getCourses(getApplicationContext()),
@@ -121,14 +129,26 @@ public class HomePageActivity extends AppCompatActivity {
                     //and the database
                     if (commonCourses.size() != 0) {
                         Log.d(TAG,"studentWithCourses has a common class");
+
+                        //add this student to viewAdapter list
+                        receivedStudentWithCourses.getStudent().setMatches(commonCourses.size());
+                        receivedStudentWithCourses.setCourses(commonCourses);
                         myBoFs.add(receivedStudentWithCourses.getStudent());
 
-                        receivedStudentWithCourses.getStudent().setMatches(commonCourses.size());
-                        db.studentsDao().insert((Student) receivedStudentWithCourses.getStudent());
+                        //only add to db if not already in db
+                        if (!dbStudents.contains((Student) receivedStudentWithCourses.getStudent())) {
+                            db.studentsDao().insert((Student) receivedStudentWithCourses.getStudent());
 
-                        for (Course receivedCourse :
-                                receivedStudentWithCourses.getCourses()) {
-                            db.coursesDao().insert(receivedCourse);
+                            int insertedId = db.studentsDao().maxId();
+
+                            //only common courses need to be added to db
+                            for (Course receivedCourse : commonCourses) {
+                                int newCourseId = db.coursesDao().maxId() + 1;
+
+                                receivedCourse.setCourseId(newCourseId);
+                                receivedCourse.setStudentId(insertedId);
+                                db.coursesDao().insert(receivedCourse);
+                            }
                         }
 
                         studentsViewAdapter.itemInserted();
@@ -138,6 +158,7 @@ public class HomePageActivity extends AppCompatActivity {
         };
 
         //set up mock listener for receiving mocked items
+        //this.fakedMessageListener = new FakedMessageListener(this.realListener, 3, mockedResult);
         this.fakedMessageListener = new FakedMessageListener(this.realListener, 3,
                         (StudentWithCourses) intent.getSerializableExtra("mockedStudent") );
     }
@@ -160,8 +181,26 @@ public class HomePageActivity extends AppCompatActivity {
 
     public void onGoToMockStudents(View view) {
         Intent intent = new Intent(this, NearbyMessageMockActivity.class);
+        //TODO: fix startActivityForResult
+        //startActivityForResult(intent,1);
         startActivity(intent);
     }
+
+//    @Override
+//    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+//        super.onActivityResult(requestCode, resultCode, data);
+//        if (requestCode == 1) {
+//
+//            if (resultCode == Activity.RESULT_OK) {
+//                // Get mocked StudentWithCourses data from NearbyMessageMockActivity
+//                mockedResult = (StudentWithCourses) data.getSerializableExtra("mockedStudent");
+//
+//                Toast.makeText(this, "Mocked student successful", Toast.LENGTH_SHORT).show();
+//            } else {
+//                Toast.makeText(this, "Mocked student unsuccessful", Toast.LENGTH_SHORT).show();
+//            }
+//        }
+//    }
 
     public void onHistoryClicked(View view) {
         Intent intent = new Intent(this, HistoryActivity.class);

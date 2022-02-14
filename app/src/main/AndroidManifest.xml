@@ -23,9 +23,6 @@
             android:name=".NearbyMessageMockActivity"
             android:exported="false" />
         <activity
-            android:name=".profile.ProfileViewActivity"
-            android:exported="false" />
-        <activity
             android:name=".InputCourses.InputCourseActivity"
             android:exported="false" />
         <activity
@@ -37,6 +34,8 @@
         <activity
             android:name=".login.NameActivity"
             android:exported="false" />
+        <activity android:name=".viewProfile.StudentDetailActivity"
+            android:exported="false"/>
         <activity
             android:name=".MainActivity"
             android:exported="true">

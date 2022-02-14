@@ -2,7 +2,6 @@ package edu.ucsd.cse110.bof;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -23,7 +22,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        AppDatabase db = AppDatabase.singleton(this);
+        db = AppDatabase.singleton(this);
+
         IStudent user = db.studentsDao().get(1);
         if (user != null) {
             Log.d(TAG, "Found user " + user.getName() + ", going to HomePage");
@@ -35,5 +35,6 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent(this, LoginActivity.class);
             this.startActivity(intent);
         }
+        finish();
     }
 }
