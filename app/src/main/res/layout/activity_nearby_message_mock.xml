@@ -14,10 +14,10 @@
         android:text="@string/confirm_mocked_student"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editName" />
+        app:layout_constraintTop_toBottomOf="@+id/input_csv" />
 
     <EditText
-        android:id="@+id/editName"
+        android:id="@+id/input_csv"
         android:layout_width="368dp"
         android:layout_height="42dp"
         android:ems="10"

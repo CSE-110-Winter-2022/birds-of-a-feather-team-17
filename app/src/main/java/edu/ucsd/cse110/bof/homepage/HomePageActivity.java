@@ -36,6 +36,7 @@ import java.util.List;
 import edu.ucsd.cse110.bof.BoFsTracker;
 import edu.ucsd.cse110.bof.FakedMessageListener;
 import edu.ucsd.cse110.bof.InputCourses.CoursesViewAdapter;
+import edu.ucsd.cse110.bof.MockedStudentFactory;
 import edu.ucsd.cse110.bof.NearbyMessageMockActivity;
 import edu.ucsd.cse110.bof.R;
 import edu.ucsd.cse110.bof.StudentWithCourses;
@@ -57,6 +58,10 @@ public class HomePageActivity extends AppCompatActivity {
     private static final String TAG = "HomePageReceiver";
     private MessageListener realListener;
     private MessageListener fakedMessageListener;
+    private MockedStudentFactory mockedStudentFactory;
+
+    private StudentWithCourses mockedStudent = null;
+    private String mockCSV = null;
 
     ActivityResultLauncher<Intent> activityLauncher = registerForActivityResult(
                     new ActivityResultContracts.StartActivityForResult(),
@@ -73,10 +78,6 @@ public class HomePageActivity extends AppCompatActivity {
                         }
     });
 
-
-    private StudentWithCourses mockedStudent = null;
-    private String mockCSV = null;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -87,6 +88,8 @@ public class HomePageActivity extends AppCompatActivity {
         Intent intent = getIntent();
         db = AppDatabase.singleton(this);
         thisStudent = db.studentsDao().get(1);
+
+        mockedStudentFactory = new MockedStudentFactory();
 
 
         //set up RecyclerView
@@ -109,8 +112,6 @@ public class HomePageActivity extends AppCompatActivity {
                 onStopSearchingClicked();
             }
         });
-
-
 
         //set up actual listener for finding BoFs
         realListener = new MessageListener() {
@@ -177,9 +178,7 @@ public class HomePageActivity extends AppCompatActivity {
             }
         };
 
-        //set up mock listener for receiving mocked items
-        this.fakedMessageListener = new FakedMessageListener(this.realListener, 3,
-                        mockedStudent);
+
     }
 
     /**
@@ -200,13 +199,24 @@ public class HomePageActivity extends AppCompatActivity {
 
     public void onGoToMockStudents(View view) {
         Intent intent = new Intent(this, NearbyMessageMockActivity.class);
-        //startActivity(intent);
-
         activityLauncher.launch(intent);
     }
 
     public void onHistoryClicked(View view) {
         Intent intent = new Intent(this, HistoryActivity.class);
         startActivity(intent);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        if (mockCSV != null) {
+            mockedStudent = mockedStudentFactory.makeMockedStudent(mockCSV);
+
+            //set up mock listener for receiving mocked items
+            this.fakedMessageListener = new FakedMessageListener(this.realListener, 3,
+                    mockedStudent);
+        }
     }
 }
