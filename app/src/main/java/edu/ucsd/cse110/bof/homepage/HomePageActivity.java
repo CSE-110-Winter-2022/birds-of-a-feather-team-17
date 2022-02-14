@@ -176,6 +176,7 @@ public class HomePageActivity extends AppCompatActivity {
         studentsViewAdapter = new StudentsViewAdapter(myBoFs);
         studentsRecyclerView.setAdapter(studentsViewAdapter);
 
+        /*
         //set up listener for search button:
         ToggleButton toggle = findViewById(R.id.search_button);
         toggle.setOnCheckedChangeListener((buttonView, isChecked) -> {
@@ -185,11 +186,22 @@ public class HomePageActivity extends AppCompatActivity {
                 onStopSearchingClicked();
             }
         });
+
+         */
     }
 
-    /**
-     * Creates the listener to start searching for BoFs,
-     */
+    @Override
+    protected void onResume() {
+        if (mockedStudent != null) {
+            this.fakedMessageListener = new FakedMessageListener(this.realListener, 3,
+                    mockedStudent);
+        }
+
+        super.onResume();
+    }
+
+    /*
+
     public void onStartSearchingClicked() {
         //set up mock listener for receiving mocked items
         this.fakedMessageListener = new FakedMessageListener(this.realListener, 3,
@@ -207,6 +219,8 @@ public class HomePageActivity extends AppCompatActivity {
         }
     }
 
+     */
+
     public void onGoToMockStudents(View view) {
         Intent intent = new Intent(this, NearbyMessageMockActivity.class);
         activityLauncher.launch(intent);
@@ -217,9 +231,4 @@ public class HomePageActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-
-    }
 }
