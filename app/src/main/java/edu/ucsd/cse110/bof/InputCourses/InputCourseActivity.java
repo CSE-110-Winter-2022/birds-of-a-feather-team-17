@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
@@ -66,9 +67,8 @@ public class InputCourseActivity extends AppCompatActivity {
         coursesLayoutManager = new LinearLayoutManager(this);
         coursesRecyclerView.setLayoutManager(coursesLayoutManager);
 
-        coursesViewAdapter = new CoursesViewAdapter(courses, (course) -> {
-            db.coursesDao().delete(course);
-        });
+        coursesViewAdapter = new CoursesViewAdapter(courses,
+                (course) -> db.coursesDao().delete(course));
 
         coursesRecyclerView.setAdapter(coursesViewAdapter);
     }
@@ -89,6 +89,7 @@ public class InputCourseActivity extends AppCompatActivity {
     public void onAddCourseClicked(View view) {
         //user's studentID is 1, first one inserted into database
         int studentID = 1;
+        int courseID = db.coursesDao().maxId() + 1;
 
         //find inputs
         Spinner newQuarterTextView = findViewById(R.id.fidget_spinner);
@@ -99,8 +100,8 @@ public class InputCourseActivity extends AppCompatActivity {
         //get info from inputs
         String newQuarterText = newQuarterTextView.getSelectedItem().toString();
         int newYearText = Integer.parseInt(newYearTextView.getSelectedItem().toString());
-        String newSubjectText = newSubjectTextView.getText().toString();
-        String newCourseNumText = newCourseNumTextView.getText().toString();
+        String newSubjectText = newSubjectTextView.getText().toString().toUpperCase();
+        String newCourseNumText = newCourseNumTextView.getText().toString().toUpperCase();
 
         //null inputs
         if (newQuarterText.isEmpty() || newSubjectText.isEmpty() || newCourseNumText.isEmpty()) {
@@ -109,7 +110,7 @@ public class InputCourseActivity extends AppCompatActivity {
         }
 
         //Make the course object and insert
-        Course newCourse = new Course(studentID, newYearText, newQuarterText, newSubjectText, newCourseNumText);
+        Course newCourse = new Course(courseID, studentID, newYearText, newQuarterText, newSubjectText, newCourseNumText);
 
         //check not duplicate course TODO: test
         List<Course> stuCoursesList = db.coursesDao().getForStudent(1);
