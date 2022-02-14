@@ -37,6 +37,8 @@
         <activity
             android:name=".login.NameActivity"
             android:exported="false" />
+        <activity android:name=".viewProfile.StudentDetailActivity"
+            android:exported="false"/>
         <activity
             android:name=".MainActivity"
             android:exported="true">

@@ -110,7 +110,7 @@ public class NearbyMessageMockActivity extends AppCompatActivity {
 
         Student mockStudent = new Student();
         mockStudent.setName(reader.next());
-        reader.nextLine();
+        //reader.nextLine();
 
         mockStudent.setPhotoUrl(reader.next());
         reader.nextLine();
@@ -126,7 +126,8 @@ public class NearbyMessageMockActivity extends AppCompatActivity {
             subject = reader.next();
             courseNum = reader.next();
 
-            mockStuCourses.add(new Course( 1, year,
+
+            mockStuCourses.add(new Course( 0,1, year,
                     quarter, subject, courseNum));
         }
 

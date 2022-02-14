@@ -14,7 +14,6 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
@@ -22,6 +21,7 @@ import java.util.Objects;
 
 import edu.ucsd.cse110.bof.R;
 import edu.ucsd.cse110.bof.model.IStudent;
+import edu.ucsd.cse110.bof.viewProfile.StudentDetailActivity;
 
 public class StudentsViewAdapter extends RecyclerView.Adapter<StudentsViewAdapter.ViewHolder>{
 
@@ -94,15 +94,15 @@ public class StudentsViewAdapter extends RecyclerView.Adapter<StudentsViewAdapte
             this.studentPhotoView.setImageBitmap(photo_bmp);
         }
 
-//        @Override
-//        public void onClick(View view) {
-//            Context context = view.getContext();
-//            Intent intent = new Intent(context, PersonDetailActivity.class);
-//            //intent.putExtra("student_name", this.student.getName());
-//            //intent.putExtra("student_notes", this.student.getNotes().toArray(new String[0]));
-//
-//            intent.putExtra("student_id", this.student.getId());
-//            context.startActivity(intent);
-//        }
+
+        public void onClick(View view) {
+           Context context = view.getContext();
+            Intent intent = new Intent(context, StudentDetailActivity.class);
+            //intent.putExtra("student_name", this.student.getName());
+            //intent.putExtra("student_notes", this.student.getNotes().toArray(new String[0]));
+
+            intent.putExtra("student_id", this.student.getStudentId());
+            context.startActivity(intent);
+        }
     }
 }
