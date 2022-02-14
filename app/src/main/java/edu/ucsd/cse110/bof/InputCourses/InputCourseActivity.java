@@ -32,6 +32,7 @@ public class InputCourseActivity extends AppCompatActivity {
     protected RecyclerView coursesRecyclerView;
     protected RecyclerView.LayoutManager coursesLayoutManager;
     protected CoursesViewAdapter coursesViewAdapter;
+    protected InputCourseHandler inputCourseHandler;
 
     private static final String TAG = "InputCourseActivity";
 
@@ -55,10 +56,19 @@ public class InputCourseActivity extends AppCompatActivity {
 
         setTitle("Birds of a Feather");
 
+        //create InputCourseHandler
+        inputCourseHandler = new InputCourseHandler(this, false);
+
+        //get student info from photo activity
+        Intent intent = getIntent();
+        String studentName = intent.getStringExtra("student_name");
+        String studentPhoto = intent.getStringExtra("student_photo");
+
+        //insert user into database (student_id=1, first element in database)
         db = AppDatabase.singleton(this);
 
-        //fetch courses for user
-        List<Course> courses = db.coursesDao().getForStudent(USER_ID);
+        //fetch courses list from user (student_id=1 in database)
+        List<Course> courses = db.coursesDao().getForStudent(1);
 
         coursesRecyclerView = findViewById(R.id.courses_view);
 
@@ -73,8 +83,7 @@ public class InputCourseActivity extends AppCompatActivity {
     }
 
     public void onDoneClicked(View view) {
-        //make sure at least 1 course is entered TODO: test
-        if (db.coursesDao().getForStudent(USER_ID).isEmpty()) {
+        if (inputCourseHandler.getNumEntered() == 0) {
             Toast.makeText(this, "Enter a course",Toast.LENGTH_SHORT).show();
             return;
         }
@@ -101,26 +110,21 @@ public class InputCourseActivity extends AppCompatActivity {
         String newSubjectText = newSubjectTextView.getText().toString().toUpperCase();
         String newCourseNumText = newCourseNumTextView.getText().toString().toUpperCase();
 
-        //null inputs
-        if (newQuarterText.isEmpty() || newSubjectText.isEmpty() || newCourseNumText.isEmpty()) {
-            Toast.makeText(this, "Enter valid course", Toast.LENGTH_SHORT).show();
-            return;
+        //have inputCourseHandler insert the course
+        Course newCourse = inputCourseHandler.inputCourse(courseID,newYearText,
+                newQuarterText, newSubjectText, newCourseNumText);
+
+        //check for null and duplicate
+        if (newCourse == null) {
+            Toast.makeText(this, "Invalid class", Toast.LENGTH_SHORT).show();
         }
-
-        //Make the course object and insert
-        Course newCourse = new Course(courseID, USER_ID, newYearText, newQuarterText, newSubjectText, newCourseNumText);
-
-        //check not duplicate course TODO: test
-        List<Course> stuCoursesList = db.coursesDao().getForStudent(USER_ID);
-        HashSet<Course> stuCourses = new HashSet<>(stuCoursesList);
-        if (stuCourses.contains(newCourse)) {
-            Toast.makeText(this, "Duplicate course", Toast.LENGTH_SHORT).show();
-            return;
+        else if (inputCourseHandler.getIsDuplicate()){
+            Toast.makeText(this, "Course already entered", Toast.LENGTH_SHORT).show();
         }
+        else {
+            //update the courseViewAdapter to show this new course
+            coursesViewAdapter.addCourse(newCourse);
 
-        db.coursesDao().insert(newCourse);
-
-        //update the courseViewAdapter to show this new course
-        coursesViewAdapter.addCourse(newCourse);
+        }
     }
 }
