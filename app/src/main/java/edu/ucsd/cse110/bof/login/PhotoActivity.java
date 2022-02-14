@@ -20,7 +20,6 @@ public class PhotoActivity extends AppCompatActivity {
     private String photoURL;
     private EditText photoInput;
     private String username;
-    private static final String TAG = "PhotoActivity";
 
     private AppDatabase db;
 
@@ -32,7 +31,6 @@ public class PhotoActivity extends AppCompatActivity {
         setContentView(R.layout.activity_photo);
 
         db = AppDatabase.singleton(this);
-
 
         photoInput = (EditText)findViewById(R.id.editPhotoURL);
 

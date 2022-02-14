@@ -27,15 +27,19 @@ import java.util.concurrent.Executors;
 import javax.net.ssl.HttpsURLConnection;
 
 import edu.ucsd.cse110.bof.R;
+import edu.ucsd.cse110.bof.StudentWithCourses;
 import edu.ucsd.cse110.bof.model.IStudent;
+
 import edu.ucsd.cse110.bof.viewProfile.StudentDetailActivity;
+import edu.ucsd.cse110.bof.model.db.Student;
+
 
 public class StudentsViewAdapter extends RecyclerView.Adapter<StudentsViewAdapter.ViewHolder> {
 
-    private final List<? extends IStudent> students;
+    private final List<IStudent> students;
 
 
-    public StudentsViewAdapter(List<? extends IStudent> students) {
+    public StudentsViewAdapter(List<IStudent> students) {
         super();
         this.students = students;
     }
@@ -57,7 +61,9 @@ public class StudentsViewAdapter extends RecyclerView.Adapter<StudentsViewAdapte
 
     //called from HomePageActivity when the list of students is updated,
     //sort list based on numMatches, then update
-    public void itemInserted() {
+    public void itemInserted(IStudent student) {
+        students.add((Student) student);
+
         students.sort(new Comparator<IStudent>() {
             @Override
             //reverse order based on number of matching courses

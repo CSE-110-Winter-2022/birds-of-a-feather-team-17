@@ -30,22 +30,19 @@ import edu.ucsd.cse110.bof.StudentWithCourses;
 
 public class NearbyMessageMockActivity extends AppCompatActivity {
     private static final String TAG = "MockingReceiver";
-    private MessageListener fakedMessageListener;
     private MessageListener realListener;
     private EditText mockStudentInput;
-    private ArrayList<Course> mockStuCourses;
-
-    private StudentWithCourses studentWithCourses;
+    private MockedStudentFactory mockedStudentFactory;
+    private String csv;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_nearby_message_mock);
 
-        // retrieve context
-        Context context = this;
+        mockStudentInput = findViewById(R.id.input_csv);
 
-        mockStudentInput = findViewById(R.id.editName);
+        mockedStudentFactory = new MockedStudentFactory();
 
         //create the listener (for confirming that it runs)
         realListener = new MessageListener() {
@@ -94,56 +91,22 @@ public class NearbyMessageMockActivity extends AppCompatActivity {
      * seconds)
      */
     public void onConfirmMockedStudent(View view) {
-        studentWithCourses = makeMockedStudent();
-        this.fakedMessageListener = new FakedMessageListener(realListener,
+
+        csv = mockStudentInput.getText().toString();
+        StudentWithCourses studentWithCourses = mockedStudentFactory
+                .makeMockedStudent(csv);
+        MessageListener fakedMessageListener = new FakedMessageListener(realListener,
                 3, studentWithCourses);
 
         Nearby.getMessagesClient(this).subscribe(fakedMessageListener);
-
-    }
-
-    //should be moved into a separate class
-    //makes a student from the CSV
-    protected StudentWithCourses makeMockedStudent() {
-        String csv = mockStudentInput.getText().toString();
-        Scanner reader = new Scanner(csv).useDelimiter("[, \n]");
-
-        Student mockStudent = new Student();
-        mockStudent.setName(reader.next());
-        reader.nextLine();
-
-        mockStudent.setPhotoUrl(reader.next());
-        reader.nextLine();
-
-        mockStuCourses = new ArrayList<>();
-
-        int year;
-        String quarter, subject, courseNum;
-
-        while (reader.hasNextLine()) {
-            year = Integer.parseInt(reader.next());
-            quarter = reader.next();
-            subject = reader.next();
-            courseNum = reader.next();
-            reader.nextLine();
-
-
-            mockStuCourses.add(new Course(0, 1, year,
-                    quarter, subject, courseNum));
-        }
-
-        return new StudentWithCourses(mockStudent, mockStuCourses);
+        mockStudentInput.setText("");
     }
 
     public void onGoBackClicked(View view) {
-        //Intent intent = new Intent();
-        Intent intent = new Intent(this,HomePageActivity.class);
+        Intent intent = new Intent();
+        intent.putExtra("mockCSV", csv);
+        setResult(0, intent);
 
-        //send mocked student to homepage as serializable
-        intent.putExtra("mockedStudent", this.studentWithCourses);
-//        setResult(RESULT_OK, intent);
-//        finish();
-        startActivity(intent);
-        finish();
+        NearbyMessageMockActivity.super.onBackPressed();
     }
 }

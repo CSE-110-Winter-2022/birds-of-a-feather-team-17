@@ -21,7 +21,7 @@ import edu.ucsd.cse110.bof.model.db.StudentsDao;
 public class HistoryActivity extends AppCompatActivity {
     private AppDatabase db;
 
-    List<Student> discoveredStudents;
+    List<IStudent> discoveredStudents;
 
     private RecyclerView studentsRecyclerView;
     private RecyclerView.LayoutManager studentsLayoutManager;

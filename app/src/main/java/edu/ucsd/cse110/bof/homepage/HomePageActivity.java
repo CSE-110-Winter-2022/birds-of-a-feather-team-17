@@ -1,5 +1,9 @@
 package edu.ucsd.cse110.bof.homepage;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -9,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -26,12 +31,14 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectInputStream;
+import java.sql.SQLOutput;
 import java.util.ArrayList;
 import java.util.List;
 
 import edu.ucsd.cse110.bof.BoFsTracker;
 import edu.ucsd.cse110.bof.FakedMessageListener;
 import edu.ucsd.cse110.bof.InputCourses.CoursesViewAdapter;
+import edu.ucsd.cse110.bof.MockedStudentFactory;
 import edu.ucsd.cse110.bof.NearbyMessageMockActivity;
 import edu.ucsd.cse110.bof.R;
 import edu.ucsd.cse110.bof.StudentWithCourses;
@@ -53,6 +60,30 @@ public class HomePageActivity extends AppCompatActivity {
     private static final String TAG = "HomePageReceiver";
     private MessageListener realListener;
     private MessageListener fakedMessageListener;
+    private MockedStudentFactory mockedStudentFactory;
+
+    private StudentWithCourses mockedStudent = null;
+    private String mockCSV = null;
+
+    ActivityResultLauncher<Intent> activityLauncher = registerForActivityResult(
+                    new ActivityResultContracts.StartActivityForResult(),
+                    new ActivityResultCallback<ActivityResult>() {
+                        @Override
+                        public void onActivityResult(ActivityResult result) {
+                            if (result.getResultCode() == 0) {
+                                Log.d(TAG, "Back from NMM");
+                                Intent intent = result.getData();
+
+                                if (intent != null) {
+                                    mockCSV = intent.getStringExtra("mockCSV");
+
+                                    mockedStudent = mockedStudentFactory.makeMockedStudent(mockCSV);
+
+
+                                }
+                            }
+                        }
+    });
 
     private StudentWithCourses mockedResult;
 
@@ -67,29 +98,8 @@ public class HomePageActivity extends AppCompatActivity {
         db = AppDatabase.singleton(this);
         thisStudent = db.studentsDao().get(1);
 
+        mockedStudentFactory = new MockedStudentFactory();
 
-        //set up RecyclerView
-        myBoFs = new ArrayList<>();
-
-        studentsRecyclerView = findViewById(R.id.students_view);
-
-        studentsLayoutManager = new LinearLayoutManager(this);
-        studentsRecyclerView.setLayoutManager(studentsLayoutManager);
-
-        studentsViewAdapter = new StudentsViewAdapter(myBoFs);
-        studentsRecyclerView.setAdapter(studentsViewAdapter);
-
-        //set up listener for search button:
-        ToggleButton toggle = findViewById(R.id.search_button);
-        toggle.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            if (isChecked) {
-                onStartSearchingClicked();
-            } else {
-                onStopSearchingClicked();
-            }
-        });
-
-        //set up actual listener for finding BoFs
         realListener = new MessageListener() {
             StudentWithCourses receivedStudentWithCourses = null;
             @Override
@@ -125,48 +135,82 @@ public class HomePageActivity extends AppCompatActivity {
                                     thisStudent.getCourses(getApplicationContext()),
                                     receivedStudentWithCourses.getCourses());
 
-                    //if not empty list, add this student to list of students
-                    //and the database
                     if (commonCourses.size() != 0) {
                         Log.d(TAG,"studentWithCourses has a common class");
 
                         //add this student to viewAdapter list
                         receivedStudentWithCourses.getStudent().setMatches(commonCourses.size());
+
+                        //myBoFs.add(receivedStudentWithCourses.getStudent());
+
                         receivedStudentWithCourses.setCourses(commonCourses);
-                        myBoFs.add(receivedStudentWithCourses.getStudent());
 
                         //only add to db if not already in db
                         if (!dbStudents.contains((Student) receivedStudentWithCourses.getStudent())) {
                             db.studentsDao().insert((Student) receivedStudentWithCourses.getStudent());
 
                             int insertedId = db.studentsDao().maxId();
+                            int insertedCourseId = db.coursesDao().maxId();
 
                             //only common courses need to be added to db
                             for (Course receivedCourse : commonCourses) {
-                                int newCourseId = db.coursesDao().maxId() + 1;
 
-                                receivedCourse.setCourseId(newCourseId);
                                 receivedCourse.setStudentId(insertedId);
+                                receivedCourse.setCourseId(++insertedCourseId);
                                 db.coursesDao().insert(receivedCourse);
                             }
                         }
 
-                        studentsViewAdapter.itemInserted();
+                        studentsViewAdapter.itemInserted(receivedStudentWithCourses.getStudent());
                     }
                 }
             }
         };
 
-        //set up mock listener for receiving mocked items
-        //this.fakedMessageListener = new FakedMessageListener(this.realListener, 3, mockedResult);
-        this.fakedMessageListener = new FakedMessageListener(this.realListener, 3,
-                        (StudentWithCourses) intent.getSerializableExtra("mockedStudent") );
+        Log.d(TAG, "made realListener");
+
+        //set up RecyclerView
+        myBoFs = new ArrayList<>();
+
+        studentsRecyclerView = findViewById(R.id.students_view);
+
+        studentsLayoutManager = new LinearLayoutManager(this);
+        studentsRecyclerView.setLayoutManager(studentsLayoutManager);
+
+        studentsViewAdapter = new StudentsViewAdapter(myBoFs);
+        studentsRecyclerView.setAdapter(studentsViewAdapter);
+
+        /*
+        //set up listener for search button:
+        ToggleButton toggle = findViewById(R.id.search_button);
+        toggle.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (isChecked) {
+                onStartSearchingClicked();
+            } else {
+                onStopSearchingClicked();
+            }
+        });
+
+         */
     }
 
-    /**
-     * Creates the listener to start searching for BoFs,
-     */
+    @Override
+    protected void onResume() {
+        if (mockedStudent != null) {
+            this.fakedMessageListener = new FakedMessageListener(this.realListener, 3,
+                    mockedStudent);
+        }
+
+        super.onResume();
+    }
+
+    /*
+
     public void onStartSearchingClicked() {
+        //set up mock listener for receiving mocked items
+        this.fakedMessageListener = new FakedMessageListener(this.realListener, 3,
+                mockedStudent);
+
         Nearby.getMessagesClient(this).subscribe(realListener);
         Nearby.getMessagesClient(this).subscribe(fakedMessageListener);
     }
@@ -179,31 +223,18 @@ public class HomePageActivity extends AppCompatActivity {
         }
     }
 
+     */
+
     public void onGoToMockStudents(View view) {
         Intent intent = new Intent(this, NearbyMessageMockActivity.class);
-        //TODO: fix startActivityForResult
-        //startActivityForResult(intent,1);
-        startActivity(intent);
-    }
 
-//    @Override
-//    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-//        super.onActivityResult(requestCode, resultCode, data);
-//        if (requestCode == 1) {
-//
-//            if (resultCode == Activity.RESULT_OK) {
-//                // Get mocked StudentWithCourses data from NearbyMessageMockActivity
-//                mockedResult = (StudentWithCourses) data.getSerializableExtra("mockedStudent");
-//
-//                Toast.makeText(this, "Mocked student successful", Toast.LENGTH_SHORT).show();
-//            } else {
-//                Toast.makeText(this, "Mocked student unsuccessful", Toast.LENGTH_SHORT).show();
-//            }
-//        }
-//    }
+        activityLauncher.launch(intent);
+
+    }
 
     public void onHistoryClicked(View view) {
         Intent intent = new Intent(this, HistoryActivity.class);
         startActivity(intent);
     }
+
 }
