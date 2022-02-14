@@ -9,8 +9,8 @@
 
   <androidx.recyclerview.widget.RecyclerView
       android:id="@+id/history_view"
-      android:layout_width="391dp"
-      android:layout_height="638dp"
+      android:layout_width="394dp"
+      android:layout_height="571dp"
       app:layout_constraintBottom_toBottomOf="parent"
       app:layout_constraintEnd_toEndOf="parent"
       app:layout_constraintHorizontal_bias="0.473"
@@ -26,6 +26,8 @@
       android:text="Go Back"
       app:layout_constraintBottom_toBottomOf="parent"
       app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintHorizontal_bias="0.498"
       app:layout_constraintStart_toStartOf="parent"
-      app:layout_constraintTop_toBottomOf="@+id/history_view" />
+      app:layout_constraintTop_toBottomOf="@+id/history_view"
+      app:layout_constraintVertical_bias="0.179" />
 </androidx.constraintlayout.widget.ConstraintLayout>
