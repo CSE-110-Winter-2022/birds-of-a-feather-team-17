@@ -33,6 +33,7 @@ public class NearbyMessageMockActivity extends AppCompatActivity {
     private MessageListener realListener;
     private EditText mockStudentInput;
     private MockedStudentFactory mockedStudentFactory;
+    private String csv;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,7 +92,7 @@ public class NearbyMessageMockActivity extends AppCompatActivity {
      */
     public void onConfirmMockedStudent(View view) {
 
-        String csv = mockStudentInput.getText().toString();
+        csv = mockStudentInput.getText().toString();
         StudentWithCourses studentWithCourses = mockedStudentFactory
                 .makeMockedStudent(csv);
         MessageListener fakedMessageListener = new FakedMessageListener(realListener,
@@ -105,7 +106,7 @@ public class NearbyMessageMockActivity extends AppCompatActivity {
 
     public void onGoBackClicked(View view) {
         Intent intent = new Intent();
-        intent.putExtra("mockCSV", mockStudentInput.getText().toString());
+        intent.putExtra("mockCSV", csv);
         setResult(0, intent);
 
         NearbyMessageMockActivity.super.onBackPressed();

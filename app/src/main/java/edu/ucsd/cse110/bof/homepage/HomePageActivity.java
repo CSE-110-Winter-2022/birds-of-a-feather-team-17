@@ -69,10 +69,15 @@ public class HomePageActivity extends AppCompatActivity {
                         @Override
                         public void onActivityResult(ActivityResult result) {
                             if (result.getResultCode() == 0) {
+                                Log.d(TAG, "Back from NMM");
                                 Intent intent = result.getData();
 
                                 if (intent != null) {
                                     mockCSV = intent.getStringExtra("mockCSV");
+
+                                    mockedStudent = mockedStudentFactory.makeMockedStudent(mockCSV);
+
+
                                 }
                             }
                         }
@@ -91,29 +96,6 @@ public class HomePageActivity extends AppCompatActivity {
 
         mockedStudentFactory = new MockedStudentFactory();
 
-
-        //set up RecyclerView
-        myBoFs = new ArrayList<>();
-
-        studentsRecyclerView = findViewById(R.id.students_view);
-
-        studentsLayoutManager = new LinearLayoutManager(this);
-        studentsRecyclerView.setLayoutManager(studentsLayoutManager);
-
-        studentsViewAdapter = new StudentsViewAdapter(myBoFs);
-        studentsRecyclerView.setAdapter(studentsViewAdapter);
-
-        //set up listener for search button:
-        ToggleButton toggle = findViewById(R.id.search_button);
-        toggle.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            if (isChecked) {
-                onStartSearchingClicked();
-            } else {
-                onStopSearchingClicked();
-            }
-        });
-
-        //set up actual listener for finding BoFs
         realListener = new MessageListener() {
             StudentWithCourses receivedStudentWithCourses = null;
             @Override
@@ -155,7 +137,6 @@ public class HomePageActivity extends AppCompatActivity {
                         //add this student to viewAdapter list
                         receivedStudentWithCourses.getStudent().setMatches(commonCourses.size());
                         receivedStudentWithCourses.setCourses(commonCourses);
-                        myBoFs.add(receivedStudentWithCourses.getStudent());
 
                         //only add to db if not already in db
                         if (!dbStudents.contains((Student) receivedStudentWithCourses.getStudent())) {
@@ -178,13 +159,38 @@ public class HomePageActivity extends AppCompatActivity {
             }
         };
 
+        Log.d(TAG, "made realListener");
 
+        //set up RecyclerView
+        myBoFs = new ArrayList<>();
+
+        studentsRecyclerView = findViewById(R.id.students_view);
+
+        studentsLayoutManager = new LinearLayoutManager(this);
+        studentsRecyclerView.setLayoutManager(studentsLayoutManager);
+
+        studentsViewAdapter = new StudentsViewAdapter(myBoFs);
+        studentsRecyclerView.setAdapter(studentsViewAdapter);
+
+        //set up listener for search button:
+        ToggleButton toggle = findViewById(R.id.search_button);
+        toggle.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (isChecked) {
+                onStartSearchingClicked();
+            } else {
+                onStopSearchingClicked();
+            }
+        });
     }
 
     /**
      * Creates the listener to start searching for BoFs,
      */
     public void onStartSearchingClicked() {
+        //set up mock listener for receiving mocked items
+        this.fakedMessageListener = new FakedMessageListener(this.realListener, 3,
+                mockedStudent);
+
         Nearby.getMessagesClient(this).subscribe(realListener);
         Nearby.getMessagesClient(this).subscribe(fakedMessageListener);
     }
@@ -211,12 +217,5 @@ public class HomePageActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
-        if (mockCSV != null) {
-            mockedStudent = mockedStudentFactory.makeMockedStudent(mockCSV);
-
-            //set up mock listener for receiving mocked items
-            this.fakedMessageListener = new FakedMessageListener(this.realListener, 3,
-                    mockedStudent);
-        }
     }
 }
