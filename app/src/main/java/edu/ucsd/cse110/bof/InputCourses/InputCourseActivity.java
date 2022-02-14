@@ -112,14 +112,14 @@ public class InputCourseActivity extends AppCompatActivity {
         String newCourseNumText = newCourseNumTextView.getText().toString().toUpperCase();
 
         //have inputCourseHandler insert the course
-        Course newCourse = inputCourseHandler.inputCourse(newYearText,
+        Course newCourse = inputCourseHandler.inputCourse(courseID,newYearText,
                 newQuarterText, newSubjectText, newCourseNumText);
 
         //check for null and duplicate
         if (newCourse == null) {
             Toast.makeText(this, "Invalid class", Toast.LENGTH_SHORT).show();
         }
-        else if (inputCourseHandler.isDuplicateCourse(newCourse)){
+        else if (inputCourseHandler.getIsDuplicate()){
             Toast.makeText(this, "Course already entered", Toast.LENGTH_SHORT).show();
         }
         else {
