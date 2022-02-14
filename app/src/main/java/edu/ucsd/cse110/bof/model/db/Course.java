@@ -11,9 +11,9 @@ import java.util.Objects;
 @Entity(tableName = "courses")
 public class Course implements Serializable {
 
-    @PrimaryKey(autoGenerate = true)
+    @PrimaryKey
     @ColumnInfo(name = "course_id")
-    public int courseId = 0;
+    public int courseId;
 
     @ColumnInfo(name = "student_id")
     public int studentId;
@@ -22,8 +22,8 @@ public class Course implements Serializable {
     public String quarter, subject, courseNum;
 
     // Course constructor
-    public Course(int studentId, int year, String quarter, String subject, String courseNum) {
-        //this.courseId = courseId;     //automatically generated
+    public Course(int courseId, int studentId, int year, String quarter, String subject, String courseNum) {
+        this.courseId = courseId;     //automatically generated
         this.studentId = studentId;
         this.year = year;
         this.quarter = quarter;

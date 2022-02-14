@@ -75,9 +75,8 @@ public class InputCourseActivity extends AppCompatActivity {
         coursesLayoutManager = new LinearLayoutManager(this);
         coursesRecyclerView.setLayoutManager(coursesLayoutManager);
 
-        coursesViewAdapter = new CoursesViewAdapter(courses, (course) -> {
-            db.coursesDao().delete(course);
-        });
+        coursesViewAdapter = new CoursesViewAdapter(courses,
+                (course) -> db.coursesDao().delete(course));
 
         coursesRecyclerView.setAdapter(coursesViewAdapter);
     }
@@ -96,6 +95,10 @@ public class InputCourseActivity extends AppCompatActivity {
     }
 
     public void onAddCourseClicked(View view) {
+        //user's studentID is 1, first one inserted into database
+        int studentID = 1;
+        int courseID = db.coursesDao().maxId() + 1;
+
         //find inputs
         Spinner newQuarterTextView = findViewById(R.id.fidget_spinner);
         Spinner newYearTextView = findViewById(R.id.input_year);
@@ -105,8 +108,8 @@ public class InputCourseActivity extends AppCompatActivity {
         //get info from inputs
         String newQuarterText = newQuarterTextView.getSelectedItem().toString();
         int newYearText = Integer.parseInt(newYearTextView.getSelectedItem().toString());
-        String newSubjectText = newSubjectTextView.getText().toString();
-        String newCourseNumText = newCourseNumTextView.getText().toString();
+        String newSubjectText = newSubjectTextView.getText().toString().toUpperCase();
+        String newCourseNumText = newCourseNumTextView.getText().toString().toUpperCase();
 
         //have inputCourseHandler insert the course
         Course newCourse = inputCourseHandler.inputCourse(newYearText,
@@ -122,6 +125,7 @@ public class InputCourseActivity extends AppCompatActivity {
         else {
             //update the courseViewAdapter to show this new course
             coursesViewAdapter.addCourse(newCourse);
+
         }
     }
 }
