@@ -42,8 +42,6 @@ public class NearbyMessageMockActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_nearby_message_mock);
 
-        // retrieve context
-        Context context = this;
 
         mockStudentInput = findViewById(R.id.editName);
 

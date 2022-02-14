@@ -133,10 +133,13 @@ public class HomePageActivity extends AppCompatActivity {
                             db.studentsDao().insert((Student) receivedStudentWithCourses.getStudent());
 
                             int insertedId = db.studentsDao().maxId();
+                            int insertedCourseId = db.coursesDao().maxId();
 
                             //only common courses need to be added to db
                             for (Course receivedCourse : commonCourses) {
+
                                 receivedCourse.setStudentId(insertedId);
+                                receivedCourse.setCourseId(++insertedCourseId);
                                 db.coursesDao().insert(receivedCourse);
                             }
                         }
