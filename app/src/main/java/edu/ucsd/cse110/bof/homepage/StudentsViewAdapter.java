@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,6 +36,8 @@ import edu.ucsd.cse110.bof.viewProfile.StudentDetailActivity;
 
 public class StudentsViewAdapter extends RecyclerView.Adapter<StudentsViewAdapter.ViewHolder> {
 
+    private static final String TAG = "StudentsViewAdapterLog";
+
     private final List<Student> students;
 
     public StudentsViewAdapter(List<Student> students) {
@@ -60,14 +63,19 @@ public class StudentsViewAdapter extends RecyclerView.Adapter<StudentsViewAdapte
     //called from HomePageActivity when the list of students is updated,
     //sort list based on numMatches, then update
     public void addStudent(Student student) {
-        this.students.add(student);
-        //reverse order based on number of matching courses
 
-        //TODO: test notifyItemInserted logic
+        Log.d(TAG, "adding student to viewAdapter");
+
+        this.students.add(student);
+        //sort by numMatches in reverse order
         students.sort((Comparator<IStudent>) (o1, o2) -> Integer.compare(o2.getMatches(), o1.getMatches()));
+
+        Log.d(TAG, "sorted students based on numMatches");
+
         int insertedIndex = students.indexOf(student);
-        //this.notifyItemInserted(this.students.size() - 1);
         this.notifyItemInserted(insertedIndex);
+
+        Log.d(TAG, "notified RecyclerView that student was inserted");
     }
 
     @Override
