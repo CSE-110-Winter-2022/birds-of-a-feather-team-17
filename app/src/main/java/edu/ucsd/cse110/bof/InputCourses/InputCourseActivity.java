@@ -66,10 +66,7 @@ public class InputCourseActivity extends AppCompatActivity {
 
         //insert user into database (student_id=1, first element in database)
         db = AppDatabase.singleton(this);
-        db.studentsDao().insert(new Student(studentName, studentPhoto));
 
-        Log.d(TAG, "Received user's name: " + studentName);
-        Log.d(TAG, "Received user's photoURL: " + studentPhoto);
 
         List<Course> courses = db.coursesDao().getForStudent(USER_ID);
 
@@ -95,6 +92,7 @@ public class InputCourseActivity extends AppCompatActivity {
         Intent intent = new Intent(this, HomePageActivity.class);
         intent.putExtra("student_id", USER_ID);
         startActivity(intent);
+        //finish();
     }
 
     public void onAddCourseClicked(View view) {
