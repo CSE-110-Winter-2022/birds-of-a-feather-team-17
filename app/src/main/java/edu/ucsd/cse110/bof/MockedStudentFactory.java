@@ -14,7 +14,8 @@ public class MockedStudentFactory {
      * @return StudentWithCourses
      */
     public StudentWithCourses makeMockedStudent(String csv) {
-        if (csv == null) {
+        //TODO: valid csv check
+        if (csv == null || csv.isEmpty()) {
             return null;
         }
         Scanner reader = new Scanner(csv).useDelimiter("[, \n]");

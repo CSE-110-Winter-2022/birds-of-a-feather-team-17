@@ -47,7 +47,7 @@ public class StudentDetailActivity extends AppCompatActivity {
     protected RecyclerView coursesRecyclerView;
     protected RecyclerView.LayoutManager coursesLayoutManager;
     protected CoursesListViewAdapter coursesListViewAdapter;
-    //private List<Course> courses = db.coursesDao().getForStudent(studentID);
+
     private ExecutorService backgroundThreadExecutor =
             Executors.newSingleThreadExecutor();
 
@@ -74,8 +74,6 @@ public class StudentDetailActivity extends AppCompatActivity {
 
         //set image
         studentImage = findViewById(R.id.student_profile_img); //finds imageview
-        //studentImageURL = student.getPhotoUrl(); //gets image url
-        //studentImage.setImageBitmap(getBitmapFromURL(studentImageURL)); //sets image using method
 
         backgroundThreadExecutor.submit(() -> {
             URL photo_url = null;

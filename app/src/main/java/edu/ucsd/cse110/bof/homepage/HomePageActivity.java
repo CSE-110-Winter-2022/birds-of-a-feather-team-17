@@ -5,10 +5,12 @@ import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -74,10 +76,7 @@ public class HomePageActivity extends AppCompatActivity {
 
                         if (intent != null) {
                             mockCSV = intent.getStringExtra("mockCSV");
-
                             mockedStudent = mockedStudentFactory.makeMockedStudent(mockCSV);
-
-
                         }
                     }
                 }
@@ -169,6 +168,7 @@ public class HomePageActivity extends AppCompatActivity {
                             db.studentsDao().insert((Student) receivedStudentWithCourses.getStudent());
 
                             int insertedId = db.studentsDao().maxId();
+                            ((Student) receivedStudentWithCourses.getStudent()).setStudentId(insertedId);
                             int insertedCourseId = db.coursesDao().maxId();
 
                             //only common courses need to be added to db
@@ -183,25 +183,22 @@ public class HomePageActivity extends AppCompatActivity {
                         Log.d(TAG, "preparing to add new mocked student to recycler view");
 
                         studentsViewAdapter.addStudent(receivedStudentWithCourses.getStudent());
-
-                        Log.d(TAG, "added new mocked student to recycler view");
                     }
                 }
             }
         };
 
+        Log.d(TAG, "realListener created");
     }
 
-    /**
-     * Creates the listener to start searching for BoFs,
-     */
     public void onStartSearchingClicked() {
         //set up mock listener for receiving mocked items
         if (mockedStudent!=null) {
             this.fakedMessageListener = new FakedMessageListener(this.realListener, 3,
                     mockedStudent);
-            //Nearby.getMessagesClient(this).subscribe(realListener);
             Nearby.getMessagesClient(this).subscribe(fakedMessageListener);
+
+            Log.d(TAG, "mocked student found, subscribing fakedMessageListener");
         }
         else {
             Log.d(TAG, "No students found/mocked");
@@ -213,15 +210,25 @@ public class HomePageActivity extends AppCompatActivity {
         if (fakedMessageListener != null) {
             //Nearby.getMessagesClient(this).unsubscribe(realListener);
             Nearby.getMessagesClient(this).unsubscribe(fakedMessageListener);
+            Log.d(TAG, "stopped searching, unsubscribing fakedMessageListener");
         }
     }
 
     public void onGoToMockStudents(View view) {
+        if (fakedMessageListener != null) {
+            Nearby.getMessagesClient(this).unsubscribe(fakedMessageListener);
+            Log.d(TAG, "going to MockStudents, unsubscribing fakedMessageListener");
+        }
         Intent intent = new Intent(this, NearbyMessageMockActivity.class);
+
         activityLauncher.launch(intent);
     }
 
     public void onHistoryClicked(View view) {
+        if (fakedMessageListener != null) {
+            Nearby.getMessagesClient(this).unsubscribe(fakedMessageListener);
+            Log.d(TAG, "going to History, unsubscribing fakedMessageListener");
+        }
         Intent intent = new Intent(this, HistoryActivity.class);
         startActivity(intent);
     }

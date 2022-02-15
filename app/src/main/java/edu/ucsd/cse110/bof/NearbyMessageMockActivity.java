@@ -41,48 +41,6 @@ public class NearbyMessageMockActivity extends AppCompatActivity {
         setContentView(R.layout.activity_nearby_message_mock);
 
         mockStudentInput = findViewById(R.id.input_csv);
-
-        mockedStudentFactory = new MockedStudentFactory();
-
-        //create the listener (for confirming that it runs)
-        realListener = new MessageListener() {
-            StudentWithCourses studentWithCourses = null;
-            @Override
-            public void onFound(@NonNull Message message) {
-                //make IStudent from byte array received
-                ByteArrayInputStream bis =
-                        new ByteArrayInputStream(message.getContent());
-                ObjectInput stuObj = null;
-                try {
-                    stuObj = new ObjectInputStream(bis);
-                    studentWithCourses = (StudentWithCourses) stuObj.readObject();
-                } catch (IOException | ClassNotFoundException e) {
-                    e.printStackTrace();
-                }
-
-                //log the received student
-                if (studentWithCourses != null) {
-                    Log.d(TAG,
-                            "Received student: " + studentWithCourses.getStudent().getName());
-                    Log.d(TAG,
-                            "photoURL: " + studentWithCourses.getStudent().getPhotoUrl());
-                    Log.d(TAG, "Classes: ");
-                    ArrayList<Course> courses =
-                            (ArrayList<Course>) studentWithCourses.getCourses();
-                    for (Course course : courses) {
-                        Log.d(TAG, course.toString());
-                    }
-                }
-                else {
-                    Log.d(TAG, "error");
-                }
-            }
-
-            @Override
-            public void onLost(@NonNull Message message) {
-                Log.d(TAG, "Lost sight of: " + studentWithCourses.getStudent().getName());
-            }
-        };
     }
 
     /**
@@ -93,16 +51,8 @@ public class NearbyMessageMockActivity extends AppCompatActivity {
     public void onConfirmMockedStudent(View view) {
 
         csv = mockStudentInput.getText().toString();
-        StudentWithCourses studentWithCourses = mockedStudentFactory
-                .makeMockedStudent(csv);
-//        MessageListener fakedMessageListener = new FakedMessageListener(realListener,
-//                3, studentWithCourses);
-//
-//        Nearby.getMessagesClient(this).subscribe(fakedMessageListener);
         mockStudentInput.setText("");
     }
-
-
 
     public void onGoBackClicked(View view) {
         Intent intent = new Intent();
