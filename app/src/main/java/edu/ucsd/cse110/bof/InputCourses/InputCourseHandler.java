@@ -49,12 +49,12 @@ public class InputCourseHandler {
      */
     public Course inputCourse(int courseId, int year, String quarter,
                                String subject, String courseNum, String courseSize) {
-        if (quarter.equals("") || subject.equals("") || courseNum.equals("")) {
+        if (quarter.equals("") || subject.equals("") || courseNum.equals("") || courseSize.equals("")) {
             return null;
         }
 
         Course newCourse = new Course(courseId, USER_ID, year, quarter.toUpperCase(),
-                subject.toUpperCase(), courseNum.toUpperCase(), courseSize.toUpperCase());
+                subject.toUpperCase(), courseNum.toUpperCase(), courseSize);
 
         if (!isDuplicateCourse(newCourse)) {
             isDuplicate = false;
