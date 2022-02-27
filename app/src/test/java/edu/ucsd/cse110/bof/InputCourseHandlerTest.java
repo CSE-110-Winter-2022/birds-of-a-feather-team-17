@@ -48,20 +48,20 @@ public class InputCourseHandlerTest {
     @Test
     public void courseIsInvalid() {
             InputCourseHandler inputCourseHandler = new InputCourseHandler(context);
-            Course newCourse = inputCourseHandler.inputCourse(0, 2021, "SP", "CSE", "");
+            Course newCourse = inputCourseHandler.inputCourse(0, 2021, "SP", "CSE", "","Large");
             assertNull(newCourse);
-            newCourse = inputCourseHandler.inputCourse(0, 2021, "SP", "", "12");
+            newCourse = inputCourseHandler.inputCourse(0, 2021, "SP", "", "12","Large");
             assertNull(newCourse);
-            newCourse = inputCourseHandler.inputCourse(0, 2021, "", "CSE", "12");
+            newCourse = inputCourseHandler.inputCourse(0, 2021, "", "CSE", "12","Large");
             assertNull(newCourse);
-            newCourse = inputCourseHandler.inputCourse(0, 2021, "", "", "");
+            newCourse = inputCourseHandler.inputCourse(0, 2021, "", "", "","Large");
             assertNull(newCourse);
     }
 
     @Test
     public void databaseIsEmpty() {
         InputCourseHandler inputCourseHandler = new InputCourseHandler(context);
-        Course newCourse = inputCourseHandler.inputCourse(0, 2021, "SP", "CSE", "12");
+        Course newCourse = inputCourseHandler.inputCourse(0, 2021, "SP", "CSE", "12","Large");
         assertNotNull(newCourse);
         assertFalse(inputCourseHandler.getIsDuplicate());
         assertEquals(newCourse.quarter, "SP");
@@ -78,14 +78,16 @@ public class InputCourseHandlerTest {
                 2021,
                 "SP",
                 "CSE",
-                "12"));
+                "12",
+                "Large"));
         InputCourseHandler inputCourseHandler = new InputCourseHandler(context);
         Course newCourse = inputCourseHandler.inputCourse(
                 db.coursesDao().maxId() + 1,
                 2022,
                 "FA",
                 "CSE",
-                "100");
+                "100",
+                "Large");
         assertNotNull(newCourse);
         assertFalse(inputCourseHandler.getIsDuplicate());
     }
@@ -99,33 +101,36 @@ public class InputCourseHandlerTest {
                 2021,
                 "SP",
                 "CSE",
-                "12"));
+                "12"
+                ,"Large"));
         db.coursesDao().insert(new Course(
                 db.coursesDao().maxId() + 1,
                 1,
                 2022,
                 "SS1",
                 "HILD",
-                "7B"));
+                "7B"
+                ,"Large"));
         db.coursesDao().insert(new Course(
                 db.coursesDao().maxId() + 1,
                 1,
                 2022,
                 "WI",
                 "CSE",
-                "101"));
+                "101"
+                ,"Large"));
         InputCourseHandler inputCourseHandler = new InputCourseHandler(context);
-        Course newCourse = inputCourseHandler.inputCourse(db.coursesDao().maxId() + 1, 2021, "SP", "CSE", "12");
+        Course newCourse = inputCourseHandler.inputCourse(db.coursesDao().maxId() + 1, 2021, "SP", "CSE", "12","Large");
         assertNull(newCourse);
         assertTrue(inputCourseHandler.getIsDuplicate());
 
         inputCourseHandler = new InputCourseHandler(context);
-        newCourse = inputCourseHandler.inputCourse(db.coursesDao().maxId() + 1, 2022, "SS1", "Hild", "7B");
+        newCourse = inputCourseHandler.inputCourse(db.coursesDao().maxId() + 1, 2022, "SS1", "Hild", "7B","Large");
         assertNull(newCourse);
         assertTrue(inputCourseHandler.getIsDuplicate());
 
         inputCourseHandler = new InputCourseHandler(context);
-        newCourse = inputCourseHandler.inputCourse(db.coursesDao().maxId() + 1, 2017, "SSS", "DOC", "2");
+        newCourse = inputCourseHandler.inputCourse(db.coursesDao().maxId() + 1, 2017, "SSS", "DOC", "2","Large");
         assertNotNull(newCourse);
         assertFalse(inputCourseHandler.getIsDuplicate());
     }

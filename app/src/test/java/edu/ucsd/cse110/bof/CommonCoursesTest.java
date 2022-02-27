@@ -32,28 +32,32 @@ public class CommonCoursesTest {
             2021,
             "SP",
             "CSE",
-            "12");
+            "12"
+            ,"Large");
     static final Course cse100FA22 = new Course(
             courseId++,
             1,
             2022,
             "FA",
             "CSE",
-            "100");
+            "100"
+            ,"Large");
     static final Course cse110WI22 = new Course(
             courseId++,
             1,
             2022,
             "WI",
             "CSE",
-            "110");
+            "110"
+            ,"Large");
     static final Course cse101WI22 = new Course(
             courseId++,
             1,
             2022,
             "WI",
             "CSE",
-            "101");
+            "101"
+            ,"Large");
 
     static final Course cse12SP21_2 = new Course(
             courseId++,
@@ -61,28 +65,32 @@ public class CommonCoursesTest {
             2021,
             "SP",
             "CSE",
-            "12");
+            "12"
+            ,"Large");
     static final Course cse100FA22_2 = new Course(
             courseId++,
             2,
             2022,
             "FA",
             "CSE",
-            "100");
+            "100"
+            ,"Large");
     static final Course cse110WI22_2 = new Course(
             courseId++,
             2,
             2022,
             "WI",
             "CSE",
-            "110");
+            "110"
+            ,"Large");
     static final Course cse101WI22_2 = new Course(
             courseId++,
             2,
             2022,
             "WI",
             "CSE",
-            "101");
+            "101"
+            ,"Large");
 
     private List<Course> stu1Courses;
     private List<Course> stu2Courses;
@@ -162,14 +170,16 @@ public class CommonCoursesTest {
                 2021,
                 "SP",
                 "CSE",
-                "12");
+                "12"
+                ,"Large");
         Course typoCse12SP21 = new Course(
                 courseId++,
                 2,
                 2021,
                 "SP",
                 "CS",
-                "12");
+                "12"
+                ,"Large");
 
         //define stu1Courses and stu2Courses lists
         stu1Courses.add(correctCse12SP21);

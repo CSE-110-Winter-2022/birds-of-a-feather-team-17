@@ -38,6 +38,7 @@ import java.util.List;
 import edu.ucsd.cse110.bof.BoFsTracker;
 import edu.ucsd.cse110.bof.FakedMessageListener;
 import edu.ucsd.cse110.bof.InputCourses.CoursesViewAdapter;
+import edu.ucsd.cse110.bof.InputCourses.InputCourseActivity;
 import edu.ucsd.cse110.bof.MockedStudentFactory;
 import edu.ucsd.cse110.bof.NearbyMessageMockActivity;
 import edu.ucsd.cse110.bof.R;
@@ -229,6 +230,14 @@ public class HomePageActivity extends AppCompatActivity {
             Log.d(TAG, "going to History, unsubscribing fakedMessageListener");
         }
         Intent intent = new Intent(this, HistoryActivity.class);
+        startActivity(intent);
+    }
+
+    public void onAddClassesClicked(View view) {
+        Intent intent = new Intent(this, InputCourseActivity.class);
+
+        //check if navigated from HomePageActivity or not (as opposed to PhotoActivity)
+        intent.putExtra("onHomePage",true);
         startActivity(intent);
     }
 }

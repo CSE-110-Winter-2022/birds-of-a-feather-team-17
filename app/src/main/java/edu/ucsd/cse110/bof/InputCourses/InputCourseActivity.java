@@ -13,21 +13,17 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.util.HashSet;
 import java.util.List;
 
-import edu.ucsd.cse110.bof.InputCourses.CoursesViewAdapter;
 import edu.ucsd.cse110.bof.R;
-import edu.ucsd.cse110.bof.StudentWithCourses;
 import edu.ucsd.cse110.bof.homepage.HomePageActivity;
-import edu.ucsd.cse110.bof.login.PhotoActivity;
-import edu.ucsd.cse110.bof.model.IStudent;
 import edu.ucsd.cse110.bof.model.db.AppDatabase;
 import edu.ucsd.cse110.bof.model.db.Course;
-import edu.ucsd.cse110.bof.model.db.Student;
 
 public class InputCourseActivity extends AppCompatActivity {
     private AppDatabase db;
+
+    private boolean onHomePage;
 
     protected RecyclerView coursesRecyclerView;
     protected RecyclerView.LayoutManager coursesLayoutManager;
@@ -44,7 +40,7 @@ public class InputCourseActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_input_course);
 
-        Spinner quarter_spinner = findViewById(R.id.fidget_spinner);
+        Spinner quarter_spinner = findViewById(R.id.input_qtr);
         ArrayAdapter<CharSequence> quarter_adapter = ArrayAdapter.createFromResource(this, R.array.quarters_array, android.R.layout.simple_spinner_item);
         quarter_adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         quarter_spinner.setAdapter(quarter_adapter);
@@ -54,7 +50,16 @@ public class InputCourseActivity extends AppCompatActivity {
         year_adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         year_spinner.setAdapter(year_adapter);
 
-        setTitle("Birds of a Feather");
+        Spinner size_spinner = findViewById(R.id.input_size);
+        ArrayAdapter<CharSequence> size_adapter = ArrayAdapter.createFromResource(this, R.array.sizes_array, android.R.layout.simple_spinner_item);
+        size_adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        size_spinner.setAdapter(size_adapter);
+
+        setTitle("Enter class history");
+
+        //Retrieve onHomePage (boolean) sent from either PhotoActivity (false) or HomePageActivity (true)
+        Bundle extras = getIntent().getExtras();
+        onHomePage = extras.getBoolean("onHomePage");
 
         //create InputCourseHandler
         inputCourseHandler = new InputCourseHandler(this);
@@ -78,36 +83,45 @@ public class InputCourseActivity extends AppCompatActivity {
     }
 
     public void onDoneClicked(View view) {
-        if (inputCourseHandler.getNumEntered() == 0) {
+        AppDatabase db = AppDatabase.singleton(this);
+        if (db.coursesDao().getForStudent(USER_ID).isEmpty()) {
             Toast.makeText(this, "Enter a course",Toast.LENGTH_SHORT).show();
             return;
         }
 
         //move to home page
-        Intent intent = new Intent(this, HomePageActivity.class);
-        intent.putExtra("student_id", USER_ID);
-        startActivity(intent);
-        //finish();
+        if (onHomePage) {
+            Log.d(TAG, "Arrived from homepage, returning to HomePageActivity");
+            finish();
+        }
+        else {
+            Intent intent = new Intent(this, HomePageActivity.class);
+            intent.putExtra("student_id", USER_ID);
+            startActivity(intent);
+            finish();
+        }
     }
 
     public void onAddCourseClicked(View view) {
         int courseID = db.coursesDao().maxId() + 1;
 
         //find inputs
-        Spinner newQuarterTextView = findViewById(R.id.fidget_spinner);
+        Spinner newQuarterTextView = findViewById(R.id.input_qtr);
         Spinner newYearTextView = findViewById(R.id.input_year);
         TextView newSubjectTextView = findViewById(R.id.input_subject);
         TextView newCourseNumTextView = findViewById(R.id.input_course_number);
+        Spinner newSizeTextView = findViewById(R.id.input_size);
 
         //get info from inputs
         String newQuarterText = newQuarterTextView.getSelectedItem().toString();
         int newYearText = Integer.parseInt(newYearTextView.getSelectedItem().toString());
         String newSubjectText = newSubjectTextView.getText().toString().toUpperCase();
         String newCourseNumText = newCourseNumTextView.getText().toString().toUpperCase();
+        String newSizeText = newSizeTextView.getSelectedItem().toString();
 
         //have inputCourseHandler insert the course
         Course newCourse = inputCourseHandler.inputCourse(courseID,newYearText,
-                newQuarterText, newSubjectText, newCourseNumText);
+                newQuarterText, newSubjectText, newCourseNumText, newSizeText);
 
         //check for null and duplicate
         if (newCourse == null) {

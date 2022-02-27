@@ -42,18 +42,19 @@ public class InputCourseHandler {
      * @param quarter       course's quarter
      * @param subject       course's subject
      * @param courseNum     course's number
+     * @param courseSize    course's size
      * @return Course if successfully made (regardless of whether inserted,
      * use isDuplicate(returnedCourse) to check if inserted) or null if no
      * Course made
      */
     public Course inputCourse(int courseId, int year, String quarter,
-                               String subject, String courseNum) {
+                               String subject, String courseNum, String courseSize) {
         if (quarter.equals("") || subject.equals("") || courseNum.equals("")) {
             return null;
         }
 
         Course newCourse = new Course(courseId, USER_ID, year, quarter.toUpperCase(),
-                subject.toUpperCase(), courseNum.toUpperCase());
+                subject.toUpperCase(), courseNum.toUpperCase(), courseSize.toUpperCase());
 
         if (!isDuplicateCourse(newCourse)) {
             isDuplicate = false;

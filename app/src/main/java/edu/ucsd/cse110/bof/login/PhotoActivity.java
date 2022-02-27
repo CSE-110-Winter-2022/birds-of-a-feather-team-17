@@ -63,8 +63,9 @@ public class PhotoActivity extends AppCompatActivity {
 
         //Link to InputCourseActivity
         Intent intent = new Intent(this, InputCourseActivity.class);
-//        intent.putExtra("student_name", username);
-//        intent.putExtra("student_photo", photoURL);
+
+        //check if navigated from HomePageActivity or not
+        intent.putExtra("onHomePage",false);
         startActivity(intent);
         finish();
 

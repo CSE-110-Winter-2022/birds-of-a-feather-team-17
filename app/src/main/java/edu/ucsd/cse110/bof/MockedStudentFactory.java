@@ -18,30 +18,34 @@ public class MockedStudentFactory {
         if (csv == null || csv.isEmpty()) {
             return null;
         }
-        Scanner reader = new Scanner(csv).useDelimiter("[, \n]");
+        Scanner reader = new Scanner(csv);
+        reader.useDelimiter("[, \n]");
 
         Student mockStudent = new Student();
         mockStudent.setName(reader.next());
-        reader.nextLine();
 
         mockStudent.setPhotoUrl(reader.next());
-        reader.nextLine();
 
         ArrayList<Course> mockStuCourses = new ArrayList<>();
 
         int year;
         String quarter, subject, courseNum;
+        String courseSize;
 
-        while (reader.hasNextLine()) {
+        while (reader.hasNext()) {
+            if (reader.next().isEmpty()) { break; }
             year = Integer.parseInt(reader.next());
             quarter = reader.next();
             subject = reader.next();
             courseNum = reader.next();
+            courseSize = reader.next();
             //reader.nextLine();
 
             mockStuCourses.add(new Course(1, 1, year,
-                    quarter, subject, courseNum));
+                    quarter, subject, courseNum, courseSize));
         }
+
+        reader.close();
 
         return new StudentWithCourses(mockStudent, mockStuCourses);
     }
