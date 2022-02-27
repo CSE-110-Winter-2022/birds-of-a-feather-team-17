@@ -208,7 +208,6 @@ public class HomePageActivity extends AppCompatActivity {
 
     public void onStopSearchingClicked() {
         if (fakedMessageListener != null) {
-            //Nearby.getMessagesClient(this).unsubscribe(realListener);
             Nearby.getMessagesClient(this).unsubscribe(fakedMessageListener);
             Log.d(TAG, "stopped searching, unsubscribing fakedMessageListener");
         }

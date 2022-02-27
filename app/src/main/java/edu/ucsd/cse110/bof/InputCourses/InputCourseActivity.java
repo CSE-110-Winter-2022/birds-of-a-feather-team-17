@@ -57,12 +57,7 @@ public class InputCourseActivity extends AppCompatActivity {
         setTitle("Birds of a Feather");
 
         //create InputCourseHandler
-        inputCourseHandler = new InputCourseHandler(this, false);
-
-        //get student info from photo activity
-        Intent intent = getIntent();
-        String studentName = intent.getStringExtra("student_name");
-        String studentPhoto = intent.getStringExtra("student_photo");
+        inputCourseHandler = new InputCourseHandler(this);
 
         //insert user into database (student_id=1, first element in database)
         db = AppDatabase.singleton(this);
@@ -124,7 +119,7 @@ public class InputCourseActivity extends AppCompatActivity {
         else {
             //update the courseViewAdapter to show this new course
             coursesViewAdapter.addCourse(newCourse);
-
+            Log.d("Database size after adding new course", Integer.toString(db.coursesDao().count()));
         }
     }
 }
