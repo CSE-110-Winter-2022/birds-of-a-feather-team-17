@@ -20,8 +20,8 @@ public interface CoursesDao {
     @Query("SELECT COUNT(*) from courses")
     int count();
 
-//    @Query("SELECT MAX(course_id) from courses")
-//    int maxId();
+    @Query("SELECT MAX(course_id) from courses")
+    int maxId();
 
     @Insert
     void insert(Course course);

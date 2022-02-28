@@ -2,6 +2,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="edu.ucsd.cse110.bof">
 
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
     <application
         android:allowBackup="true"
         android:fullBackupOnly="true"
@@ -10,6 +13,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.BirdsOfAFeather">
+
+        <activity
+            android:name=".homepage.HistoryActivity"
+            android:exported="false" />
         <activity
             android:name=".homepage.HomePageActivity"
             android:exported="false" />
@@ -28,6 +35,8 @@
         <activity
             android:name=".login.NameActivity"
             android:exported="false" />
+        <activity android:name=".viewProfile.StudentDetailActivity"
+            android:exported="false"/>
         <activity
             android:name=".MainActivity"
             android:exported="true">

@@ -7,6 +7,7 @@ import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
 import java.util.List;
+import java.util.Objects;
 
 import edu.ucsd.cse110.bof.model.IStudent;
 
@@ -31,6 +32,7 @@ public class Student implements IStudent {
     public Student(String name, String photoURL) {
         this.name = name;
         this.photoURL = photoURL;
+        this.numMatches = 0;
     }
 
     // Student default constructor
@@ -65,13 +67,24 @@ public class Student implements IStudent {
 
     public void setMatches(int numMatches) { this.numMatches = numMatches; }
 
-    public void incrementMatches() { numMatches++; }
-
     // pass in a context to receive singleton database instance
     public List<Course> getCourses(Context context) {
         AppDatabase db = AppDatabase.singleton(context);
         CoursesDao coursesDao = db.coursesDao();
 
         return coursesDao.getForStudent(this.studentId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, photoURL);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Student student = (Student) o;
+        return name.equals(student.name) && photoURL.equals(student.photoURL);
     }
 }

@@ -19,22 +19,13 @@ public class BoFsTracker {
      * objects and returns a new list containing only those courses that are
      * common between them
      *
-     * @param context the app's current context
-     * @param thisStu the user's Student object
-     * @param otherStu the Student object received over Bluetooth
+     * @param thisStuCourses List of courses of this student (user)
+     * @param otherStuCoursesList List of courses of other student
      * @return ArrayList containing all the common Courses between the two
      * Student, in order from oldest to newest
      */
-    public static List<Course> getCommonCourses(Context context, IStudent thisStu,
-                                                IStudent otherStu) {
+    public static List<Course> getCommonCourses(List<Course> thisStuCourses, List<Course> otherStuCoursesList) {
         ArrayList<Course> commonCoursesList = new ArrayList<>();
-
-        //fetch other student's courses from database
-        AppDatabase db = AppDatabase.singleton(context);
-        CoursesDao coursesDao = db.coursesDao();
-        ArrayList<Course> otherStuCoursesList = (ArrayList<Course>) coursesDao.getForStudent(otherStu.getStudentId());
-        ArrayList<Course> thisStuCourses = (ArrayList<Course>) coursesDao.getForStudent(thisStu.getStudentId());
-
 
         //add all of the other student's courses to the HashSet
         HashSet<Course> otherStuCourses = new HashSet<>(otherStuCoursesList);

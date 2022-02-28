@@ -15,18 +15,26 @@
     <string name="submit">Submit</string>
     <string name="photo_url_hint">Enter your photo URL</string>
     <string name="choose_a_profile_photo">Choose a profile photo</string>
-    <string name="default_photo_url">https://t4.ftcdn.net/jpg/00/64/67/63/360_F_64676383_LdbmhiNM6Ypzb3FM4PPuFP9rHe7ri8Ju.jpg</string>
+    <string name="default_photo_url">https://commons.wikimedia.org/wiki/File:Default_pfp.jpg</string>
     <string-array name="quarters_array">
-        <item>FA</item>
-        <item>WI</item>
-        <item>SP</item>
-        <item>SS1</item>
-        <item>SS2</item>
         <item>SSS</item>
+        <item>SS2</item>
+        <item>SS1</item>
+        <item>SP</item>
+        <item>WI</item>
+        <item>FA</item>
+    </string-array>
+    <string-array name="years_array">
+        <item>2016</item>
+        <item>2017</item>
+        <item>2018</item>
+        <item>2019</item>
+        <item>2020</item>
+        <item>2021</item>
+        <item>2022</item>
     </string-array>
     <string name="confirm_mocked_student">Confirm mocked student</string>
-    <string
-        name="hint_student_csv">Enter name,photo url, and classes as csv</string>
+    <string name="hint_student_csv">Enter name,photo url, and classes as csv</string>
     <string name="start_searching">Start Searching</string>
     <string name="stop_searching">Stop Searching</string>
     <string name="mock_students">Mock Students</string>
