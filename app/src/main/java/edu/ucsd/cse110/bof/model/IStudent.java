@@ -13,6 +13,10 @@ public interface IStudent extends Serializable {
     String getPhotoUrl();
     List<Course> getCourses(Context context);
     int getMatches();
+    float getClassSizeWeight();
+    float getRecencyWeight();
 
     void setMatches(int numMatches);
+    void setClassSizeWeight(float weight);
+    void setRecencyWeight(float weight);
 }
