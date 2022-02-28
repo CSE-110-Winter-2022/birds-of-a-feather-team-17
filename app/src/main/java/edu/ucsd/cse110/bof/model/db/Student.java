@@ -28,6 +28,12 @@ public class Student implements IStudent {
     @ColumnInfo(name = "matches")
     public int numMatches;
 
+    @ColumnInfo(name = "classSizeWeight")
+    public float classSizeWeight;
+
+    @ColumnInfo(name = "recencyWeight")
+    public float recencyWeight;
+
     // Student constructor
     public Student(String name, String photoURL) {
         this.name = name;
@@ -66,6 +72,14 @@ public class Student implements IStudent {
     public int getMatches() { return numMatches; }
 
     public void setMatches(int numMatches) { this.numMatches = numMatches; }
+
+    public float getClassSizeWeight() { return classSizeWeight; }
+
+    public void setClassSizeWeight(float weight) { this.classSizeWeight = weight; }
+
+    public float getRecencyWeight() { return recencyWeight; }
+
+    public void setRecencyWeight(float weight) { this.recencyWeight = weight; }
 
     // pass in a context to receive singleton database instance
     public List<Course> getCourses(Context context) {
