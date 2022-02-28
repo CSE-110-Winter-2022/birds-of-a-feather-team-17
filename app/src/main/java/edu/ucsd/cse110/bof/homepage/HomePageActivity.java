@@ -76,8 +76,10 @@ public class HomePageActivity extends AppCompatActivity {
                         Intent intent = result.getData();
 
                         if (intent != null) {
+                            Log.d(TAG, "Making mocked student from csv");
                             mockCSV = intent.getStringExtra("mockCSV");
                             mockedStudent = mockedStudentFactory.makeMockedStudent(mockCSV);
+                            Log.d(TAG, "Mocked student created");
                         }
                     }
                 }
