@@ -17,8 +17,11 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
@@ -91,6 +94,12 @@ public class HomePageActivity extends AppCompatActivity {
         setContentView(R.layout.activity_home_page);
         setTitle("Birds of a Feather");
 
+        //create spinner (drop-down menu) for priorities/sorting algorithms
+        Spinner p_spinner = findViewById(R.id.priority_spinner);
+        ArrayAdapter<CharSequence> p_adapter = ArrayAdapter.createFromResource(this, R.array.priorities_array, android.R.layout.simple_spinner_item);
+        p_adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        p_spinner.setAdapter(p_adapter);
+
         //set thisStudent
         Intent intent = getIntent();
         db = AppDatabase.singleton(this);
@@ -116,6 +125,19 @@ public class HomePageActivity extends AppCompatActivity {
                 onStopSearchingClicked();
             }
         });
+
+        p_spinner.setOnItemSelectedListener(
+                new AdapterView.OnItemSelectedListener() {
+                    public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
+
+                        String priority = parent.getItemAtPosition(pos).toString();
+                        if (priority.equals("recent")) {}
+                        else if (priority.equals("class sizes")) {}
+
+                    }
+                    public void onNothingSelected(AdapterView<?> parent) {
+                    }
+                });
 
         mockedStudentFactory = new MockedStudentFactory();
 
@@ -162,7 +184,6 @@ public class HomePageActivity extends AppCompatActivity {
                         //add this student to viewAdapter list
                         receivedStudentWithCourses.getStudent().setMatches(commonCourses.size());
 
-                        //myBoFs.add(receivedStudentWithCourses.getStudent());
 
                         receivedStudentWithCourses.setCourses(commonCourses);
 

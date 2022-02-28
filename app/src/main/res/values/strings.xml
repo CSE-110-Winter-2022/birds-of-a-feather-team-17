@@ -41,6 +41,10 @@
         <item>Small</item>
         <item>Tiny</item>
     </string-array>
+    <string-array name="priorities_array">
+        <item>recent</item>
+        <item>small classes</item>
+    </string-array>
     <string name="confirm_mocked_student">Confirm mocked student</string>
     <string name="hint_student_csv">Enter name,photo url, and classes as csv</string>
     <string name="start_searching">Start Searching</string>
