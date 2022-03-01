@@ -212,6 +212,9 @@ public class HomePageActivity extends AppCompatActivity {
                         Log.d(TAG, "preparing to add new mocked student to recycler view");
 
                         studentsViewAdapter.addStudent(receivedStudentWithCourses.getStudent());
+
+                        //resort the list
+                        Log.d(TAG, "student added, resorting the list...");
                         studentsViewAdapter.sortList(p_spinner.getSelectedItem().toString());
 
                     }
