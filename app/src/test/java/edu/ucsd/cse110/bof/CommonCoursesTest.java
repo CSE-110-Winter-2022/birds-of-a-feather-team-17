@@ -32,32 +32,32 @@ public class CommonCoursesTest {
             2021,
             "SP",
             "CSE",
-            "12"
-            ,"Large");
+            "12",
+            "Large");
     static final Course cse100FA22 = new Course(
             courseId++,
             1,
             2022,
             "FA",
             "CSE",
-            "100"
-            ,"Large");
+            "100",
+            "Large");
     static final Course cse110WI22 = new Course(
             courseId++,
             1,
             2022,
             "WI",
             "CSE",
-            "110"
-            ,"Large");
+            "110",
+            "Large");
     static final Course cse101WI22 = new Course(
             courseId++,
             1,
             2022,
             "WI",
             "CSE",
-            "101"
-            ,"Large");
+            "101",
+            "Large");
 
     static final Course cse12SP21_2 = new Course(
             courseId++,
@@ -65,32 +65,32 @@ public class CommonCoursesTest {
             2021,
             "SP",
             "CSE",
-            "12"
-            ,"Large");
+            "12",
+            "Large");
     static final Course cse100FA22_2 = new Course(
             courseId++,
             2,
             2022,
             "FA",
             "CSE",
-            "100"
-            ,"Large");
+            "100",
+            "Large");
     static final Course cse110WI22_2 = new Course(
             courseId++,
             2,
             2022,
             "WI",
             "CSE",
-            "110"
-            ,"Large");
+            "110",
+            "Large");
     static final Course cse101WI22_2 = new Course(
             courseId++,
             2,
             2022,
             "WI",
             "CSE",
-            "101"
-            ,"Large");
+            "101",
+            "Large");
 
     private List<Course> stu1Courses;
     private List<Course> stu2Courses;

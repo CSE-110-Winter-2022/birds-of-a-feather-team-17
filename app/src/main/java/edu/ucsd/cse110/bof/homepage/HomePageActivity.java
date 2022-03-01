@@ -33,6 +33,7 @@ import java.io.ObjectInput;
 import java.io.ObjectInputStream;
 import java.sql.SQLOutput;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 import edu.ucsd.cse110.bof.BoFsTracker;
@@ -56,6 +57,7 @@ public class HomePageActivity extends AppCompatActivity {
 
     RecyclerView studentsRecyclerView;
     RecyclerView.LayoutManager studentsLayoutManager;
+    RecyclerView.AdapterDataObserver myObserver;
     StudentsViewAdapter studentsViewAdapter;
 
     private static final String TAG = "HomePageReceiver";
@@ -107,6 +109,20 @@ public class HomePageActivity extends AppCompatActivity {
         studentsViewAdapter = new StudentsViewAdapter(myBoFs);
         studentsRecyclerView.setAdapter(studentsViewAdapter);
 
+        //TODO
+        myObserver = new RecyclerView.AdapterDataObserver() {
+            @Override
+            public void onChanged() {
+                studentsViewAdapter.getStudents().sort((Comparator<IStudent>) (o1, o2) -> Integer.compare(o2.getMatches(), o1.getMatches()));
+
+                Log.d(TAG, "sorted students based on numMatches");
+                super.onChanged();
+            }
+        };
+
+        studentsViewAdapter.registerAdapterDataObserver(myObserver);
+
+
         //set up listener for search button:
         ToggleButton toggle = findViewById(R.id.search_button);
         toggle.setOnCheckedChangeListener((buttonView, isChecked) -> {
@@ -121,10 +137,11 @@ public class HomePageActivity extends AppCompatActivity {
 
         realListener = new MessageListener() {
             StudentWithCourses receivedStudentWithCourses = null;
+
             @Override
             public void onFound(@NonNull Message message) {
-                //make StudentWithCourses from byte array received
 
+                //make StudentWithCourses from byte array received
                 Log.d(TAG, "found a (nonnull) message: "+message);
                 ByteArrayInputStream bis =
                         new ByteArrayInputStream(message.getContent());
@@ -138,56 +155,10 @@ public class HomePageActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
 
-                List<Student> dbStudents = db.studentsDao().getAll();
+                Log.d(TAG, "message is a studentWithCourses named "
+                        + receivedStudentWithCourses.getStudent().getName());
 
-                Log.d(TAG,
-                        "message is a studentWithCourses named "
-                                + receivedStudentWithCourses.getStudent().getName());
-
-                //check that this student isn't in list nor in database
-                if (!myBoFs.contains(receivedStudentWithCourses.getStudent())) {
-                    Log.d(TAG, "student not in homepage list nor database");
-
-                    //use BoFsTracker to find common classes
-                    ArrayList<Course> commonCourses = (ArrayList<Course>)
-                            BoFsTracker.getCommonCourses(
-                                    thisStudent.getCourses(getApplicationContext()),
-                                    receivedStudentWithCourses.getCourses());
-
-                    //if not empty list, add this student to list of students
-                    //and the database
-                    if (commonCourses.size() != 0) {
-                        Log.d(TAG,"studentWithCourses has a common class");
-
-                        //add this student to viewAdapter list
-                        receivedStudentWithCourses.getStudent().setMatches(commonCourses.size());
-
-                        //myBoFs.add(receivedStudentWithCourses.getStudent());
-
-                        receivedStudentWithCourses.setCourses(commonCourses);
-
-                        //only add to db if not already in db
-                        if (!dbStudents.contains((Student) receivedStudentWithCourses.getStudent())) {
-                            db.studentsDao().insert((Student) receivedStudentWithCourses.getStudent());
-
-                            int insertedId = db.studentsDao().maxId();
-                            ((Student) receivedStudentWithCourses.getStudent()).setStudentId(insertedId);
-                            int insertedCourseId = db.coursesDao().maxId();
-
-                            //only common courses need to be added to db
-                            for (Course receivedCourse : commonCourses) {
-
-                                receivedCourse.setStudentId(insertedId);
-                                receivedCourse.setCourseId(++insertedCourseId);
-                                db.coursesDao().insert(receivedCourse);
-                            }
-                        }
-
-                        Log.d(TAG, "preparing to add new mocked student to recycler view");
-
-                        studentsViewAdapter.addStudent(receivedStudentWithCourses.getStudent());
-                    }
-                }
+                updateLists(receivedStudentWithCourses);
             }
         };
 
@@ -195,7 +166,7 @@ public class HomePageActivity extends AppCompatActivity {
     }
 
     public void onStartSearchingClicked() {
-        //set up mock listener for receiving mocked items
+        //set up mock listener if a mockedStudent was made
         if (mockedStudent!=null) {
             this.fakedMessageListener = new FakedMessageListener(this.realListener, 3,
                     mockedStudent);
@@ -204,23 +175,33 @@ public class HomePageActivity extends AppCompatActivity {
             Log.d(TAG, "mocked student found, subscribing fakedMessageListener");
         }
         else {
-            Log.d(TAG, "No students found/mocked");
-            Toast.makeText(this, "No students found", Toast.LENGTH_SHORT).show();
+            Log.d(TAG, "Not mocking student");
+            Toast.makeText(this, "Not mocking student", Toast.LENGTH_SHORT).show();
         }
+
+        //actual listener (not necessary for project)
+        Nearby.getMessagesClient(this).subscribe(realListener);
+        Log.d(TAG, "subscribing realListener");
     }
 
     public void onStopSearchingClicked() {
         if (fakedMessageListener != null) {
             Nearby.getMessagesClient(this).unsubscribe(fakedMessageListener);
-            Log.d(TAG, "stopped searching, unsubscribing fakedMessageListener");
+            Log.d(TAG, "destroying fakedMessageListener");
+
+            //garbage collector will destroy current listener?
+            fakedMessageListener = null;
         }
+
+        //actual listener (not necessary for project)
+        Nearby.getMessagesClient(this).subscribe(realListener);
+        Log.d(TAG, "unsubscribing realListener");
     }
 
     public void onGoToMockStudents(View view) {
-        if (fakedMessageListener != null) {
-            Nearby.getMessagesClient(this).unsubscribe(fakedMessageListener);
-            Log.d(TAG, "going to MockStudents, unsubscribing fakedMessageListener");
-        }
+        //stop searching when going to NMM activity
+        onStopSearchingClicked();
+
         Intent intent = new Intent(this, NearbyMessageMockActivity.class);
 
         activityLauncher.launch(intent);
@@ -241,5 +222,77 @@ public class HomePageActivity extends AppCompatActivity {
         //check if navigated from HomePageActivity or not (as opposed to PhotoActivity)
         intent.putExtra("onHomePage",true);
         startActivity(intent);
+    }
+
+    // called from listener, checks whether the student needs to be added to
+    // homepage list and database
+    public void updateLists(StudentWithCourses receivedStudentWithCourses) {
+        Student newStudent = receivedStudentWithCourses.getStudent();
+        String newName = newStudent.getName();
+
+        //check that this student isn't in homepage list
+        if (studentsViewAdapter.getStudents().contains(newStudent)) {
+            Log.d(TAG, newName + " already in homepage list");
+            return;
+        }
+
+        //use BoFsTracker to find common course
+        ArrayList<Course> commonCourses = (ArrayList<Course>)
+                BoFsTracker.getCommonCourses(
+                        thisStudent.getCourses(getApplicationContext()),
+                        receivedStudentWithCourses.getCourses());
+
+        //if at least one common course, add this student to list of students
+        //and the database
+        if (commonCourses.size() == 0) {
+            Log.d(TAG, newName + " has no common courses");
+            return;
+        }
+
+        //set matches to add into list
+        newStudent.setMatches(commonCourses.size());
+
+        //add this student to viewAdapter list
+        Log.d(TAG, "preparing to add " + newName + " to recycler view");
+        studentsViewAdapter.addStudent(receivedStudentWithCourses.getStudent());
+
+        //only add to db if not already in db
+        if (!db.studentsDao().getAll().contains(newStudent)) {
+            Log.d(TAG,newName + " will be added to database");
+            db.studentsDao().insert((Student) receivedStudentWithCourses.getStudent());
+
+            int insertedId = db.studentsDao().maxId();
+            newStudent.setStudentId(insertedId);
+            int insertedCourseId = db.coursesDao().maxId();
+
+            //only common courses need to be added to db
+            for (Course receivedCourse : commonCourses) {
+
+                receivedCourse.setStudentId(insertedId);
+                receivedCourse.setCourseId(++insertedCourseId);
+                db.coursesDao().insert(receivedCourse);
+            }
+        }
+        else {
+            Log.d(TAG,newName + " already in database");
+        }
+
+        System.out.println("wtf");
+    }
+
+    //for testing, need to be able to make mocked student without going to NMM
+    public void setMockedStudent(StudentWithCourses stuWithCourses) {
+        mockedStudent = stuWithCourses;
+    }
+
+    //for testing, need to switch working database with a test db
+    public void setDb(AppDatabase db) {
+        this.db = db;
+    }
+
+    //for testing, need to get a reference to the studentsViewAdapter to see
+    //if it mocked students added correctly, sorted
+    public StudentsViewAdapter getStudentsViewAdapter() {
+        return this.studentsViewAdapter;
     }
 }

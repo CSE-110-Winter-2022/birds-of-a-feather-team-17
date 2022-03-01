@@ -57,7 +57,7 @@ public class Course implements Serializable {
     }
 
 
-    //bottom two methods required to check common courses
+    //bottom two methods required to check common courses, neither check ids
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

@@ -41,6 +41,7 @@ public class MockedStudentFactory {
 
         while (reader.hasNextLine()) {
             reader.nextLine();
+            if (!reader.hasNext()) { break; }
             year = Integer.parseInt(reader.next());
             quarter = reader.next();
             subject = reader.next();

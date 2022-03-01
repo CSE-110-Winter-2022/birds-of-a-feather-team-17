@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
@@ -38,11 +39,11 @@ public class StudentsViewAdapter extends RecyclerView.Adapter<StudentsViewAdapte
 
     private static final String TAG = "StudentsViewAdapterLog";
 
-    private final List<Student> students;
+    private final ArrayList<Student> students;
 
     public StudentsViewAdapter(List<Student> students) {
         super();
-        this.students = students;
+        this.students = (ArrayList<Student>) students;
     }
 
     @NonNull
@@ -68,12 +69,12 @@ public class StudentsViewAdapter extends RecyclerView.Adapter<StudentsViewAdapte
 
         this.students.add(student);
         //sort by numMatches in reverse order
-        students.sort((Comparator<IStudent>) (o1, o2) -> Integer.compare(o2.getMatches(), o1.getMatches()));
 
-        Log.d(TAG, "sorted students based on numMatches");
-
+        //FIXME
         int insertedIndex = students.indexOf(student);
+        //this.notifyItemRangeChanged(0, students.size());
         this.notifyItemInserted(insertedIndex);
+        //this.notifyDataSetChanged();
 
         Log.d(TAG, "notified RecyclerView that student was inserted");
     }
@@ -137,5 +138,9 @@ public class StudentsViewAdapter extends RecyclerView.Adapter<StudentsViewAdapte
             intent.putExtra("student_id", this.student.getStudentId());
             context.startActivity(intent);
         }
+    }
+
+    public List<Student> getStudents() {
+        return students;
     }
 }

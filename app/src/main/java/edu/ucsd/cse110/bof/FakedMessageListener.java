@@ -1,4 +1,6 @@
 package edu.ucsd.cse110.bof;
+import android.util.Log;
+
 import com.google.android.gms.nearby.messages.Message;
 import com.google.android.gms.nearby.messages.MessageListener;
 
@@ -20,7 +22,7 @@ import edu.ucsd.cse110.bof.model.db.Student;
 public class FakedMessageListener extends MessageListener {
     private final MessageListener messageListener;
     private final ScheduledExecutorService executor;
-
+    private static final String TAG = "FakedMessageListenerLog";
 
     //mocks receiving StudentWithCourses as message at given frequency
     public FakedMessageListener(MessageListener realMessageListener,
@@ -44,10 +46,21 @@ public class FakedMessageListener extends MessageListener {
 
         byte[] finalStudentWithCoursesBytes = studentWithCoursesBytes;
 
+        /*
         executor.scheduleAtFixedRate(() -> {
+            Log.d(TAG, "sending mocked message");
             Message message = new
                     Message(finalStudentWithCoursesBytes);
             this.messageListener.onFound(message);
         }, 0, frequency, TimeUnit.SECONDS);
+
+         */
+
+        executor.schedule(() -> {
+            Log.d(TAG, "sending mocked message");
+            Message message = new
+                    Message(finalStudentWithCoursesBytes);
+            this.messageListener.onFound(message);
+        }, 0, TimeUnit.SECONDS);
     }
 }
