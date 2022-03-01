@@ -39,11 +39,11 @@ public class StudentsViewAdapter extends RecyclerView.Adapter<StudentsViewAdapte
 
     private static final String TAG = "StudentsViewAdapterLog";
 
-    private final ArrayList<Student> students;
+    private final List<Student> students;
 
     public StudentsViewAdapter(List<Student> students) {
         super();
-        this.students = (ArrayList<Student>) students;
+        this.students = students;
     }
 
     @NonNull
@@ -62,21 +62,40 @@ public class StudentsViewAdapter extends RecyclerView.Adapter<StudentsViewAdapte
     }
 
     //called from HomePageActivity when the list of students is updated,
-    //sort list based on numMatches, then update
     public void addStudent(Student student) {
 
         Log.d(TAG, "adding student to viewAdapter");
 
         this.students.add(student);
-        //sort by numMatches in reverse order
+
+        Log.d(TAG, "student added");
+
 
         //FIXME
-        int insertedIndex = students.indexOf(student);
+        //int insertedIndex = students.indexOf(student);
         //this.notifyItemRangeChanged(0, students.size());
-        this.notifyItemInserted(insertedIndex);
+        //this.notifyItemInserted(insertedIndex);
         //this.notifyDataSetChanged();
 
+        //this.notifyItemInserted(this.students.size()-1);
+
         Log.d(TAG, "notified RecyclerView that student was inserted");
+    }
+
+    //sort the students list by specified priority algorithm
+    public void sortList(String priority) {
+        if (priority.equals("recent")) {
+            students.sort((Comparator<IStudent>) (o1, o2) ->
+                    Integer.compare(o2.getRecencyWeight(), o1.getRecencyWeight()));
+        }
+        else if (priority.equals("class sizes")) {
+            students.sort((Comparator<IStudent>) (o1, o2) ->
+                    Float.compare(o2.getClassSizeWeight(), o1.getClassSizeWeight()));
+        }
+        else if (priority.equals("common classes")) {
+            students.sort((Comparator<IStudent>) (o1, o2) ->
+                    Integer.compare(o2.getMatches(), o1.getMatches()));
+        }
     }
 
     @Override

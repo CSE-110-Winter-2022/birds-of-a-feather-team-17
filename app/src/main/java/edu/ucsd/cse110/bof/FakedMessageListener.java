@@ -46,7 +46,6 @@ public class FakedMessageListener extends MessageListener {
 
         byte[] finalStudentWithCoursesBytes = studentWithCoursesBytes;
 
-        /*
         executor.scheduleAtFixedRate(() -> {
             Log.d(TAG, "sending mocked message");
             Message message = new
@@ -54,13 +53,12 @@ public class FakedMessageListener extends MessageListener {
             this.messageListener.onFound(message);
         }, 0, frequency, TimeUnit.SECONDS);
 
-         */
 
-        executor.schedule(() -> {
-            Log.d(TAG, "sending mocked message");
-            Message message = new
-                    Message(finalStudentWithCoursesBytes);
-            this.messageListener.onFound(message);
-        }, 0, TimeUnit.SECONDS);
+
+    }
+
+    //stops executor from running
+    public void stopRun() {
+        this.executor.shutdown();
     }
 }
