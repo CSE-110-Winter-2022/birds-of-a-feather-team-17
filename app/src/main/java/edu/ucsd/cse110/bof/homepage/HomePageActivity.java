@@ -61,6 +61,8 @@ public class HomePageActivity extends AppCompatActivity {
     RecyclerView.LayoutManager studentsLayoutManager;
     StudentsViewAdapter studentsViewAdapter;
 
+    Spinner p_spinner;          //spinner (drop-down menu) for priority sorting
+
     private static final String TAG = "HomePageReceiver";
     private MessageListener realListener;
     private MessageListener fakedMessageListener;
@@ -95,7 +97,7 @@ public class HomePageActivity extends AppCompatActivity {
         setTitle("Birds of a Feather");
 
         //create spinner (drop-down menu) for priorities/sorting algorithms
-        Spinner p_spinner = findViewById(R.id.priority_spinner);
+        p_spinner = findViewById(R.id.priority_spinner);
         ArrayAdapter<CharSequence> p_adapter = ArrayAdapter.createFromResource(this, R.array.priorities_array, android.R.layout.simple_spinner_item);
         p_adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         p_spinner.setAdapter(p_adapter);
@@ -131,8 +133,7 @@ public class HomePageActivity extends AppCompatActivity {
                     public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
 
                         String priority = parent.getItemAtPosition(pos).toString();
-                        if (priority.equals("recent")) {}
-                        else if (priority.equals("class sizes")) {}
+                        studentsViewAdapter.sortList(priority);
 
                     }
                     public void onNothingSelected(AdapterView<?> parent) {
@@ -184,6 +185,10 @@ public class HomePageActivity extends AppCompatActivity {
                         //add this student to viewAdapter list
                         receivedStudentWithCourses.getStudent().setMatches(commonCourses.size());
 
+                        receivedStudentWithCourses.getStudent().setClassSizeWeight(calcClassSizeWeight(commonCourses));
+
+                        receivedStudentWithCourses.getStudent().setRecencyWeight(calcRecencyWeight(commonCourses));
+
 
                         receivedStudentWithCourses.setCourses(commonCourses);
 
@@ -207,6 +212,8 @@ public class HomePageActivity extends AppCompatActivity {
                         Log.d(TAG, "preparing to add new mocked student to recycler view");
 
                         studentsViewAdapter.addStudent(receivedStudentWithCourses.getStudent());
+                        studentsViewAdapter.sortList(p_spinner.getSelectedItem().toString());
+
                     }
                 }
             }
@@ -262,5 +269,39 @@ public class HomePageActivity extends AppCompatActivity {
         //check if navigated from HomePageActivity or not (as opposed to PhotoActivity)
         intent.putExtra("onHomePage",true);
         startActivity(intent);
+    }
+
+    public static float calcClassSizeWeight(ArrayList<Course> courses) {
+        if(courses == null) { return 0; }
+        float sum = 0;
+        for(Course c : courses) {
+            switch(c.courseSize) {
+                case "Tiny": sum += 1.00; break;
+                case "Small": sum += 0.33; break;
+                case "Medium": sum += 0.18; break;
+                case "Large": sum += 0.10; break;
+                case "Huge": sum += 0.06; break;
+                case "Gigantic": sum += 0.01; break;
+            }
+        }
+        return sum;
+    }
+
+    public static int calcRecencyWeight(ArrayList<Course> courses) {
+        if(courses == null) { return 0; }
+        int sum = 0;
+        for(Course c : courses) {
+            if(2022 - c.year > 1) {
+                sum += 1;
+            } else {
+                switch (c.quarter) {
+                    case "FA": sum += 5; break;
+                    case "SP": sum += 3; break;
+                    case "WI": sum += 2; break;
+                    default: sum += 4;
+                }
+            }
+        }
+        return sum;
     }
 }

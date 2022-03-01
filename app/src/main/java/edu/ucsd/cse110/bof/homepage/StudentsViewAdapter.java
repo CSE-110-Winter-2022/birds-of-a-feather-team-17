@@ -60,22 +60,32 @@ public class StudentsViewAdapter extends RecyclerView.Adapter<StudentsViewAdapte
         holder.setStudent(students.get(position));
     }
 
-    //called from HomePageActivity when the list of students is updated,
-    //sort list based on numMatches, then update
+    //called from HomePageActivity when the list of students is updated
     public void addStudent(Student student) {
 
         Log.d(TAG, "adding student to viewAdapter");
 
         this.students.add(student);
-        //sort by numMatches in reverse order
-        students.sort((Comparator<IStudent>) (o1, o2) -> Integer.compare(o2.getMatches(), o1.getMatches()));
 
-        Log.d(TAG, "sorted students based on numMatches");
-
-        int insertedIndex = students.indexOf(student);
-        this.notifyItemInserted(insertedIndex);
+        this.notifyItemInserted(this.students.size()-1);
 
         Log.d(TAG, "notified RecyclerView that student was inserted");
+    }
+
+    //sort the students list by specified priority algorithm
+    public void sortList(String priority) {
+        if (priority.equals("recent")) {
+            students.sort((Comparator<IStudent>) (o1, o2) ->
+                    Integer.compare(o2.getRecencyWeight(), o1.getRecencyWeight()));
+        }
+        else if (priority.equals("class sizes")) {
+            students.sort((Comparator<IStudent>) (o1, o2) ->
+                    Float.compare(o2.getClassSizeWeight(), o1.getClassSizeWeight()));
+        }
+        else if (priority.equals("common classes")) {
+            students.sort((Comparator<IStudent>) (o1, o2) ->
+                    Integer.compare(o2.getMatches(), o1.getMatches()));
+        }
     }
 
     @Override

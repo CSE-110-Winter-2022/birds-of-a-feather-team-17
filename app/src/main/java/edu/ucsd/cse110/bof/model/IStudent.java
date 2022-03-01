@@ -14,9 +14,9 @@ public interface IStudent extends Serializable {
     List<Course> getCourses(Context context);
     int getMatches();
     float getClassSizeWeight();
-    float getRecencyWeight();
+    int getRecencyWeight();
 
     void setMatches(int numMatches);
     void setClassSizeWeight(float weight);
-    void setRecencyWeight(float weight);
+    void setRecencyWeight(int weight);
 }

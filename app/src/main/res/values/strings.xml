@@ -42,6 +42,7 @@
         <item>Tiny</item>
     </string-array>
     <string-array name="priorities_array">
+        <item>common classes</item>
         <item>recent</item>
         <item>small classes</item>
     </string-array>

@@ -32,7 +32,7 @@ public class Student implements IStudent {
     public float classSizeWeight;
 
     @ColumnInfo(name = "recencyWeight")
-    public float recencyWeight;
+    public int recencyWeight;
 
     // Student constructor
     public Student(String name, String photoURL) {
@@ -77,9 +77,9 @@ public class Student implements IStudent {
 
     public void setClassSizeWeight(float weight) { this.classSizeWeight = weight; }
 
-    public float getRecencyWeight() { return recencyWeight; }
+    public int getRecencyWeight() { return recencyWeight; }
 
-    public void setRecencyWeight(float weight) { this.recencyWeight = weight; }
+    public void setRecencyWeight(int weight) { this.recencyWeight = weight; }
 
     // pass in a context to receive singleton database instance
     public List<Course> getCourses(Context context) {
