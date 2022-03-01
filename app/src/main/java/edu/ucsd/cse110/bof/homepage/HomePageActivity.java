@@ -61,8 +61,6 @@ public class HomePageActivity extends AppCompatActivity {
     RecyclerView.LayoutManager studentsLayoutManager;
     StudentsViewAdapter studentsViewAdapter;
 
-    Spinner p_spinner;          //spinner (drop-down menu) for priority sorting
-
     private static final String TAG = "HomePageReceiver";
     private MessageListener realListener;
     private MessageListener fakedMessageListener;
@@ -97,7 +95,7 @@ public class HomePageActivity extends AppCompatActivity {
         setTitle("Birds of a Feather");
 
         //create spinner (drop-down menu) for priorities/sorting algorithms
-        p_spinner = findViewById(R.id.priority_spinner);
+        Spinner p_spinner = findViewById(R.id.priority_spinner);
         ArrayAdapter<CharSequence> p_adapter = ArrayAdapter.createFromResource(this, R.array.priorities_array, android.R.layout.simple_spinner_item);
         p_adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         p_spinner.setAdapter(p_adapter);
@@ -118,6 +116,22 @@ public class HomePageActivity extends AppCompatActivity {
         studentsViewAdapter = new StudentsViewAdapter(myBoFs);
         studentsRecyclerView.setAdapter(studentsViewAdapter);
 
+        p_spinner.setOnItemSelectedListener(
+                new AdapterView.OnItemSelectedListener() {
+                    @Override
+                    public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
+
+                        Log.d(TAG, "Selecting priority...");
+                        String priority = parent.getItemAtPosition(pos).toString();
+                        studentsViewAdapter.sortList(priority);
+                        Log.d(TAG, "List sorted based on priority: "+priority);
+
+                    }
+                    @Override
+                    public void onNothingSelected(AdapterView<?> parent) {
+                    }
+                });
+
         //set up listener for search button:
         ToggleButton toggle = findViewById(R.id.search_button);
         toggle.setOnCheckedChangeListener((buttonView, isChecked) -> {
@@ -127,18 +141,6 @@ public class HomePageActivity extends AppCompatActivity {
                 onStopSearchingClicked();
             }
         });
-
-        p_spinner.setOnItemSelectedListener(
-                new AdapterView.OnItemSelectedListener() {
-                    public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
-
-                        String priority = parent.getItemAtPosition(pos).toString();
-                        studentsViewAdapter.sortList(priority);
-
-                    }
-                    public void onNothingSelected(AdapterView<?> parent) {
-                    }
-                });
 
         mockedStudentFactory = new MockedStudentFactory();
 
@@ -213,9 +215,9 @@ public class HomePageActivity extends AppCompatActivity {
 
                         studentsViewAdapter.addStudent(receivedStudentWithCourses.getStudent());
 
-                        //resort the list
+                        //resort the list; TODO: move below code elsewhere, not called at all
                         Log.d(TAG, "student added, resorting the list...");
-                        studentsViewAdapter.sortList(p_spinner.getSelectedItem().toString());
+                        //studentsViewAdapter.sortList(p_spinner.getSelectedItem().toString());
 
                     }
                 }
@@ -228,11 +230,11 @@ public class HomePageActivity extends AppCompatActivity {
     public void onStartSearchingClicked() {
         //set up mock listener for receiving mocked items
         if (mockedStudent!=null) {
+            Log.d(TAG, "mocked student found, subscribing fakedMessageListener");
+
             this.fakedMessageListener = new FakedMessageListener(this.realListener, 3,
                     mockedStudent);
             Nearby.getMessagesClient(this).subscribe(fakedMessageListener);
-
-            Log.d(TAG, "mocked student found, subscribing fakedMessageListener");
         }
         else {
             Log.d(TAG, "No students found/mocked");

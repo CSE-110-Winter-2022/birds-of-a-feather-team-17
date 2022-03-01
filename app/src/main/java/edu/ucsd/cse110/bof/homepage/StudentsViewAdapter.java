@@ -67,6 +67,8 @@ public class StudentsViewAdapter extends RecyclerView.Adapter<StudentsViewAdapte
 
         this.students.add(student);
 
+        Log.d(TAG, "student added");
+
         this.notifyItemInserted(this.students.size()-1);
 
         Log.d(TAG, "notified RecyclerView that student was inserted");
