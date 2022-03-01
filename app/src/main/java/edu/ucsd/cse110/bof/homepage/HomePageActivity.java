@@ -60,6 +60,8 @@ public class HomePageActivity extends AppCompatActivity {
 
     List<Student> myBoFs;
 
+    private ToggleButton toggle;
+
     RecyclerView studentsRecyclerView;
     RecyclerView.LayoutManager studentsLayoutManager;
     RecyclerView.AdapterDataObserver myObserver;
@@ -73,6 +75,7 @@ public class HomePageActivity extends AppCompatActivity {
     private StudentWithCourses mockedStudent = null;
     private String mockCSV = null;
 
+    //for getting the csv from NMMActivity
     ActivityResultLauncher<Intent> activityLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             new ActivityResultCallback<ActivityResult>() {
@@ -136,7 +139,7 @@ public class HomePageActivity extends AppCompatActivity {
                     }
                 });
 
-        //TODO
+        //TODO:
         myObserver = new RecyclerView.AdapterDataObserver() {
             @Override
             public void onChanged() {
@@ -151,7 +154,7 @@ public class HomePageActivity extends AppCompatActivity {
 
 
         //set up listener for search button:
-        ToggleButton toggle = findViewById(R.id.search_button);
+        toggle = findViewById(R.id.search_button);
         toggle.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if (isChecked) {
                 onStartSearchingClicked();
@@ -192,6 +195,10 @@ public class HomePageActivity extends AppCompatActivity {
         Log.d(TAG, "realListener created");
     }
 
+    // creates the fakedMessageListener if a mockedStudent exists and
+    // subscribes the realListener for actual bluetooth. Once the fML is
+    // made, it should immediately call realListener's onFound(), which calls
+    // updateList()
     public void onStartSearchingClicked() {
         //set up mock listener if a mockedStudent was made
         if (mockedStudent!=null) {
@@ -217,7 +224,6 @@ public class HomePageActivity extends AppCompatActivity {
             Log.d(TAG, "destroying fakedMessageListener");
 
             //garbage collector will destroy current listener?
-            // TODO: stop fakedMessageListener's executor on stopsearch
             fakedMessageListener.stopRun();
             fakedMessageListener = null;
         }
@@ -228,19 +234,21 @@ public class HomePageActivity extends AppCompatActivity {
     }
 
     public void onGoToMockStudents(View view) {
-        //stop searching when going to NMM activity
-        onStopSearchingClicked();
+        //make sure button is off when going to NMMActivity
+        //button's listener will stop fakedMessageListener if needed
+        toggle.setChecked(false);
 
+        Log.d(TAG, "going to NMM");
         Intent intent = new Intent(this, NearbyMessageMockActivity.class);
-
         activityLauncher.launch(intent);
     }
 
     public void onHistoryClicked(View view) {
-        if (fakedMessageListener != null) {
-            Nearby.getMessagesClient(this).unsubscribe(fakedMessageListener);
-            Log.d(TAG, "going to History, unsubscribing fakedMessageListener");
-        }
+        //make sure button is off when going to HistoryActivity
+        //button's listener will stop fakedMessageListener if needed
+        toggle.setChecked(false);
+
+        Log.d(TAG, "going to History");
         Intent intent = new Intent(this, HistoryActivity.class);
         startActivity(intent);
     }

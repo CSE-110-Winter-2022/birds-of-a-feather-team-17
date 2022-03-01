@@ -78,7 +78,7 @@ public class SortBoFsTest {
 
     /*
     @Test
-    public void sortByRecencySwitchesPositions() {
+    public void sortByRecentSwitchesPositions() {
         //use ActivityScenario to emulate activities
         ActivityScenario<HomePageActivity> scenario =
                 ActivityScenario.launch(HomePageActivity.class);
@@ -142,13 +142,12 @@ public class SortBoFsTest {
             //Then sort list in studentsViewAdapter by recent
             activity.getStudentsViewAdapter().sortList("recent");
 
-            //Casey is now above Bob
+            //Casey should now be above Bob
             Assert.assertEquals(2, viewAdapterList.size());
             Assert.assertEquals(Casey, viewAdapterList.get(0));
             Assert.assertEquals(Bob, viewAdapterList.get(1));
         });
     }
-
 
      */
 
