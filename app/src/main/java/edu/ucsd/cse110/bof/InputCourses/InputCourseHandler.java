@@ -12,22 +12,16 @@ import edu.ucsd.cse110.bof.model.db.Course;
 public class InputCourseHandler {
     private static final int USER_ID = 1;   //id of user in db
     private int numEntered;                 //number of courses entered by this
-    private AppDatabase db;                 //database instance
+    private final AppDatabase db;           //database instance
     private boolean isDuplicate = false;    //true if last entered course is
                                             // a duplicate
 
     /**
      * Constructor for InputCourseHandler
      * @param context context that this is called in
-     * @param isTest true if this InputCourseHandler is for testing
      */
-    public InputCourseHandler(Context context, boolean isTest) {
-        if (isTest) {
-            db = AppDatabase.useTestSingleton(context);
-        }
-        else {
-            db = AppDatabase.singleton(context);
-        }
+    public InputCourseHandler(Context context) {
+        db = AppDatabase.singleton(context);
         numEntered = 0;
         isDuplicate = false;
     }
@@ -48,18 +42,19 @@ public class InputCourseHandler {
      * @param quarter       course's quarter
      * @param subject       course's subject
      * @param courseNum     course's number
+     * @param courseSize    course's size
      * @return Course if successfully made (regardless of whether inserted,
      * use isDuplicate(returnedCourse) to check if inserted) or null if no
      * Course made
      */
     public Course inputCourse(int courseId, int year, String quarter,
-                               String subject, String courseNum) {
-        if (quarter.equals("") || subject.equals("") || courseNum.equals("")) {
+                               String subject, String courseNum, String courseSize) {
+        if (quarter.equals("") || subject.equals("") || courseNum.equals("") || courseSize.equals("")) {
             return null;
         }
 
-        Course newCourse = new Course(courseId, USER_ID, year, quarter,
-                subject, courseNum);
+        Course newCourse = new Course(courseId, USER_ID, year, quarter.toUpperCase(),
+                subject.toUpperCase(), courseNum.toUpperCase(), courseSize);
 
         if (!isDuplicateCourse(newCourse)) {
             isDuplicate = false;

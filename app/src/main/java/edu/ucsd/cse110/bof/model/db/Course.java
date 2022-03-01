@@ -20,15 +20,17 @@ public class Course implements Serializable {
 
     public int year;
     public String quarter, subject, courseNum;
+    public String courseSize;
 
     // Course constructor
-    public Course(int courseId, int studentId, int year, String quarter, String subject, String courseNum) {
+    public Course(int courseId, int studentId, int year, String quarter, String subject, String courseNum, String courseSize) {
         this.courseId = courseId;
         this.studentId = studentId;
         this.year = year;
         this.quarter = quarter;
         this.subject = subject;
         this.courseNum = courseNum;
+        this.courseSize = courseSize;
     }
 
     // getters and setters
@@ -51,7 +53,7 @@ public class Course implements Serializable {
     @NonNull
     @Override
     public String toString() {
-        return ""+year+" "+quarter+" "+subject+" "+courseNum;
+        return ""+year+" "+quarter+" "+subject+" "+courseNum+" "+courseSize;
     }
 
 
@@ -61,11 +63,14 @@ public class Course implements Serializable {
         if (this == o) return true;
         if (!(o instanceof Course)) return false;
         Course course = (Course) o;
-        return year == course.year && Objects.equals(quarter, course.quarter) && Objects.equals(subject, course.subject) && Objects.equals(courseNum, course.courseNum);
+        return year == course.year && Objects.equals(quarter, course.quarter) &&
+                Objects.equals(subject, course.subject) &&
+                Objects.equals(courseNum, course.courseNum) &&
+                Objects.equals(courseSize, course.courseSize);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(year, quarter, subject, courseNum);
+        return Objects.hash(year, quarter, subject, courseNum, courseSize);
     }
 }
