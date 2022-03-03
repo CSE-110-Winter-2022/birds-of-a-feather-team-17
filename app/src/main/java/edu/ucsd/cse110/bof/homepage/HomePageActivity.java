@@ -319,6 +319,15 @@ public class HomePageActivity extends AppCompatActivity {
         }
         return sum;
     }
+    //for testing, need to be able to make mocked student without going to NMM
+    public void setMockedStudent(StudentWithCourses stuWithCourses) {
+        mockedStudent = stuWithCourses;
+    }
+
+    //for testing, need to switch working database with a test db
+    public void setDb(AppDatabase db) {
+        this.db = db;
+    }
 
     //test method
     public StudentsViewAdapter getStudentsViewAdapter() {
