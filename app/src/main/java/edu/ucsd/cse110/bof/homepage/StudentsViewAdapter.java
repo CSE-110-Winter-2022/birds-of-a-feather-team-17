@@ -2,6 +2,7 @@ package edu.ucsd.cse110.bof.homepage;
 
 import static java.util.Locale.US;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -40,6 +41,10 @@ public class StudentsViewAdapter extends RecyclerView.Adapter<StudentsViewAdapte
 
     private final List<Student> students;
 
+    private final ExecutorService backgroundThreadExecutor =
+            Executors.newSingleThreadExecutor();
+    private Context context;
+
     public StudentsViewAdapter(List<Student> students) {
         super();
         this.students = students;
@@ -58,6 +63,31 @@ public class StudentsViewAdapter extends RecyclerView.Adapter<StudentsViewAdapte
     @Override
     public void onBindViewHolder(@NonNull StudentsViewAdapter.ViewHolder holder, int position) {
         holder.setStudent(students.get(position));
+        backgroundThreadExecutor.submit(() -> {
+            Log.d(TAG, "retrieving photo from internet...");
+            URL photo_url = null;
+            try {
+                photo_url = new URL(students.get(position).getPhotoUrl());
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            }
+            Bitmap photoBitmap = null;
+            try {
+                HttpsURLConnection connection =
+                        (HttpsURLConnection) Objects.requireNonNull(photo_url).openConnection();
+                connection.setDoInput(true);
+                photoBitmap = BitmapFactory.decodeStream(connection.getInputStream());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            Log.d(TAG, "photo retrieved: " + photoBitmap);
+
+            final Bitmap finalPhotoBitmap = photoBitmap;
+            ((Activity)context).runOnUiThread(() -> {
+                Log.d(TAG, "setting holder's photo...");
+                holder.setPhoto(finalPhotoBitmap);
+            });
+        });
     }
 
     //called from HomePageActivity when the list of students is updated
@@ -95,14 +125,16 @@ public class StudentsViewAdapter extends RecyclerView.Adapter<StudentsViewAdapte
         return this.students.size();
     }
 
+    public void setContext(Context contextD) {
+        this.context = contextD;
+        Log.d(TAG, "context set");
+    }
+
     public static class ViewHolder
             extends RecyclerView.ViewHolder implements View.OnClickListener {
         private final TextView studentNameView;
         private final TextView studentMatchesView;
         private final ImageView studentPhotoView;
-
-        private ExecutorService backgroundThreadExecutor =
-                Executors.newSingleThreadExecutor();
 
         private IStudent student;
 
@@ -119,26 +151,11 @@ public class StudentsViewAdapter extends RecyclerView.Adapter<StudentsViewAdapte
             this.studentNameView.setText(student.getName());
             this.studentMatchesView.setText(String.format(US, "%d",
                     student.getMatches()));
+        }
 
-            backgroundThreadExecutor.submit(() -> {
-                URL photo_url = null;
-                try {
-                    photo_url = new URL(student.getPhotoUrl());
-                } catch (MalformedURLException e) {
-                    e.printStackTrace();
-                }
-                Bitmap photoBitmap = null;
-                try {
-                    HttpsURLConnection connection =
-                            (HttpsURLConnection) Objects.requireNonNull(photo_url).openConnection();
-                    connection.setDoInput(true);
-                    photoBitmap = BitmapFactory.decodeStream(connection.getInputStream());
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
-                this.studentPhotoView.setImageBitmap(photoBitmap);
-            });
+        public void setPhoto(Bitmap photoBitmap) {
+            this.studentPhotoView.setImageBitmap(photoBitmap);
+            Log.d(TAG, "photo set");
         }
 
         @Override

@@ -69,6 +69,8 @@ public class HomePageActivity extends AppCompatActivity {
     private StudentWithCourses mockedStudent = null;
     private String mockCSV = null;
 
+    public Context context;
+
     ActivityResultLauncher<Intent> activityLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             new ActivityResultCallback<ActivityResult>() {
@@ -93,6 +95,8 @@ public class HomePageActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home_page);
         setTitle("Birds of a Feather");
+
+        context = this;
 
         //create spinner (drop-down menu) for priorities/sorting algorithms
         Spinner p_spinner = findViewById(R.id.priority_spinner);
@@ -213,14 +217,21 @@ public class HomePageActivity extends AppCompatActivity {
 
                         Log.d(TAG, "preparing to add new mocked student to recycler view");
 
+                        studentsViewAdapter.setContext(context);
                         studentsViewAdapter.addStudent(receivedStudentWithCourses.getStudent());
+                        studentsViewAdapter.setContext(null);
 
-                        //resort the list; TODO: move below code elsewhere, not called at all
+                        //resort the list
                         Log.d(TAG, "student added, resorting the list...");
-                        //studentsViewAdapter.sortList(p_spinner.getSelectedItem().toString());
+                        studentsViewAdapter.sortList(p_spinner.getSelectedItem().toString());
+                        Log.d(TAG, "students list sorted");
 
                     }
                 }
+            }
+            @Override
+            public void onLost(@NonNull Message message) {
+                Log.d(TAG, "Lost sight of message: " + message);
             }
         };
 

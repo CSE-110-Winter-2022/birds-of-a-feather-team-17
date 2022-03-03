@@ -18,7 +18,7 @@ public class MockedStudentFactory {
      * @return StudentWithCourses
      */
     public StudentWithCourses makeMockedStudent(String csv) {
-        Log.d(TAG, "Within factory, reading csv...");
+        Log.d(TAG, "Within factory, reading csv: " + csv);
         //TODO: valid csv check
         if (csv == null || csv.isEmpty()) {
             return null;
