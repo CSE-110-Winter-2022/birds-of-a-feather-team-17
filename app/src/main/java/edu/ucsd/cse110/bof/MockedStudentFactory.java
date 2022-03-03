@@ -18,7 +18,7 @@ public class MockedStudentFactory {
      * @return StudentWithCourses
      */
     public StudentWithCourses makeMockedStudent(String csv) {
-        Log.d(TAG, "Within factory, reading csv...");
+        Log.d(TAG, "Within factory, reading csv: " + csv);
         //TODO: valid csv check
         if (csv == null || csv.isEmpty()) {
             return null;
@@ -41,6 +41,7 @@ public class MockedStudentFactory {
 
         while (reader.hasNextLine()) {
             reader.nextLine();
+            if (!reader.hasNext()) { break; }
             year = Integer.parseInt(reader.next());
             quarter = reader.next();
             subject = reader.next();
