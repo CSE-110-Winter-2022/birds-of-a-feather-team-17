@@ -118,7 +118,7 @@ public class StudentsViewAdapter extends RecyclerView.Adapter<StudentsViewAdapte
             students.sort((Comparator<IStudent>) (o1, o2) ->
                     Integer.compare(o2.getMatches(), o1.getMatches()));
         }
-        this.notifyItemRangeChanged(0, this.students.size()-1);
+        this.notifyDataSetChanged();
     }
 
     @Override
