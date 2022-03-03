@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 
+import java.util.jar.Attributes;
+
 import edu.ucsd.cse110.bof.homepage.HomePageActivity;
 import edu.ucsd.cse110.bof.login.LoginActivity;
 import edu.ucsd.cse110.bof.login.NameActivity;
@@ -31,7 +33,7 @@ public class MainActivity extends AppCompatActivity {
         }
         else {
             Log.d(TAG, "User not found, go to Login to start making new user");
-            Intent intent = new Intent(this, LoginActivity.class);
+            Intent intent = new Intent(this, NameActivity.class);
             this.startActivity(intent);
         }
         finish();

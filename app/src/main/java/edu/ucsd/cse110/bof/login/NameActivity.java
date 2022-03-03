@@ -21,10 +21,11 @@ public class NameActivity extends AppCompatActivity {
 
         usernameInput = findViewById(R.id.editName);
 
-        Bundle extras = getIntent().getExtras();
-        if (extras != null) {
-            username = extras.getString("name");
-        }
+//        Bundle extras = getIntent().getExtras();
+//        if (extras != null) {
+//            username = extras.getString("name");
+//        }
+        username = "Allen";
         usernameInput.setText(username); //Prefill username with Google Login Info
     }
 
