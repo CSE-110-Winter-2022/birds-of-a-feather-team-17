@@ -76,7 +76,7 @@ public class SortBoFsTest {
 
     //FIXME: notifyItemInserted problem causes this to fail
 
-    /*
+/*
     @Test
     public void sortByRecentSwitchesPositions() {
         //use ActivityScenario to emulate activities
@@ -117,6 +117,14 @@ public class SortBoFsTest {
             //emulate clicking start search to start the FakedMessageListener;
             activity.onStartSearchingClicked();
 
+            try {
+                wait(1000);
+            } catch (InterruptedException e) {
+
+            }
+
+            activity.onStopSearchingClicked();
+
             //Bob should now be visible in viewAdapterList
             Assert.assertEquals(Bob, viewAdapterList.get(0));
             Assert.assertEquals(1, viewAdapterList.size());
@@ -149,6 +157,6 @@ public class SortBoFsTest {
         });
     }
 
-     */
+ */
 
 }

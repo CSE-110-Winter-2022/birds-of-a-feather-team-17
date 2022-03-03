@@ -69,7 +69,8 @@ public class SearchBoFsTest {
     }
 
     //FIXME: notifyItemInserted problem causes this test to fail
-    /*
+
+    //Basic test: Bob should be added to both db and viewAdapter
     @Test
     public void bobIsAddedWithOnlyOneCommonClass() {
         ActivityScenario<HomePageActivity> scenario =
@@ -135,10 +136,10 @@ public class SearchBoFsTest {
         });
     }
 
-     */
-
     //FIXME: notifyItemInserted problem causes this test to fail
-    /*
+
+    // testing that identical student is only inserted once into db, but
+    // always inserted into viewAdapter
     @Test
     public void bobIsAlreadyInDatabase() {
         ActivityScenario<HomePageActivity> scenario =
@@ -205,5 +206,4 @@ public class SearchBoFsTest {
         });
     }
 
-     */
 }

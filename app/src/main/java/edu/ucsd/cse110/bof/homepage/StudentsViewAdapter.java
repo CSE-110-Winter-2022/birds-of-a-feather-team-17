@@ -7,6 +7,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,6 +29,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import javax.net.ssl.HttpsURLConnection;
 
@@ -45,6 +48,8 @@ public class StudentsViewAdapter extends RecyclerView.Adapter<StudentsViewAdapte
     private final ExecutorService backgroundThreadExecutor =
             Executors.newSingleThreadExecutor();
     private Context context;
+
+    private final Object lock = new Object();
 
     public StudentsViewAdapter(List<Student> students) {
         super();
@@ -94,22 +99,22 @@ public class StudentsViewAdapter extends RecyclerView.Adapter<StudentsViewAdapte
     //called from HomePageActivity when the list of students is updated,
     public void addStudent(Student student) {
 
-        Log.d(TAG, "adding student to viewAdapter");
+        synchronized (lock) {
+            Log.d(TAG, "adding student to viewAdapter");
 
-        this.students.add(student);
+            this.students.add(student);
 
-        Log.d(TAG, "student added");
+            Log.d(TAG, "student added");
 
 
-        //FIXME
-        //int insertedIndex = students.indexOf(student);
-        //this.notifyItemRangeChanged(0, students.size());
-        //this.notifyItemInserted(insertedIndex);
-        //this.notifyDataSetChanged();
+            //FIXME
+            //int insertedIndex = students.indexOf(student);
+            //this.notifyItemRangeChanged(0, students.size());
+            //this.notifyItemInserted(insertedIndex);
 
-        //this.notifyItemInserted(this.students.size()-1);
+            //Log.d(TAG, "notified RecyclerView that student was inserted");
+        }
 
-        Log.d(TAG, "notified RecyclerView that student was inserted");
     }
 
     //sort the students list by specified priority algorithm
@@ -130,7 +135,10 @@ public class StudentsViewAdapter extends RecyclerView.Adapter<StudentsViewAdapte
 
     @Override
     public int getItemCount() {
-        return this.students.size();
+        synchronized (lock) {
+            return this.students.size();
+        }
+
     }
 
     public void setContext(Context contextD) {
@@ -177,6 +185,8 @@ public class StudentsViewAdapter extends RecyclerView.Adapter<StudentsViewAdapte
     }
 
     public List<Student> getStudents() {
-        return students;
+        synchronized (lock) {
+            return students;
+        }
     }
 }

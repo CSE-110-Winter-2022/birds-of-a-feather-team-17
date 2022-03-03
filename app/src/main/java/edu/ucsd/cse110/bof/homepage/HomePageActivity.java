@@ -1,28 +1,28 @@
 package edu.ucsd.cse110.bof.homepage;
 
+import static java.lang.System.err;
+
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Parcel;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.CompoundButton;
-import android.widget.EditText;
 import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
@@ -34,16 +34,18 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectInputStream;
-import java.sql.SQLOutput;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
+import java.util.Observable;
+import java.util.Observer;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import edu.ucsd.cse110.bof.BoFsTracker;
 import edu.ucsd.cse110.bof.FakedMessageListener;
-import edu.ucsd.cse110.bof.InputCourses.CoursesViewAdapter;
 import edu.ucsd.cse110.bof.InputCourses.InputCourseActivity;
 import edu.ucsd.cse110.bof.MockedStudentFactory;
 import edu.ucsd.cse110.bof.NearbyMessageMockActivity;
@@ -65,11 +67,17 @@ public class HomePageActivity extends AppCompatActivity {
     RecyclerView.LayoutManager studentsLayoutManager;
     StudentsViewAdapter studentsViewAdapter;
 
+
     private static final String TAG = "HomePageReceiver";
     private MessageListener realListener;
     private FakedMessageListener fakedMessageListener;
     private MockedStudentFactory mockedStudentFactory;
 
+    // Student received from listener(s) (if mockedStudent != null,
+    // receivedStudentWithCourses will refer to same object as mockedStudent
+    private StudentWithCourses receivedStudentWithCourses;
+
+    //Student made on return from the NMMActivity
     private StudentWithCourses mockedStudent = null;
     private String mockCSV = null;
 
@@ -87,9 +95,10 @@ public class HomePageActivity extends AppCompatActivity {
 
                         if (intent != null) {
                             Log.d(TAG, "Making mocked student from csv");
-                            mockCSV = intent.getStringExtra("mockCSV");
+                            String mockCSV = intent.getStringExtra("mockCSV");
+
                             mockedStudent = mockedStudentFactory.makeMockedStudent(mockCSV);
-                            Log.d(TAG, "Mocked student created");
+                            Log.d(TAG, "Mocked student " + mockedStudent.getStudent().getName() + " created");
                         }
                     }
                 }
@@ -154,7 +163,6 @@ public class HomePageActivity extends AppCompatActivity {
         mockedStudentFactory = new MockedStudentFactory();
 
         realListener = new MessageListener() {
-            StudentWithCourses receivedStudentWithCourses = null;
 
             @Override
             public void onFound(@NonNull Message message) {
@@ -162,7 +170,7 @@ public class HomePageActivity extends AppCompatActivity {
                 Log.d(TAG, "found a (nonnull) message: "+message);
                 ByteArrayInputStream bis =
                         new ByteArrayInputStream(message.getContent());
-                ObjectInput stuObj = null;
+                ObjectInput stuObj;
                 try {
                     stuObj = new ObjectInputStream(bis);
                     receivedStudentWithCourses =
@@ -175,7 +183,7 @@ public class HomePageActivity extends AppCompatActivity {
                 Log.d(TAG, "message is a studentWithCourses named "
                         + receivedStudentWithCourses.getStudent().getName());
 
-                updateLists(receivedStudentWithCourses);
+                updateLists();
             }
         };
 
@@ -192,7 +200,7 @@ public class HomePageActivity extends AppCompatActivity {
             Log.d(TAG, "mocked student found, subscribing fakedMessageListener");
 
             this.fakedMessageListener = new FakedMessageListener(this.realListener, 3,
-                    mockedStudent);
+                    mockedStudent, this);
             Nearby.getMessagesClient(this).subscribe(fakedMessageListener);
         }
         else {
@@ -210,7 +218,7 @@ public class HomePageActivity extends AppCompatActivity {
             Nearby.getMessagesClient(this).unsubscribe(fakedMessageListener);
             Log.d(TAG, "destroying fakedMessageListener");
 
-            //garbage collector will destroy current listener?
+            //garbage collector will destroy current listener
             fakedMessageListener.stopRun();
             fakedMessageListener = null;
         }
@@ -285,8 +293,8 @@ public class HomePageActivity extends AppCompatActivity {
 
     // called from listener, checks whether the student needs to be added to
     // homepage list and database
-    public void updateLists(StudentWithCourses receivedStudentWithCourses) {
-        Student newStudent = receivedStudentWithCourses.getStudent();
+    public void updateLists()  {
+        Student newStudent = mockedStudent.getStudent();
         String newName = newStudent.getName();
 
         //check that this student isn't in homepage list
@@ -298,7 +306,7 @@ public class HomePageActivity extends AppCompatActivity {
         //use BoFsTracker to find common course
         ArrayList<Course> commonCourses = (ArrayList<Course>)
                 BoFsTracker.getCommonCourses(
-                        thisStudent.getCourses(getApplicationContext()),
+                        db.coursesDao().getForStudent(1),
                         receivedStudentWithCourses.getCourses());
 
         //if at least one common course, add this student to list of students
@@ -318,7 +326,7 @@ public class HomePageActivity extends AppCompatActivity {
         //only add to db if not already in db
         if (!db.studentsDao().getAll().contains(newStudent)) {
             Log.d(TAG,newName + " will be added to database");
-            db.studentsDao().insert((Student) receivedStudentWithCourses.getStudent());
+            db.studentsDao().insert(newStudent);
 
             int insertedId = db.studentsDao().maxId();
             newStudent.setStudentId(insertedId);

@@ -1,7 +1,10 @@
 package edu.ucsd.cse110.bof;
 
+import androidx.test.ext.junit.runners.AndroidJUnit4;
+
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,6 +13,7 @@ import edu.ucsd.cse110.bof.model.db.Course;
 import edu.ucsd.cse110.bof.model.db.Student;
 
 //checks that csv parsing works as intended (factory handles parsing)
+@RunWith(AndroidJUnit4.class)
 public class MockStudentFromCSVTest {
 
     private final MockedStudentFactory factory = new MockedStudentFactory();
@@ -54,7 +58,7 @@ public class MockStudentFromCSVTest {
         List<Course> coursesExpected = new ArrayList<>();
 
         // factory handles parsing, should return a StudentWithCourses
-        StudentWithCourses bobWithCourses = factory.makeMockedStudent(billCSV);
+        StudentWithCourses bobWithCourses = factory.makeMockedStudent(bobCSV);
 
         // correct student object (compares url and name only)
         Assert.assertEquals(bobExpected, bobWithCourses.getStudent());
