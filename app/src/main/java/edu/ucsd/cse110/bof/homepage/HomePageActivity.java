@@ -219,7 +219,7 @@ public class HomePageActivity extends AppCompatActivity {
 
                         studentsViewAdapter.setContext(context);
                         studentsViewAdapter.addStudent(receivedStudentWithCourses.getStudent());
-                        studentsViewAdapter.setContext(null);
+                        //studentsViewAdapter.setContext(null);
 
                         //resort the list
                         Log.d(TAG, "student added, resorting the list...");
