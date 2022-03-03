@@ -110,7 +110,7 @@ public class StudentsViewAdapter extends RecyclerView.Adapter<StudentsViewAdapte
             students.sort((Comparator<IStudent>) (o1, o2) ->
                     Integer.compare(o2.getRecencyWeight(), o1.getRecencyWeight()));
         }
-        else if (priority.equals("class sizes")) {
+        else if (priority.equals("small classes")) {
             students.sort((Comparator<IStudent>) (o1, o2) ->
                     Float.compare(o2.getClassSizeWeight(), o1.getClassSizeWeight()));
         }
@@ -118,6 +118,7 @@ public class StudentsViewAdapter extends RecyclerView.Adapter<StudentsViewAdapte
             students.sort((Comparator<IStudent>) (o1, o2) ->
                     Integer.compare(o2.getMatches(), o1.getMatches()));
         }
+        this.notifyItemRangeChanged(0, this.students.size()-1);
     }
 
     @Override

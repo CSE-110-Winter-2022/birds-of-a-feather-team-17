@@ -39,6 +39,8 @@ public class Student implements IStudent {
         this.name = name;
         this.photoURL = photoURL;
         this.numMatches = 0;
+        this.classSizeWeight=0;
+        this.recencyWeight=0;
     }
 
     // Student default constructor
@@ -46,6 +48,8 @@ public class Student implements IStudent {
         this.name = "Ava";
         this.photoURL = "ava.jpg";
         this.numMatches = 0;
+        this.classSizeWeight=0;
+        this.recencyWeight=0;
     }
 
     // getters and setters

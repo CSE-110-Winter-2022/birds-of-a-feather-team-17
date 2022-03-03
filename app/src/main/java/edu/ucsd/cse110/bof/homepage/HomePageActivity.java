@@ -195,7 +195,6 @@ public class HomePageActivity extends AppCompatActivity {
 
                         receivedStudentWithCourses.getStudent().setRecencyWeight(calcRecencyWeight(commonCourses));
 
-
                         receivedStudentWithCourses.setCourses(commonCourses);
 
                         //only add to db if not already in db
