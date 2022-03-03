@@ -59,12 +59,10 @@ public class HomePageActivity extends AppCompatActivity {
     private IStudent thisStudent;
 
     List<Student> myBoFs;
-
-    private ToggleButton toggle;
-
+    ToggleButton toggleSearch;
+    Spinner p_spinner;
     RecyclerView studentsRecyclerView;
     RecyclerView.LayoutManager studentsLayoutManager;
-    RecyclerView.AdapterDataObserver myObserver;
     StudentsViewAdapter studentsViewAdapter;
 
     private static final String TAG = "HomePageReceiver";
@@ -74,6 +72,8 @@ public class HomePageActivity extends AppCompatActivity {
 
     private StudentWithCourses mockedStudent = null;
     private String mockCSV = null;
+
+    private Context context;
 
     //for getting the csv from NMMActivity
     ActivityResultLauncher<Intent> activityLauncher = registerForActivityResult(
@@ -101,8 +101,10 @@ public class HomePageActivity extends AppCompatActivity {
         setContentView(R.layout.activity_home_page);
         setTitle("Birds of a Feather");
 
+        context = this;
+
         //create spinner (drop-down menu) for priorities/sorting algorithms
-        Spinner p_spinner = findViewById(R.id.priority_spinner);
+        p_spinner = findViewById(R.id.priority_spinner);
         ArrayAdapter<CharSequence> p_adapter = ArrayAdapter.createFromResource(this, R.array.priorities_array, android.R.layout.simple_spinner_item);
         p_adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         p_spinner.setAdapter(p_adapter);
@@ -139,23 +141,9 @@ public class HomePageActivity extends AppCompatActivity {
                     }
                 });
 
-        //TODO:
-        myObserver = new RecyclerView.AdapterDataObserver() {
-            @Override
-            public void onChanged() {
-                studentsViewAdapter.sortList("common classes");
-
-                Log.d(TAG, "sorted students based on numMatches");
-                super.onChanged();
-            }
-        };
-
-        studentsViewAdapter.registerAdapterDataObserver(myObserver);
-
-
         //set up listener for search button:
-        toggle = findViewById(R.id.search_button);
-        toggle.setOnCheckedChangeListener((buttonView, isChecked) -> {
+        toggleSearch = findViewById(R.id.search_button);
+        toggleSearch.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if (isChecked) {
                 onStartSearchingClicked();
             } else {
@@ -170,7 +158,6 @@ public class HomePageActivity extends AppCompatActivity {
 
             @Override
             public void onFound(@NonNull Message message) {
-
                 //make StudentWithCourses from byte array received
                 Log.d(TAG, "found a (nonnull) message: "+message);
                 ByteArrayInputStream bis =
@@ -202,11 +189,11 @@ public class HomePageActivity extends AppCompatActivity {
     public void onStartSearchingClicked() {
         //set up mock listener if a mockedStudent was made
         if (mockedStudent!=null) {
+            Log.d(TAG, "mocked student found, subscribing fakedMessageListener");
+
             this.fakedMessageListener = new FakedMessageListener(this.realListener, 3,
                     mockedStudent);
             Nearby.getMessagesClient(this).subscribe(fakedMessageListener);
-
-            Log.d(TAG, "mocked student found, subscribing fakedMessageListener");
         }
         else {
             Log.d(TAG, "Not mocking student");
@@ -236,17 +223,18 @@ public class HomePageActivity extends AppCompatActivity {
     public void onGoToMockStudents(View view) {
         //make sure button is off when going to NMMActivity
         //button's listener will stop fakedMessageListener if needed
-        toggle.setChecked(false);
+        toggleSearch.setChecked(false);
 
         Log.d(TAG, "going to NMM");
         Intent intent = new Intent(this, NearbyMessageMockActivity.class);
+
         activityLauncher.launch(intent);
     }
 
     public void onHistoryClicked(View view) {
         //make sure button is off when going to HistoryActivity
         //button's listener will stop fakedMessageListener if needed
-        toggle.setChecked(false);
+        toggleSearch.setChecked(false);
 
         Log.d(TAG, "going to History");
         Intent intent = new Intent(this, HistoryActivity.class);
@@ -348,7 +336,10 @@ public class HomePageActivity extends AppCompatActivity {
             Log.d(TAG,newName + " already in database");
         }
 
-        System.out.println("wtf");
+        //resort the list
+        Log.d(TAG, "student added, resorting the list...");
+        studentsViewAdapter.sortList(p_spinner.getSelectedItem().toString());
+        Log.d(TAG, "students list sorted");
     }
 
     //for testing, need to be able to make mocked student without going to NMM
