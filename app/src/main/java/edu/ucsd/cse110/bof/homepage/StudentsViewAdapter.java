@@ -168,4 +168,9 @@ public class StudentsViewAdapter extends RecyclerView.Adapter<StudentsViewAdapte
             context.startActivity(intent);
         }
     }
+
+    //test method
+    public List<Student> getStudents() {
+        return this.students;
+    }
 }

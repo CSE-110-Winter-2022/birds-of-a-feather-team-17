@@ -319,4 +319,9 @@ public class HomePageActivity extends AppCompatActivity {
         }
         return sum;
     }
+
+    //test method
+    public StudentsViewAdapter getStudentsViewAdapter() {
+        return studentsViewAdapter;
+    }
 }
