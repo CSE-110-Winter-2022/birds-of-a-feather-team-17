@@ -1,5 +1,7 @@
 package edu.ucsd.cse110.bof.viewProfile;
 
+//TODO get rid of unused imports
+
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -7,8 +9,10 @@ import android.media.Image;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -41,10 +45,12 @@ public class StudentDetailActivity extends AppCompatActivity {
     private IStudent student;
     private List<Course> courses;
     private String studentImageURL;
+    private boolean waveOn = false;
 
     protected TextView studentName;
     protected ImageView studentImage;
     protected RecyclerView coursesRecyclerView;
+    protected ImageButton waveButton;
     protected RecyclerView.LayoutManager coursesLayoutManager;
     protected CoursesListViewAdapter coursesListViewAdapter;
 
@@ -55,6 +61,8 @@ public class StudentDetailActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_profile);
+
+        waveButton = findViewById(R.id.imageButton);
 
         Intent intent = getIntent();
         studentID = intent.getIntExtra("student_id", 0); //get student id
@@ -116,6 +124,21 @@ public class StudentDetailActivity extends AppCompatActivity {
         finish();
     }
 
+    public void onWaveClicked(View view) {
+        if(!waveOn) {
+            waveOn = true;
+
+            //Change image icon and accompanying description
+            waveButton.setImageResource(R.drawable.wave_filled);
+            waveButton.setContentDescription(getApplicationContext().getString(R.string.wave_on));
+
+            //Send wave through Nearby
+
+            //Display a toast declaring wave was sent
+            Toast.makeText(this, "Wave sent!", Toast.LENGTH_SHORT).show();
+        }
+    }
+
     public static Bitmap getBitmapFromURL(String src) {
         try {
             URL url = new URL(src);
@@ -130,5 +153,4 @@ public class StudentDetailActivity extends AppCompatActivity {
             return null;
         }
     }
-
 }

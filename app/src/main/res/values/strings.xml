@@ -47,4 +47,7 @@
     <string name="stop_searching">Stop Searching</string>
     <string name="mock_students">Mock Students</string>
     <string name="go_back">Go Back</string>
+    <string name="wave_on">wave on</string>
+    <string name="wave_off">wave off</string>
+    <string name="wave_sent">\"Wave sent!\"</string>
 </resources>
