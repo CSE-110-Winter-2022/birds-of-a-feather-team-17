@@ -104,19 +104,20 @@ public class StudentsViewAdapter extends RecyclerView.Adapter<StudentsViewAdapte
         Log.d(TAG, "notified RecyclerView that student was inserted");
     }
 
+    //TODO test: waved students on top but ordering is still preserved otherwise
     //sort the students list by specified priority algorithm
     public void sortList(String priority) {
         if (priority.equals("recent")) {
             students.sort((Comparator<IStudent>) (o1, o2) ->
-                    Integer.compare(o2.getRecencyWeight(), o1.getRecencyWeight()));
+                    Integer.compare(o2.getRecencyWeight() + o2.waveMultiplier(), o1.getRecencyWeight() + o1.waveMultiplier()));
         }
         else if (priority.equals("small classes")) {
             students.sort((Comparator<IStudent>) (o1, o2) ->
-                    Float.compare(o2.getClassSizeWeight(), o1.getClassSizeWeight()));
+                    Float.compare(o2.getClassSizeWeight() + o2.waveMultiplier(), o1.getClassSizeWeight() + o1.waveMultiplier()));
         }
         else if (priority.equals("common classes")) {
             students.sort((Comparator<IStudent>) (o1, o2) ->
-                    Integer.compare(o2.getMatches(), o1.getMatches()));
+                    Integer.compare(o2.getMatches() + o2.waveMultiplier(), o1.getMatches() + o1.waveMultiplier()));
         }
         this.notifyDataSetChanged();
     }

@@ -13,6 +13,8 @@ import edu.ucsd.cse110.bof.model.IStudent;
 
 @Entity(tableName = "students")
 public class Student implements IStudent {
+    //add constant for putting wavedAtMe students on top while preserving inherent sorting order
+    public static final int WAVE_CONSTANT = 2000000;
 
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "student_id")
@@ -34,13 +36,18 @@ public class Student implements IStudent {
     @ColumnInfo(name = "recencyWeight")
     public int recencyWeight;
 
+    //TODO test: waved in DB
+    @ColumnInfo(name = "wavedAtMe")
+    public boolean wavedAtMe;
+
     // Student constructor
     public Student(String name, String photoURL) {
         this.name = name;
         this.photoURL = photoURL;
         this.numMatches = 0;
-        this.classSizeWeight=0;
-        this.recencyWeight=0;
+        this.classSizeWeight = 0;
+        this.recencyWeight = 0;
+        this.wavedAtMe = false;
     }
 
     // Student default constructor
@@ -48,8 +55,9 @@ public class Student implements IStudent {
         this.name = "Ava";
         this.photoURL = "ava.jpg";
         this.numMatches = 0;
-        this.classSizeWeight=0;
-        this.recencyWeight=0;
+        this.classSizeWeight = 0;
+        this.recencyWeight = 0;
+        this.wavedAtMe = false;
     }
 
     // getters and setters
@@ -84,6 +92,19 @@ public class Student implements IStudent {
     public int getRecencyWeight() { return recencyWeight; }
 
     public void setRecencyWeight(int weight) { this.recencyWeight = weight; }
+
+    //TODO test: added WaveMultiplier methods
+    public boolean getWavedAtMe() { return wavedAtMe; }
+
+    public void setWavedAtMe(boolean wavedAtMe) { this.wavedAtMe = wavedAtMe; }
+
+    public int waveMultiplier() {
+        if(wavedAtMe)
+            return WAVE_CONSTANT;
+        else
+            return 0;
+    }
+
 
     // pass in a context to receive singleton database instance
     public List<Course> getCourses(Context context) {

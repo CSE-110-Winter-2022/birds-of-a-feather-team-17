@@ -15,8 +15,11 @@ public interface IStudent extends Serializable {
     int getMatches();
     float getClassSizeWeight();
     int getRecencyWeight();
+    boolean getWavedAtMe(); //TODO test: added wavedAtMe to indicate if a student has waved at me
+    int waveMultiplier();
 
     void setMatches(int numMatches);
     void setClassSizeWeight(float weight);
     void setRecencyWeight(int weight);
+    void setWavedAtMe(boolean waved);
 }

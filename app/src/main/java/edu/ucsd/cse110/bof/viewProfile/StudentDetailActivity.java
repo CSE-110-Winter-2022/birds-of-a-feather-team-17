@@ -132,7 +132,7 @@ public class StudentDetailActivity extends AppCompatActivity {
             waveButton.setImageResource(R.drawable.wave_filled);
             waveButton.setContentDescription(getApplicationContext().getString(R.string.wave_on));
 
-            //Send wave through Nearby
+            //TODO Send wave through Nearby
 
             //Display a toast declaring wave was sent
             Toast.makeText(this, "Wave sent!", Toast.LENGTH_SHORT).show();

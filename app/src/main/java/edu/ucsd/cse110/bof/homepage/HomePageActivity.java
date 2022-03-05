@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -108,6 +109,11 @@ public class HomePageActivity extends AppCompatActivity {
         Intent intent = getIntent();
         db = AppDatabase.singleton(this);
         thisStudent = db.studentsDao().get(1);
+
+        //TODO test: OUTPUT current UUID for use with mocking
+        SharedPreferences sharedPreferences = getSharedPreferences("BoF", MODE_PRIVATE);
+        String UUID = sharedPreferences.getString("UUID", "UUID didn't exist");
+        Log.d("UUID", UUID); //output UUID with tag UUID in console
 
         //set up RecyclerView
         myBoFs = new ArrayList<>();
