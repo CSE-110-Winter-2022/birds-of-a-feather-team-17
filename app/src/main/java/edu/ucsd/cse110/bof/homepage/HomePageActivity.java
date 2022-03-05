@@ -17,8 +17,11 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
@@ -66,6 +69,8 @@ public class HomePageActivity extends AppCompatActivity {
     private StudentWithCourses mockedStudent = null;
     private String mockCSV = null;
 
+    public Context context;
+
     ActivityResultLauncher<Intent> activityLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             new ActivityResultCallback<ActivityResult>() {
@@ -91,6 +96,14 @@ public class HomePageActivity extends AppCompatActivity {
         setContentView(R.layout.activity_home_page);
         setTitle("Birds of a Feather");
 
+        context = this;
+
+        //create spinner (drop-down menu) for priorities/sorting algorithms
+        Spinner p_spinner = findViewById(R.id.priority_spinner);
+        ArrayAdapter<CharSequence> p_adapter = ArrayAdapter.createFromResource(this, R.array.priorities_array, android.R.layout.simple_spinner_item);
+        p_adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        p_spinner.setAdapter(p_adapter);
+
         //set thisStudent
         Intent intent = getIntent();
         db = AppDatabase.singleton(this);
@@ -106,6 +119,22 @@ public class HomePageActivity extends AppCompatActivity {
 
         studentsViewAdapter = new StudentsViewAdapter(myBoFs);
         studentsRecyclerView.setAdapter(studentsViewAdapter);
+
+        p_spinner.setOnItemSelectedListener(
+                new AdapterView.OnItemSelectedListener() {
+                    @Override
+                    public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
+
+                        Log.d(TAG, "Selecting priority...");
+                        String priority = parent.getItemAtPosition(pos).toString();
+                        studentsViewAdapter.sortList(priority);
+                        Log.d(TAG, "List sorted based on priority: "+priority);
+
+                    }
+                    @Override
+                    public void onNothingSelected(AdapterView<?> parent) {
+                    }
+                });
 
         //set up listener for search button:
         ToggleButton toggle = findViewById(R.id.search_button);
@@ -162,7 +191,9 @@ public class HomePageActivity extends AppCompatActivity {
                         //add this student to viewAdapter list
                         receivedStudentWithCourses.getStudent().setMatches(commonCourses.size());
 
-                        //myBoFs.add(receivedStudentWithCourses.getStudent());
+                        receivedStudentWithCourses.getStudent().setClassSizeWeight(calcClassSizeWeight(commonCourses));
+
+                        receivedStudentWithCourses.getStudent().setRecencyWeight(calcRecencyWeight(commonCourses));
 
                         receivedStudentWithCourses.setCourses(commonCourses);
 
@@ -185,9 +216,21 @@ public class HomePageActivity extends AppCompatActivity {
 
                         Log.d(TAG, "preparing to add new mocked student to recycler view");
 
+                        studentsViewAdapter.setContext(context);
                         studentsViewAdapter.addStudent(receivedStudentWithCourses.getStudent());
+                        //studentsViewAdapter.setContext(null);
+
+                        //resort the list
+                        Log.d(TAG, "student added, resorting the list...");
+                        studentsViewAdapter.sortList(p_spinner.getSelectedItem().toString());
+                        Log.d(TAG, "students list sorted");
+
                     }
                 }
+            }
+            @Override
+            public void onLost(@NonNull Message message) {
+                Log.d(TAG, "Lost sight of message: " + message);
             }
         };
 
@@ -197,11 +240,11 @@ public class HomePageActivity extends AppCompatActivity {
     public void onStartSearchingClicked() {
         //set up mock listener for receiving mocked items
         if (mockedStudent!=null) {
+            Log.d(TAG, "mocked student found, subscribing fakedMessageListener");
+
             this.fakedMessageListener = new FakedMessageListener(this.realListener, 3,
                     mockedStudent);
             Nearby.getMessagesClient(this).subscribe(fakedMessageListener);
-
-            Log.d(TAG, "mocked student found, subscribing fakedMessageListener");
         }
         else {
             Log.d(TAG, "No students found/mocked");
@@ -241,5 +284,53 @@ public class HomePageActivity extends AppCompatActivity {
         //check if navigated from HomePageActivity or not (as opposed to PhotoActivity)
         intent.putExtra("onHomePage",true);
         startActivity(intent);
+    }
+
+    public static float calcClassSizeWeight(ArrayList<Course> courses) {
+        if(courses == null) { return 0; }
+        float sum = 0;
+        for(Course c : courses) {
+            switch(c.courseSize) {
+                case "Tiny": sum += 1.00; break;
+                case "Small": sum += 0.33; break;
+                case "Medium": sum += 0.18; break;
+                case "Large": sum += 0.10; break;
+                case "Huge": sum += 0.06; break;
+                case "Gigantic": sum += 0.01; break;
+            }
+        }
+        return sum;
+    }
+
+    public static int calcRecencyWeight(ArrayList<Course> courses) {
+        if(courses == null) { return 0; }
+        int sum = 0;
+        for(Course c : courses) {
+            if(2022 - c.year > 1) {
+                sum += 1;
+            } else {
+                switch (c.quarter) {
+                    case "FA": sum += 5; break;
+                    case "SP": sum += 3; break;
+                    case "WI": sum += 2; break;
+                    default: sum += 4;
+                }
+            }
+        }
+        return sum;
+    }
+    //for testing, need to be able to make mocked student without going to NMM
+    public void setMockedStudent(StudentWithCourses stuWithCourses) {
+        mockedStudent = stuWithCourses;
+    }
+
+    //for testing, need to switch working database with a test db
+    public void setDb(AppDatabase db) {
+        this.db = db;
+    }
+
+    //test method
+    public StudentsViewAdapter getStudentsViewAdapter() {
+        return studentsViewAdapter;
     }
 }

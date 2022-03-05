@@ -44,10 +44,11 @@ public class FakedMessageListener extends MessageListener {
 
         byte[] finalStudentWithCoursesBytes = studentWithCoursesBytes;
 
-        executor.scheduleAtFixedRate(() -> {
+        //executor.scheduleAtFixedRate(() -> {
             Message message = new
                     Message(finalStudentWithCoursesBytes);
             this.messageListener.onFound(message);
-        }, 0, frequency, TimeUnit.SECONDS);
+            this.messageListener.onLost(message);
+        //}, 0, frequency, TimeUnit.SECONDS);
     }
 }
