@@ -58,7 +58,7 @@ public class Student implements IStudent {
     public Student() {
         this.name = "Ava";
         this.photoURL = "ava.jpg";
-        this.UUID = "4b295157-ba31-4f9f-8401-5d85d9cf659a";
+        this.UUID = "a4ca50b6-941b-11ec-b909-0242ac120002";
         this.numMatches = 0;
         this.classSizeWeight = 0;
         this.recencyWeight = 0;
