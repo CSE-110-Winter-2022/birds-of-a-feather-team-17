@@ -111,8 +111,7 @@ public class HomePageActivity extends AppCompatActivity {
         thisStudent = db.studentsDao().get(1);
 
         //TODO test: OUTPUT current UUID for use with mocking
-        SharedPreferences sharedPreferences = getSharedPreferences("BoF", MODE_PRIVATE);
-        String UUID = sharedPreferences.getString("UUID", "UUID didn't exist");
+        String UUID = thisStudent.getUUID();
         Log.d("UUID", UUID); //output UUID with tag UUID in console
 
         //set up RecyclerView

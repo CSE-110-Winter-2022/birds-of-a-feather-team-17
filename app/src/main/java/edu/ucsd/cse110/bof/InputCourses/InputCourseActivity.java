@@ -90,9 +90,6 @@ public class InputCourseActivity extends AppCompatActivity {
             return;
         }
 
-        //TODO test: UUID generation
-        UUIDGenerator.generate(getApplicationContext());
-
         //move to home page
         if (onHomePage) {
             Log.d(TAG, "Arrived from homepage, returning to HomePageActivity");

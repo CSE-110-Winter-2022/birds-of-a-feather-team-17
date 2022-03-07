@@ -20,6 +20,9 @@ public class Student implements IStudent {
     @ColumnInfo(name = "student_id")
     public int studentId = 0;
 
+    @ColumnInfo(name = "UUID")
+    public String UUID;
+
     @ColumnInfo(name = "name")
     public String name;
 
@@ -41,9 +44,10 @@ public class Student implements IStudent {
     public boolean wavedAtMe;
 
     // Student constructor
-    public Student(String name, String photoURL) {
+    public Student(String name, String photoURL, String UUID) {
         this.name = name;
         this.photoURL = photoURL;
+        this.UUID = UUID;
         this.numMatches = 0;
         this.classSizeWeight = 0;
         this.recencyWeight = 0;
@@ -54,6 +58,7 @@ public class Student implements IStudent {
     public Student() {
         this.name = "Ava";
         this.photoURL = "ava.jpg";
+        this.UUID = "4b295157-ba31-4f9f-8401-5d85d9cf659a";
         this.numMatches = 0;
         this.classSizeWeight = 0;
         this.recencyWeight = 0;
@@ -67,6 +72,14 @@ public class Student implements IStudent {
 
     public void setStudentId(int studentId) {
         this.studentId = studentId;
+    }
+
+    public String getUUID() {
+        return UUID;
+    }
+
+    public void setUUID(String UUID) {
+        this.UUID = UUID;
     }
 
     public String getName() {
