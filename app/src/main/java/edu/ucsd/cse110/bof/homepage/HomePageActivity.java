@@ -241,6 +241,17 @@ public class HomePageActivity extends AppCompatActivity {
         super.onDestroy();
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (mockedStudent != null) {
+            Log.d(TAG, "onResume: updating fakedMessageListener with current mockedStudent " +
+                    mockedStudent.getStudent().getName());
+            this.fakedMessageListener = new FakedMessageListener(this.realListener, 3,
+                    mockedStudent);
+        }
+    }
+
     // creates the fakedMessageListener if a mockedStudent exists and
     // subscribes the realListener for actual bluetooth. Once the fML is
     // made, it should immediately call realListener's onFound(), which calls
@@ -255,36 +266,34 @@ public class HomePageActivity extends AppCompatActivity {
                     mockedStudent);
             Nearby.getMessagesClient(this).subscribe(fakedMessageListener);
         }
-        else {
-            Log.d(TAG, "No students found/mocked");
-            Toast.makeText(this, "No students found", Toast.LENGTH_SHORT).show();
-        }
 
         //actual listener (not necessary for project)
         Log.d(TAG, "MessagesClient.subscribe: subscribing realListener...");
         Nearby.getMessagesClient(this).subscribe(realListener);
-        Log.d(TAG, "subscribed realListener");
     }
 
     public void onStopSearchingClicked() {
-        if (fakedMessageListener != null) {
-            Nearby.getMessagesClient(this).unsubscribe(fakedMessageListener);
-            Log.d(TAG, "MessagesClient.unsubscribe: stopped searching, " +
-                    "unsubscribing and destroying fakedMessageListener...");
-
-            fakedMessageListener = null;
-        }
+        removeFakedML();
 
         //actual listener (not necessary for project)
         Log.d(TAG, "MessagesClient.unsubscribe: unsubscribing realListener...");
         Nearby.getMessagesClient(this).unsubscribe(realListener);
-        Log.d(TAG, "unsubscribed realListener");
+    }
+
+    //removes fakedMessageListener if created
+    public void removeFakedML() {
+        if (fakedMessageListener != null) {
+            Log.d(TAG, "MessagesClient.unsubscribe: " +
+                    "unsubscribing and destroying fakedMessageListener...");
+
+            Nearby.getMessagesClient(this).unsubscribe(fakedMessageListener);
+            Log.d(TAG, "unsubscribed fakedMessageListener");
+            fakedMessageListener = null;
+        }
     }
 
     public void onGoToMockStudents(View view) {
-        //make sure button is off when going to NMMActivity
-        //button's listener will stop fakedMessageListener if needed
-        toggleSearch.setChecked(false);
+        removeFakedML();
 
         Log.d(TAG, "going to NMM");
         Intent intent = new Intent(this, NearbyMessageMockActivity.class);
@@ -293,9 +302,7 @@ public class HomePageActivity extends AppCompatActivity {
     }
 
     public void onHistoryClicked(View view) {
-        //make sure button is off when going to HistoryActivity
-        //button's listener will stop fakedMessageListener if needed
-        toggleSearch.setChecked(false);
+        removeFakedML();
 
         Log.d(TAG, "going to History");
         Intent intent = new Intent(this, HistoryActivity.class);
@@ -303,9 +310,7 @@ public class HomePageActivity extends AppCompatActivity {
     }
 
     public void onAddClassesClicked(View view) {
-        //make sure button is off when going to HistoryActivity
-        //button's listener will stop fakedMessageListener if needed
-        toggleSearch.setChecked(false);
+        removeFakedML();
 
         Log.d(TAG, "going to InputCourses");
         Intent intent = new Intent(this, InputCourseActivity.class);
