@@ -39,5 +39,3 @@
         android:translationY="6sp"
         tools:srcCompat="@tools:sample/avatars" />
 </FrameLayout>
-
-<!--@dimen/list_item_height-->

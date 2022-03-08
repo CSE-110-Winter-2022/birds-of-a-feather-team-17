@@ -241,6 +241,15 @@ public class HomePageActivity extends AppCompatActivity {
         super.onDestroy();
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (mockedStudent != null) {
+            this.fakedMessageListener = new FakedMessageListener(this.realListener, 3,
+                    mockedStudent);
+        }
+    }
+
     // creates the fakedMessageListener if a mockedStudent exists and
     // subscribes the realListener for actual bluetooth. Once the fML is
     // made, it should immediately call realListener's onFound(), which calls
@@ -282,9 +291,9 @@ public class HomePageActivity extends AppCompatActivity {
     }
 
     public void onGoToMockStudents(View view) {
-        //make sure button is off when going to NMMActivity
-        //button's listener will stop fakedMessageListener if needed
-        toggleSearch.setChecked(false);
+//        //make sure button is off when going to NMMActivity
+//        //button's listener will stop fakedMessageListener if needed
+//        toggleSearch.setChecked(false);
 
         Log.d(TAG, "going to NMM");
         Intent intent = new Intent(this, NearbyMessageMockActivity.class);
@@ -292,20 +301,20 @@ public class HomePageActivity extends AppCompatActivity {
         activityLauncher.launch(intent);
     }
 
-    public void onHistoryClicked(View view) {
-        //make sure button is off when going to HistoryActivity
-        //button's listener will stop fakedMessageListener if needed
-        toggleSearch.setChecked(false);
+    public void onSessionsClicked(View view) {
+//        //make sure button is off when going to SessionsActivity
+//        //button's listener will stop fakedMessageListener if needed
+//        toggleSearch.setChecked(false);
 
-        Log.d(TAG, "going to History");
-        Intent intent = new Intent(this, HistoryActivity.class);
+        Log.d(TAG, "going to Sessions");
+        Intent intent = new Intent(this, SessionsActivity.class);
         startActivity(intent);
     }
 
     public void onAddClassesClicked(View view) {
-        //make sure button is off when going to HistoryActivity
-        //button's listener will stop fakedMessageListener if needed
-        toggleSearch.setChecked(false);
+//        //make sure button is off when going to HistoryActivity
+//        //button's listener will stop fakedMessageListener if needed
+//        toggleSearch.setChecked(false);
 
         Log.d(TAG, "going to InputCourses");
         Intent intent = new Intent(this, InputCourseActivity.class);
