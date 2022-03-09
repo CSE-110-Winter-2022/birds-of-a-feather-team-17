@@ -29,17 +29,11 @@ public class SessionsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list_sessions);
-
-        //get sessions from Database, Update Recycler
-        db = AppDatabase.singleton(this);
-
-        //create list of past sessions
-        sessions = db.sessionsDao().getAll();
-
-        //TODO: priority sort
-
-        //set title
         setTitle("Past Sessions");
+
+        //get sessions from database
+        db = AppDatabase.singleton(this);
+        sessions = db.sessionsDao().getAll();
 
         //set up RecyclerView
         sessionsRecyclerView = findViewById(R.id.sessions_view);

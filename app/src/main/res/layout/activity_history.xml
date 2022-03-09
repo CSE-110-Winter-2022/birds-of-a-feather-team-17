@@ -5,18 +5,38 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".homepage.HistoryActivity">
+    tools:context=".homepage.SessionDetailActivity">
 
   <androidx.recyclerview.widget.RecyclerView
       android:id="@+id/history_view"
-      android:layout_width="394dp"
-      android:layout_height="571dp"
+      android:layout_width="388dp"
+      android:layout_height="496dp"
       app:layout_constraintBottom_toBottomOf="parent"
       app:layout_constraintEnd_toEndOf="parent"
-      app:layout_constraintHorizontal_bias="0.473"
+      app:layout_constraintHorizontal_bias="0.478"
       app:layout_constraintStart_toStartOf="parent"
       app:layout_constraintTop_toTopOf="parent"
-      app:layout_constraintVertical_bias="0.213" />
+      app:layout_constraintVertical_bias="0.344" />
+
+  <TextView
+      android:id="@+id/prioritize_text2"
+      android:layout_width="92dp"
+      android:layout_height="25dp"
+      android:layout_marginStart="16dp"
+      android:layout_marginTop="24dp"
+      android:text="Prioritize:"
+      android:textSize="20sp"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toTopOf="parent" />
+
+  <Spinner
+      android:id="@+id/priority_spinner2"
+      android:layout_width="200dp"
+      android:layout_height="48dp"
+      android:layout_marginStart="24dp"
+      android:layout_marginTop="14dp"
+      app:layout_constraintStart_toEndOf="@+id/prioritize_text2"
+      app:layout_constraintTop_toTopOf="parent" />
 
   <Button
       android:id="@+id/go_back_btn"

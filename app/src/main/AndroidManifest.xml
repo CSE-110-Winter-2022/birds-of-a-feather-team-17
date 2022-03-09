@@ -15,7 +15,7 @@
         android:theme="@style/Theme.BirdsOfAFeather">
 
         <activity
-            android:name=".homepage.HistoryActivity"
+            android:name=".homepage.SessionDetailActivity"
             android:exported="false" />
         <activity
             android:name=".homepage.HomePageActivity"

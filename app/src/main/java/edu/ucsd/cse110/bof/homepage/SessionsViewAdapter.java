@@ -67,7 +67,7 @@ public class SessionsViewAdapter extends RecyclerView.Adapter<SessionsViewAdapte
         @Override
         public void onClick(View view) {
             Context context = view.getContext();
-            Intent intent = new Intent(context, HistoryActivity.class);
+            Intent intent = new Intent(context, SessionDetailActivity.class);
 
             intent.putExtra("session_id", this.session.getSessionID());
             context.startActivity(intent);

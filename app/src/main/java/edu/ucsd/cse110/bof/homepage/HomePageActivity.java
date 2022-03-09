@@ -13,6 +13,7 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -69,6 +70,10 @@ public class HomePageActivity extends AppCompatActivity {
     List<Student> myBoFs;
     ToggleButton toggleSearch;
     Spinner p_spinner;
+    private Date currDate = null;
+    @SuppressLint("ConstantLocale")
+    private static final SimpleDateFormat sdf =
+            new SimpleDateFormat("MM/dd/yy hh:mmaa", Locale.getDefault());
 
     RecyclerView studentsRecyclerView;
     RecyclerView.LayoutManager studentsLayoutManager;
@@ -128,7 +133,6 @@ public class HomePageActivity extends AppCompatActivity {
         p_spinner.setAdapter(p_adapter);
 
         //set thisStudent and thisStudentCourses
-        Intent intent = getIntent();
         db = AppDatabase.singleton(this);
         thisStudent = db.studentsDao().get(1);
         thisStudentCourses = db.coursesDao().getForStudent(1);
@@ -242,6 +246,12 @@ public class HomePageActivity extends AppCompatActivity {
                 "): unpublishing selfMessage (StudentWithCourses)...");
         Nearby.getMessagesClient(this).unpublish(selfMessage);
         Log.d(TAG, "unpublished selfMessage");
+
+        //TODO: save session if still "Start searching"...Test
+        if (toggleSearch.isChecked()) {
+            saveSession();
+        }
+
         super.onDestroy();
     }
 
@@ -261,6 +271,11 @@ public class HomePageActivity extends AppCompatActivity {
     // made, it should immediately call realListener's onFound(), which calls
     // updateList()
     public void onStartSearchingClicked() {
+        //get current date when Start Searching is clicked
+        currDate = new Date();
+        String currDateFormatted = sdf.format(currDate);
+        Log.d(TAG, "Start clicked at time: " + currDateFormatted);
+
         //set up mock listener if a mockedStudent was made
         if (mockedStudent!=null) {
             Log.d(TAG, "MessagesClient.subscribe: mocked student found, " +
@@ -277,31 +292,31 @@ public class HomePageActivity extends AppCompatActivity {
     }
 
     public void onStopSearchingClicked() {
-        //gets current date when Stop is clicked
-        Date currDate = new Date();
-        SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yy hh:mmaa", Locale.getDefault());
-        String currDateFormatted = sdf.format(new Date());
-
         removeFakedML();
 
         //actual listener (not necessary for project)
         Log.d(TAG, "MessagesClient.unsubscribe: unsubscribing realListener...");
         Nearby.getMessagesClient(this).unsubscribe(realListener);
 
-        Log.d(TAG, "Stop clicked at time: " + currDateFormatted);
+        //Stop clicked, create session
+        Log.d(TAG, "Stop clicked");
+        saveSession();
+    }
 
-        //create session
-        Log.d(TAG, "Creating session...");
+    private void saveSession() {
+        Log.d(TAG, "creating session...");
         List<Integer> studentIDList = new ArrayList<>();
         for (Student stu : myBoFs) {
             studentIDList.add(stu.getStudentId());
         }
 
-        //TODO: save session, rename session
+        String currDateFormatted = sdf.format(currDate);
+        //TODO: save/rename session with pop-up window
         String sessionName = currDateFormatted;
 
         db.sessionsDao().insert(new Session(studentIDList, currDateFormatted, sessionName));
 
+        Toast.makeText(this, "Session saved", Toast.LENGTH_SHORT).show();
         Log.d(TAG, "Saved Session " + sessionName + " in database");
     }
 

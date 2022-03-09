@@ -170,7 +170,6 @@ public class StudentsViewAdapter extends RecyclerView.Adapter<StudentsViewAdapte
         }
     }
 
-    //test method
     public List<Student> getStudents() {
         return this.students;
     }
