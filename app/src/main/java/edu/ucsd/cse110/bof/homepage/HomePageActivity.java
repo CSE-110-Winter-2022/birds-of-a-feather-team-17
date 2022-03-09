@@ -89,25 +89,26 @@ public class HomePageActivity extends AppCompatActivity {
 
     //for getting the csv from NMMActivity
     ActivityResultLauncher<Intent> activityLauncher = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(),
-            new ActivityResultCallback<ActivityResult>() {
-                @Override
-                public void onActivityResult(ActivityResult result) {
-                    if (result.getResultCode() == 0) {
-                        Log.d(TAG, "Back from NMM");
-                        Intent intent = result.getData();
+        new ActivityResultContracts.StartActivityForResult(),
+        new ActivityResultCallback<ActivityResult>() {
+            @Override
+            public void onActivityResult(ActivityResult result) {
+                if (result.getResultCode() == 0) {
+                    Log.d(TAG, "Back from NMM");
+                    Intent intent = result.getData();
 
-                        if (intent != null) {
-                            Log.d(TAG, "Making mocked student from csv");
-                            mockCSV = intent.getStringExtra("mockCSV");
-                            mockedStudent = mockedStudentFactory.makeMockedStudent(mockCSV);
-                            if (mockedStudent == null) { Log.d(TAG, "Mocked student is null, not created"); }
-                            else
-                                Log.d(TAG, "Mocked student " + mockedStudent.getStudent().getName() + " created");
-                        }
+                    if (intent != null) {
+                        Log.d(TAG, "Making mocked student from csv");
+                        mockCSV = intent.getStringExtra("mockCSV");
+                        mockedStudent = mockedStudentFactory.makeMockedStudent(mockCSV);
+                        if (mockedStudent == null) { Log.d(TAG, "Mocked student is null, not created"); }
+                        else
+                            Log.d(TAG, "Mocked student " + mockedStudent.getStudent().getName() + " created");
                     }
                 }
-    });
+            }
+        }
+    );
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -139,6 +140,7 @@ public class HomePageActivity extends AppCompatActivity {
 
         studentsViewAdapter = new StudentsViewAdapter(myBoFs);
         studentsRecyclerView.setAdapter(studentsViewAdapter);
+        studentsViewAdapter.setContext(context);
 
         p_spinner.setOnItemSelectedListener(
                 new AdapterView.OnItemSelectedListener() {

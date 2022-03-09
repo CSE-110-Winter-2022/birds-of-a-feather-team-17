@@ -34,6 +34,9 @@ public class Student implements IStudent {
     @ColumnInfo(name = "recencyWeight")
     public int recencyWeight;
 
+    @ColumnInfo(name = "isFav")
+    public boolean isFav = false;
+
     // Student constructor
     public Student(String name, String photoURL) {
         this.name = name;
@@ -84,6 +87,10 @@ public class Student implements IStudent {
     public int getRecencyWeight() { return recencyWeight; }
 
     public void setRecencyWeight(int weight) { this.recencyWeight = weight; }
+
+    public boolean getIsFav() { return isFav; }
+
+    public void setIsFav() { this.isFav = true; }
 
     // pass in a context to receive singleton database instance
     public List<Course> getCourses(Context context) {

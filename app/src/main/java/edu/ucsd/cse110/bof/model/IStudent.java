@@ -15,8 +15,10 @@ public interface IStudent extends Serializable {
     int getMatches();
     float getClassSizeWeight();
     int getRecencyWeight();
+    boolean getIsFav();
 
     void setMatches(int numMatches);
     void setClassSizeWeight(float weight);
     void setRecencyWeight(int weight);
+    void setIsFav();
 }

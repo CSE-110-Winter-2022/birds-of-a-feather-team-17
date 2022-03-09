@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.Image;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -31,14 +32,16 @@ import edu.ucsd.cse110.bof.R;
 import edu.ucsd.cse110.bof.model.IStudent;
 import edu.ucsd.cse110.bof.model.db.AppDatabase;
 import edu.ucsd.cse110.bof.model.db.Course;
+import edu.ucsd.cse110.bof.model.db.Student;
 import edu.ucsd.cse110.bof.viewProfile.CoursesListViewAdapter;
 
 
 public class StudentDetailActivity extends AppCompatActivity {
 
+    private static final String TAG = "Within Student Profile: ";
     private AppDatabase db;
     int studentID;
-    private IStudent student;
+    private Student student;
     private List<Course> courses;
     private String studentImageURL;
 
@@ -131,4 +134,10 @@ public class StudentDetailActivity extends AppCompatActivity {
         }
     }
 
+    public void onFavClicked(View view) {
+        db.studentsDao().delete(student);
+        student.setIsFav();
+        db.studentsDao().insert(student);
+        Log.d(TAG, "Favorite clicked");
+    }
 }

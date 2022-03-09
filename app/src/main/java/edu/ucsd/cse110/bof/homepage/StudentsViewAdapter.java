@@ -32,6 +32,7 @@ import javax.net.ssl.HttpsURLConnection;
 import edu.ucsd.cse110.bof.R;
 import edu.ucsd.cse110.bof.StudentWithCourses;
 import edu.ucsd.cse110.bof.model.IStudent;
+import edu.ucsd.cse110.bof.model.db.AppDatabase;
 import edu.ucsd.cse110.bof.model.db.Student;
 import edu.ucsd.cse110.bof.viewProfile.StudentDetailActivity;
 
@@ -39,11 +40,12 @@ public class StudentsViewAdapter extends RecyclerView.Adapter<StudentsViewAdapte
 
     private static final String TAG = "StudentsViewAdapterLog";
 
-    private final List<Student> students;
+    private List<Student> students;
 
     private final ExecutorService backgroundThreadExecutor =
             Executors.newSingleThreadExecutor();
     private Context context;
+    private AppDatabase db;
 
     public StudentsViewAdapter(List<Student> students) {
         super();
@@ -107,19 +109,51 @@ public class StudentsViewAdapter extends RecyclerView.Adapter<StudentsViewAdapte
 
     //sort the students list by specified priority algorithm
     public void sortList(String priority) {
-        if (priority.equals("recent")) {
-            students.sort((Comparator<IStudent>) (o1, o2) ->
-                    Integer.compare(o2.getRecencyWeight(), o1.getRecencyWeight()));
+        updateStudentList();
+        switch (priority) {
+            case "recent":
+                students.sort((s1, s2) -> {
+                    if (s1.getIsFav() ^ s2.getIsFav()) {
+                        return (s1.getIsFav()) ? -1 : 1;
+                    } else {
+                        return Integer.compare(s2.getRecencyWeight(), s1.getRecencyWeight());
+                    }
+                });
+                break;
+            case "small classes":
+                students.sort((s1, s2) -> {
+                    if (s1.getIsFav() ^ s2.getIsFav()) {
+                        return (s1.getIsFav()) ? -1 : 1;
+                    } else {
+                        return Float.compare(s2.getClassSizeWeight(), s1.getClassSizeWeight());
+                    }
+                });
+                break;
+            case "common classes":
+                students.sort((s1, s2) -> {
+                    if (s1.getIsFav() ^ s2.getIsFav()) {
+                        return (s1.getIsFav()) ? -1 : 1;
+                    } else {
+                        return Integer.compare(s2.getMatches(), s1.getMatches());
+                    }
+                });
+                break;
         }
-        else if (priority.equals("small classes")) {
-            students.sort((Comparator<IStudent>) (o1, o2) ->
-                    Float.compare(o2.getClassSizeWeight(), o1.getClassSizeWeight()));
+        this.notifyItemRangeChanged(0, students.size());
+    }
+
+    public void updateStudentList() {
+        if(db != null) {
+            students = db.studentsDao().getAll();
+            Log.d(TAG, "students updated");
+            for(Student i : students) {
+                Log.d(TAG, "Student name: " + i.getName());
+                Log.d(TAG, "Student matches: " + i.getMatches());
+                Log.d(TAG, "Student class size weight: " + i.getClassSizeWeight());
+                Log.d(TAG, "Student recency weight: " + i.getRecencyWeight());
+                Log.d(TAG, "Student is fav: " + i.getIsFav());
+            }
         }
-        else if (priority.equals("common classes")) {
-            students.sort((Comparator<IStudent>) (o1, o2) ->
-                    Integer.compare(o2.getMatches(), o1.getMatches()));
-        }
-        this.notifyDataSetChanged();
     }
 
     @Override
@@ -129,6 +163,7 @@ public class StudentsViewAdapter extends RecyclerView.Adapter<StudentsViewAdapte
 
     public void setContext(Context contextD) {
         this.context = contextD;
+        this.db = AppDatabase.singleton(context);
         Log.d(TAG, "context set");
     }
 

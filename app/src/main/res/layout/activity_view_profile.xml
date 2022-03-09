@@ -68,4 +68,18 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/list_classes_recycler"
         app:layout_constraintVertical_bias="0.261" />
+
+    <Button
+        android:id="@+id/button_fav"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="onFavClicked"
+        android:text="Tmp Fav btn"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.942"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/list_classes_recycler"
+        app:layout_constraintVertical_bias="0.261" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
