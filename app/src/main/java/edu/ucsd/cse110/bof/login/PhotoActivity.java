@@ -49,7 +49,6 @@ public class PhotoActivity extends AppCompatActivity {
         else {
             photoURL = photoInput.getText().toString();
 
-            //TODO: test
             if (!URLUtil.isValidUrl(photoURL)) {
                 Toast.makeText(this, "Invalid URL", Toast.LENGTH_SHORT).show();
                 return;

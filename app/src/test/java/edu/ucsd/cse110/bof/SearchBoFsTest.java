@@ -68,8 +68,6 @@ public class SearchBoFsTest {
         db.coursesDao().insert(cse110WI22L);
     }
 
-    //FIXME: notifyItemInserted problem causes this test to fail
-
     //Basic test: Bob should be added to both db and viewAdapter
     @Test
     public void bobIsAddedWithOnlyOneCommonClass() {
@@ -135,8 +133,6 @@ public class SearchBoFsTest {
                     db.coursesDao().getForStudent(2));
         });
     }
-
-    //FIXME: notifyItemInserted problem causes this test to fail
 
     // testing that identical student is only inserted once into db, but
     // always inserted into viewAdapter

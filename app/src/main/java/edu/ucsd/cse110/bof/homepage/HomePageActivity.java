@@ -40,8 +40,11 @@ import java.io.ObjectInput;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.sql.SQLOutput;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import edu.ucsd.cse110.bof.BoFsTracker;
 import edu.ucsd.cse110.bof.FakedMessageListener;
@@ -54,6 +57,7 @@ import edu.ucsd.cse110.bof.StudentWithCourses;
 import edu.ucsd.cse110.bof.model.IStudent;
 import edu.ucsd.cse110.bof.model.db.AppDatabase;
 import edu.ucsd.cse110.bof.model.db.Course;
+import edu.ucsd.cse110.bof.model.db.Session;
 import edu.ucsd.cse110.bof.model.db.Student;
 
 public class HomePageActivity extends AppCompatActivity {
@@ -245,6 +249,8 @@ public class HomePageActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         if (mockedStudent != null) {
+            Log.d(TAG, "onResume: updating fakedMessageListener with current mockedStudent " +
+                    mockedStudent.getStudent().getName());
             this.fakedMessageListener = new FakedMessageListener(this.realListener, 3,
                     mockedStudent);
         }
@@ -264,36 +270,55 @@ public class HomePageActivity extends AppCompatActivity {
                     mockedStudent);
             Nearby.getMessagesClient(this).subscribe(fakedMessageListener);
         }
-        else {
-            Log.d(TAG, "No students found/mocked");
-            Toast.makeText(this, "No students found", Toast.LENGTH_SHORT).show();
-        }
 
         //actual listener (not necessary for project)
         Log.d(TAG, "MessagesClient.subscribe: subscribing realListener...");
         Nearby.getMessagesClient(this).subscribe(realListener);
-        Log.d(TAG, "subscribed realListener");
     }
 
     public void onStopSearchingClicked() {
-        if (fakedMessageListener != null) {
-            Nearby.getMessagesClient(this).unsubscribe(fakedMessageListener);
-            Log.d(TAG, "MessagesClient.unsubscribe: stopped searching, " +
-                    "unsubscribing and destroying fakedMessageListener...");
+        //gets current date when Stop is clicked
+        Date currDate = new Date();
+        SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yy hh:mmaa", Locale.getDefault());
+        String currDateFormatted = sdf.format(new Date());
 
-            fakedMessageListener = null;
-        }
+        removeFakedML();
 
         //actual listener (not necessary for project)
         Log.d(TAG, "MessagesClient.unsubscribe: unsubscribing realListener...");
         Nearby.getMessagesClient(this).unsubscribe(realListener);
-        Log.d(TAG, "unsubscribed realListener");
+
+        Log.d(TAG, "Stop clicked at time: " + currDateFormatted);
+
+        //create session
+        Log.d(TAG, "Creating session...");
+        List<Integer> studentIDList = new ArrayList<>();
+        for (Student stu : myBoFs) {
+            studentIDList.add(stu.getStudentId());
+        }
+
+        //TODO: save session, rename session
+        String sessionName = currDateFormatted;
+
+        db.sessionsDao().insert(new Session(studentIDList, currDateFormatted, sessionName));
+
+        Log.d(TAG, "Saved Session " + sessionName + " in database");
+    }
+
+    //removes fakedMessageListener if created
+    public void removeFakedML() {
+        if (fakedMessageListener != null) {
+            Log.d(TAG, "MessagesClient.unsubscribe: " +
+                    "unsubscribing and destroying fakedMessageListener...");
+
+            Nearby.getMessagesClient(this).unsubscribe(fakedMessageListener);
+            Log.d(TAG, "unsubscribed fakedMessageListener");
+            fakedMessageListener = null;
+        }
     }
 
     public void onGoToMockStudents(View view) {
-//        //make sure button is off when going to NMMActivity
-//        //button's listener will stop fakedMessageListener if needed
-//        toggleSearch.setChecked(false);
+        removeFakedML();
 
         Log.d(TAG, "going to NMM");
         Intent intent = new Intent(this, NearbyMessageMockActivity.class);
@@ -302,9 +327,7 @@ public class HomePageActivity extends AppCompatActivity {
     }
 
     public void onSessionsClicked(View view) {
-//        //make sure button is off when going to SessionsActivity
-//        //button's listener will stop fakedMessageListener if needed
-//        toggleSearch.setChecked(false);
+        removeFakedML();
 
         Log.d(TAG, "going to Sessions");
         Intent intent = new Intent(this, SessionsActivity.class);
@@ -312,9 +335,7 @@ public class HomePageActivity extends AppCompatActivity {
     }
 
     public void onAddClassesClicked(View view) {
-//        //make sure button is off when going to HistoryActivity
-//        //button's listener will stop fakedMessageListener if needed
-//        toggleSearch.setChecked(false);
+        removeFakedML();
 
         Log.d(TAG, "going to InputCourses");
         Intent intent = new Intent(this, InputCourseActivity.class);

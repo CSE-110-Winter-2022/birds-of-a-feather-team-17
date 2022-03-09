@@ -24,20 +24,17 @@ public class Session {
     public List<Integer> studentIDList;
 
     //internal identifier for creation time
+    @ColumnInfo(name = "creation_time")
     public String creationTime;
+
+    @ColumnInfo(name = "display_name")
     public String dispName;
 
     // Course constructor
-    public Session(String creationTime) {
-        studentIDList = new ArrayList<>();
+    public Session(List<Integer> studentIDList, String creationTime, String dispName) {
+        this.studentIDList = studentIDList;
         this.creationTime = creationTime;
-        this.dispName = creationTime;
-
-        //TODO: move sdf instantiation to HomePageActivity
-        //FIXME: Not sure if format works! Make sure!
-//        SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yy hh:mmaa", Locale.getDefault());
-//        creationTime = sdf.format(new Date());
-
+        this.dispName = dispName;
     }
 
     //Set display name
@@ -45,12 +42,11 @@ public class Session {
         this.dispName = dispName;
     }
 
-    //TODO: implement update database after student is added to Session (within HomePageActivity)
     //add a student by adding to studentsIDList, then calling method to update stringJSON list
-    public void addStudent(Integer studID){
-        studentIDList.add(studID);
-        //updateJSONList();
-    }
+//    public void addStudent(Integer studID){
+//        studentIDList.add(studID);
+//        //updateJSONList();
+//    }
 
     // getters
     public int getSessionID(){
