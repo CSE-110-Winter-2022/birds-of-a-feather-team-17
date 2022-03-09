@@ -19,14 +19,14 @@ import edu.ucsd.cse110.bof.model.db.Student;
 
 public class FakedMessageListener extends MessageListener {
     private final MessageListener messageListener;
-    private final ScheduledExecutorService executor;
+    //private final ScheduledExecutorService executor;
 
 
     //mocks receiving StudentWithCourses as message at given frequency
     public FakedMessageListener(MessageListener realMessageListener,
                                 int frequency, StudentWithCourses studentWithCourses) {
         this.messageListener = realMessageListener;
-        this.executor = Executors.newSingleThreadScheduledExecutor();
+        //this.executor = Executors.newSingleThreadScheduledExecutor();
 
         //make byte array for student and courses
         ByteArrayOutputStream bos = new ByteArrayOutputStream();

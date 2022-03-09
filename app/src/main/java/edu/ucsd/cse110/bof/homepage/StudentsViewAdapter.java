@@ -64,7 +64,8 @@ public class StudentsViewAdapter extends RecyclerView.Adapter<StudentsViewAdapte
     public void onBindViewHolder(@NonNull StudentsViewAdapter.ViewHolder holder, int position) {
         holder.setStudent(students.get(position));
         backgroundThreadExecutor.submit(() -> {
-            Log.d(TAG, "retrieving photo from internet...");
+            Log.d(TAG, "retrieving Student " + students.get(position).getName() +
+                    "'s photo from internet...");
             URL photo_url = null;
             try {
                 photo_url = new URL(students.get(position).getPhotoUrl());
