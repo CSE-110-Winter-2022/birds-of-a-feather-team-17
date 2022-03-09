@@ -133,6 +133,11 @@ public class StudentDetailActivity extends AppCompatActivity {
             waveButton.setContentDescription(getApplicationContext().getString(R.string.wave_on));
 
             //TODO Send wave through Nearby
+            //probably should write a SendStudent function
+
+            student.setWavedTo(true);
+
+            //TODO update DB
 
             //Display a toast declaring wave was sent
             Toast.makeText(this, "Wave sent!", Toast.LENGTH_SHORT).show();

@@ -6,6 +6,7 @@ import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -39,9 +40,17 @@ public class Student implements IStudent {
     @ColumnInfo(name = "recencyWeight")
     public int recencyWeight;
 
-    //TODO test: waved in DB
+    //TODO test: waves in DB
     @ColumnInfo(name = "wavedAtMe")
     public boolean wavedAtMe;
+
+    //TODO test: waves in DB
+    @ColumnInfo(name = "wavedTo")
+    public boolean wavedTo;
+
+    //TODO test: waves in DB
+    @ColumnInfo(name = "waveTarget")
+    public String waveTarget;
 
     // Student constructor
     public Student(String name, String photoURL, String UUID) {
@@ -52,6 +61,8 @@ public class Student implements IStudent {
         this.classSizeWeight = 0;
         this.recencyWeight = 0;
         this.wavedAtMe = false;
+        this.wavedTo = false;
+        this.waveTarget = "";
     }
 
     // Student default constructor
@@ -63,6 +74,8 @@ public class Student implements IStudent {
         this.classSizeWeight = 0;
         this.recencyWeight = 0;
         this.wavedAtMe = false;
+        this.wavedTo = false;
+        this.waveTarget = "";
     }
 
     // getters and setters
@@ -106,18 +119,37 @@ public class Student implements IStudent {
 
     public void setRecencyWeight(int weight) { this.recencyWeight = weight; }
 
-    //TODO test: added WaveMultiplier methods
-    public boolean getWavedAtMe() { return wavedAtMe; }
+    public boolean isWavedAtMe() {
+        return wavedAtMe;
+    }
 
-    public void setWavedAtMe(boolean wavedAtMe) { this.wavedAtMe = wavedAtMe; }
+    public void setWavedAtMe(boolean wavedAtMe) {
+        this.wavedAtMe = wavedAtMe;
+    }
 
+    public boolean isWavedTo() {
+        return wavedTo;
+    }
+
+    public void setWavedTo(boolean wavedTo) {
+        this.wavedTo = wavedTo;
+    }
+
+    public String getWaveTarget() {
+        return waveTarget;
+    }
+
+    public void setWaveTarget(String waveTarget) {
+        this.waveTarget = waveTarget;
+    }
+
+    //Get addition multiplier to keep regular sorting order but with wave on top
     public int waveMultiplier() {
         if(wavedAtMe)
             return WAVE_CONSTANT;
         else
             return 0;
     }
-
 
     // pass in a context to receive singleton database instance
     public List<Course> getCourses(Context context) {

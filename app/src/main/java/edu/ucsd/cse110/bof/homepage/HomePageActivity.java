@@ -16,7 +16,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -88,6 +87,8 @@ public class HomePageActivity extends AppCompatActivity {
 
     private Context context;
 
+    private String UUID;
+
     //for getting the csv from NMMActivity
     ActivityResultLauncher<Intent> activityLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
@@ -131,7 +132,7 @@ public class HomePageActivity extends AppCompatActivity {
         thisStudentCourses = db.coursesDao().getForStudent(1);
 
         //TODO test: OUTPUT current UUID for use with mocking
-        String UUID = thisStudent.getUUID();
+        UUID = thisStudent.getUUID();
         Log.d("UUID", UUID); //output UUID with tag UUID in console
 
         //set up RecyclerView
@@ -212,6 +213,7 @@ public class HomePageActivity extends AppCompatActivity {
 
         Log.d(TAG, "creating message to send through Nearby...");
         //create user's StudentWithCourses object to send to others via Bluetooth/Nearby API
+
         selfStudentWithCourses = new StudentWithCourses(thisStudent, thisStudentCourses);
 
         //make byte array for student and courses
@@ -360,15 +362,36 @@ public class HomePageActivity extends AppCompatActivity {
 
     // called from listener, checks whether the student needs to be added to
     // homepage list and database
+
+    //TODO: test
     private void updateLists()  {
 
         Student newStudent = receivedStudentWithCourses.getStudent();
         String newName = newStudent.getName();
+        int matchingIndex = -1;
+
+        //getMatchingStudent will throw NullPointerException if student doesn't exist
+        try {
+            matchingIndex = getMatchingStudent(newStudent);
+        }
+        catch (NullPointerException e) {
+            //do nothing
+        }
 
         //check that this student isn't in list nor in database
         if (studentsViewAdapter.getStudents().contains(newStudent)) {
             Log.d(TAG, "Student " + newName + " already in homepage list");
             return;
+        }
+        else if (matchingIndex != -1) {
+            if (newStudent.getWaveTarget().equals(UUID)) {
+                //set existing student's waveAtMe to true on studentsViewAdapter
+                studentsViewAdapter.getStudents().get(matchingIndex).setWavedAtMe(true);
+                //TODO notify adapter
+                //TODO update Adapter UI
+                //TODO update Adapter Sorting
+                //TODO update DB
+            }
         }
         else {
             Log.d(TAG, "student not in homepage list nor database");
@@ -430,6 +453,16 @@ public class HomePageActivity extends AppCompatActivity {
 
             }
         }
+    }
+
+    //Helper function to find the existing student matching the new student
+    private int getMatchingStudent(Student newStudent) {
+        for(int i = 0; i < studentsViewAdapter.getStudents().size(); i++) {
+            if (studentsViewAdapter.getStudents().get(i).getUUID().equals(newStudent.UUID)) {
+                return i;
+            }
+        }
+        return -1;
     }
 
     //for testing, need to be able to make mocked student without going to NMM

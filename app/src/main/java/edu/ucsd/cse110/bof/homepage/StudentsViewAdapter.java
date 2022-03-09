@@ -105,7 +105,7 @@ public class StudentsViewAdapter extends RecyclerView.Adapter<StudentsViewAdapte
         Log.d(TAG, "notified RecyclerView that student was inserted");
     }
 
-    //TODO test: waved students on top but ordering is still preserved otherwise
+    //TODO test: Sorted according to waves, original order preserved
     //sort the students list by specified priority algorithm
     public void sortList(String priority) {
         if (priority.equals("recent")) {
