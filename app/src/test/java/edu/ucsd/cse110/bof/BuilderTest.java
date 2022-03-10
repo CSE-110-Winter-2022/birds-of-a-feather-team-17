@@ -81,6 +81,7 @@ public class BuilderTest {
         Assert.assertEquals(coursesExpected, bobWithCourses.getCourses());
     }
 
+    //does not use csv to build
     @Test
     public void builderCreatesBillCorrectly() {
         Student bobExpected = new Student("Bob", "https://upload.wikimedia.org/wikipedia/en/c/c5/Bob_the_builder.jpg", someUUID);
@@ -104,5 +105,20 @@ public class BuilderTest {
 
         Assert.assertEquals(bobExpected, actual.getStudent());
         Assert.assertEquals(coursesExpected, actual.getCourses());
+    }
+
+    //fails since stuName is never set
+    @Test
+    public void builderFailsIfFieldNotSet() {
+        Assert.assertThrows(Contract.ViolationException.class, () -> {
+                StudentWithCourses actual = builder
+                //.setStuName("Bob") would go here
+                .setStuPhotoURL("https://upload.wikimedia.org/wikipedia/en/c/c5/Bob_the_builder.jpg")
+                .setStuUUID(someUUID)
+                .addCourse(2021, "FA", "CSE", "210", "Large")
+                .addCourse(2022, "WI", "CSE", "110", "Tiny")
+                .addCourse(2022, "SP", "CSE", "110", "Gigantic")
+                .getSWC();
+        });
     }
 }
