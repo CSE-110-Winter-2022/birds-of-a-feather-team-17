@@ -63,16 +63,22 @@ public class TestHomePageFeatures {
     private static int courseId = 1;
     private static int userId = 1;
 
+    private static final String someUUID1 = "a4ca50b6-941b-11ec-b909-0242ac120002";
+    private static final String someUUID2 = "232dc5a5-b428-4ff0-88af-8817afc8e098";
+    private static final String someUUID3 = "7299ef8f-3b21-45d3-b105-f9ceddca48bf";
+
     private static final String bobPhoto = "https://upload.wikimedia" +
             ".org/wikipedia/en/c/c5/Bob_the_builder.jpg";
 
-    private static final String billCSV = "Bill,,,,\n" +
+    private static final String billCSV = someUUID1 + ",,,,\n" +
+            "Bill,,,,\n" +
             "https://lh3.googleusercontent.com/pw/AM-JKLXQ2ix4dg-PzLrPOSMOOy6M3PSUrijov9jCLXs4IGSTwN73B4kr-F6Nti_4KsiUU8LzDSGPSWNKnFdKIPqCQ2dFTRbARsW76pevHPBzc51nceZDZrMPmDfAYyI4XNOnPrZarGlLLUZW9wal6j-z9uA6WQ=w854-h924-no?authuser=0,,,,\n" +
             "2021,FA,CSE,210,Tiny\n" +
             "2022,WI,CSE,110,Large\n" +
             "2022,SP,CSE,110,Gigantic\n";
 
-    private static final String bobCSV = "Bob,,,,\n" +
+    private static final String bobCSV = someUUID2 + ",,,,\n" +
+            "Bob,,,,\n" +
             bobPhoto +
             "2021,FA,CSE,210,Tiny\n" +
             "2022,WI,CSE,110,Large\n" +
@@ -80,18 +86,21 @@ public class TestHomePageFeatures {
 
     // should come first when ordering by matches since he has 2 common
     // courses with Ava
-    private static final String JerryCSV = "Jerry,,,,\n" +
+    private static final String JerryCSV = someUUID1 + ",,,,\n" +
+            "Jerry,,,,\n" +
             "https://lh3.googleusercontent.com/pw/AM-JKLXQ2ix4dg-PzLrPOSMOOy6M3PSUrijov9jCLXs4IGSTwN73B4kr-F6Nti_4KsiUU8LzDSGPSWNKnFdKIPqCQ2dFTRbARsW76pevHPBzc51nceZDZrMPmDfAYyI4XNOnPrZarGlLLUZW9wal6j-z9uA6WQ=w854-h924-no?authuser=0,,,,\n" +
             "2016,FA,CSE,210,Gigantic\n" +
             "2016,WI,CSE,200,Gigantic\n";
 
     //should come first when ordering by size since he has a tiny common class
-    private static final String BarryCSV = "Barry,,,,\n" +
+    private static final String BarryCSV = someUUID2 + ",,,,\n" +
+            "Barry,,,,\n" +
             "https://lh3.googleusercontent.com/pw/AM-JKLXQ2ix4dg-PzLrPOSMOOy6M3PSUrijov9jCLXs4IGSTwN73B4kr-F6Nti_4KsiUU8LzDSGPSWNKnFdKIPqCQ2dFTRbARsW76pevHPBzc51nceZDZrMPmDfAYyI4XNOnPrZarGlLLUZW9wal6j-z9uA6WQ=w854-h924-no?authuser=0,,,,\n" +
             "2018,FA,CSE,99,Tiny\n";
 
     //should come first when ordering by recent since he has a FA22 class
-    private static final String HarryCSV = "Harry,,,,\n" +
+    private static final String HarryCSV = someUUID3 + ",,,,\n" +
+            "Harry,,,,\n" +
             "https://lh3.googleusercontent.com/pw/AM-JKLXQ2ix4dg-PzLrPOSMOOy6M3PSUrijov9jCLXs4IGSTwN73B4kr-F6Nti_4KsiUU8LzDSGPSWNKnFdKIPqCQ2dFTRbARsW76pevHPBzc51nceZDZrMPmDfAYyI4XNOnPrZarGlLLUZW9wal6j-z9uA6WQ=w854-h924-no?authuser=0,,,,\n" +
             "2022,FA,CSE,110,Large\n";
 

@@ -163,7 +163,7 @@ public class Student implements IStudent {
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, photoURL);
+        return Objects.hash(name, photoURL, UUID);
     }
 
     @Override
@@ -171,6 +171,7 @@ public class Student implements IStudent {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Student student = (Student) o;
-        return name.equals(student.name) && photoURL.equals(student.photoURL);
+        return name.equals(student.name) && photoURL.equals(student.photoURL) &&
+                UUID.equals(student.UUID);
     }
 }

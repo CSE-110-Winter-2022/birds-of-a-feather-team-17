@@ -9,6 +9,7 @@ import org.junit.runner.RunWith;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import edu.ucsd.cse110.bof.model.StudentWithCourses;
 import edu.ucsd.cse110.bof.model.db.Course;
@@ -18,13 +19,19 @@ import edu.ucsd.cse110.bof.model.db.Student;
 @RunWith(AndroidJUnit4.class)
 public class BuilderTest {
 
-    private static final String billCSV = "Bill,,,,\n" +
+    private static final String someUUID = "a4ca50b6-941b-11ec-b909-0242ac120002";
+    private static final String billPhotoURL = "https://lh3.googleusercontent.com/pw/AM-JKLXQ2ix4dg-PzLrPOSMOOy6M3PSUrijov9jCLXs4IGSTwN73B4kr-F6Nti_4KsiUU8LzDSGPSWNKnFdKIPqCQ2dFTRbARsW76pevHPBzc51nceZDZrMPmDfAYyI4XNOnPrZarGlLLUZW9wal6j-z9uA6WQ=w854-h924-no?authuser=0";
+
+
+    private static final String billCSV = "a4ca50b6-941b-11ec-b909-0242ac120002,,,,\n" +
+            "Bill,,,,\n" +
             "https://lh3.googleusercontent.com/pw/AM-JKLXQ2ix4dg-PzLrPOSMOOy6M3PSUrijov9jCLXs4IGSTwN73B4kr-F6Nti_4KsiUU8LzDSGPSWNKnFdKIPqCQ2dFTRbARsW76pevHPBzc51nceZDZrMPmDfAYyI4XNOnPrZarGlLLUZW9wal6j-z9uA6WQ=w854-h924-no?authuser=0,,,,\n" +
             "2021,FA,CSE,210,Large\n" +
             "2022,WI,CSE,110,Tiny\n" +
             "2022,SP,CSE,110,Gigantic\n";
 
-    private static final String bobCSV = "Bob,,,,\n" +
+    private static final String bobCSV = "a4ca50b6-941b-11ec-b909-0242ac120002,,,,\n" +
+            "Bob,,,,\n" +
             "https://upload.wikimedia.org/wikipedia/en/c/c5/Bob_the_builder.jpg,,,,\n";
     private IBuilder builder;
 
@@ -36,7 +43,7 @@ public class BuilderTest {
     @Test
     public void builderParsesBillCSV() {
         // expected values
-        Student billExpected = new Student("Bill", "https://lh3.googleusercontent.com/pw/AM-JKLXQ2ix4dg-PzLrPOSMOOy6M3PSUrijov9jCLXs4IGSTwN73B4kr-F6Nti_4KsiUU8LzDSGPSWNKnFdKIPqCQ2dFTRbARsW76pevHPBzc51nceZDZrMPmDfAYyI4XNOnPrZarGlLLUZW9wal6j-z9uA6WQ=w854-h924-no?authuser=0");
+        Student billExpected = new Student("Bill", billPhotoURL, someUUID);
         List<Course> coursesExpected = new ArrayList<>();
         coursesExpected.add(new Course(1 ,1 ,2021,
                 "FA", "CSE", "210", "Large"));
@@ -60,7 +67,7 @@ public class BuilderTest {
     @Test
     public void builderParsesBobCSV() {
         // expected values
-        Student bobExpected = new Student("Bob", "https://upload.wikimedia.org/wikipedia/en/c/c5/Bob_the_builder.jpg");
+        Student bobExpected = new Student("Bob", "https://upload.wikimedia.org/wikipedia/en/c/c5/Bob_the_builder.jpg", someUUID);
         List<Course> coursesExpected = new ArrayList<>();
 
         // builder handles parsing, should return a StudentWithCourses
@@ -76,7 +83,7 @@ public class BuilderTest {
 
     @Test
     public void builderCreatesBillCorrectly() {
-        Student bobExpected = new Student("Bob", "https://upload.wikimedia.org/wikipedia/en/c/c5/Bob_the_builder.jpg");
+        Student bobExpected = new Student("Bob", "https://upload.wikimedia.org/wikipedia/en/c/c5/Bob_the_builder.jpg", someUUID);
         List<Course> coursesExpected = new ArrayList<>();
 
         coursesExpected.add(new Course(1 ,1 ,2021,
@@ -89,6 +96,7 @@ public class BuilderTest {
         StudentWithCourses actual = builder
                 .setStuName("Bob")
                 .setStuPhotoURL("https://upload.wikimedia.org/wikipedia/en/c/c5/Bob_the_builder.jpg")
+                .setStuUUID(someUUID)
                 .addCourse(2021, "FA", "CSE", "210", "Large")
                 .addCourse(2022, "WI", "CSE", "110", "Tiny")
                 .addCourse(2022, "SP", "CSE", "110", "Gigantic")

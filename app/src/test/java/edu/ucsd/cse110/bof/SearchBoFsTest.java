@@ -29,6 +29,7 @@ public class SearchBoFsTest {
 
     private AppDatabase db;
     private static int courseId = 1;
+    private static final String someUUID = "a4ca50b6-941b-11ec-b909-0242ac120002";
 
     private static final String bobPhoto = "https://upload.wikimedia" +
             ".org/wikipedia/en/c/c5/Bob_the_builder.jpg";
@@ -75,7 +76,7 @@ public class SearchBoFsTest {
                 ActivityScenario.launch(HomePageActivity.class);
 
         //make Bob and his courses to mock:
-        Student Bob = new Student("Bob", bobPhoto);
+        Student Bob = new Student("Bob", bobPhoto, someUUID);
 
         Course cse110WI22L = new Course(    //this should appear in the list
                 courseId++,
@@ -145,7 +146,7 @@ public class SearchBoFsTest {
         scenario.moveToState(Lifecycle.State.CREATED);
 
         //make Bob and his courses to mock:
-        Student Bob = new Student("Bob", bobPhoto);
+        Student Bob = new Student("Bob", bobPhoto, someUUID);
 
         Course cse110WI22L = new Course(    //this should appear in the list
                 courseId++,

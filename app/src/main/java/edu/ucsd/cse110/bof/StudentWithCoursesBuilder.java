@@ -19,7 +19,7 @@ public class StudentWithCoursesBuilder implements IBuilder {
 
     private String stuName;
     private String stuPhotoURL;
-    private int stuID;
+    private String stuUUID;
     private List<Course> stuCourses;
 
     public StudentWithCoursesBuilder() {
@@ -44,11 +44,11 @@ public class StudentWithCoursesBuilder implements IBuilder {
     }
 
     @Override
-    public IBuilder setStuID(int ID) {
-        Contract.REQUIRE(ID >= 0,
-                "valid id");
+    public IBuilder setStuUUID(String UUID) {
+        Contract.REQUIRE(UUID != null && !UUID.equals(""),
+                "UUID not null or empty");
 
-        this.stuID = ID;
+        this.stuUUID = UUID;
         return this;
     }
 
@@ -65,7 +65,7 @@ public class StudentWithCoursesBuilder implements IBuilder {
         Contract.REQUIRE(size != null && !size.equals(""),
                 "size not null or empty");
 
-        this.stuCourses.add(new Course(-1, this.stuID, year, quarter, subj,
+        this.stuCourses.add(new Course(-1, 1, year, quarter, subj,
                 number, size));
 
         Contract.ENSURE(stuCourses.size() == sizePre + 1,
@@ -88,6 +88,9 @@ public class StudentWithCoursesBuilder implements IBuilder {
 
         Scanner reader = new Scanner(csv);
         reader.useDelimiter("\\s*[,\n]\\s*");
+
+        setStuUUID(reader.next());
+        reader.nextLine();
 
         setStuName(reader.next());
         reader.nextLine();
@@ -129,7 +132,7 @@ public class StudentWithCoursesBuilder implements IBuilder {
                 "stuPhotoURL not null or empty");
 
         StudentWithCourses retVal = new StudentWithCourses(
-                new Student(stuName, stuPhotoURL), stuCourses);
+                new Student(stuName, stuPhotoURL, stuUUID), stuCourses);
 
         reset();
         return retVal;
@@ -139,7 +142,7 @@ public class StudentWithCoursesBuilder implements IBuilder {
     public void reset() {
         this.stuName = null;
         this.stuPhotoURL = null;
-        this.stuID = 0;
+        this.stuUUID = null;
         this.stuCourses = new ArrayList<>();
         Contract.ENSURE(this.stuCourses.size() == 0, "new empty list");
     }

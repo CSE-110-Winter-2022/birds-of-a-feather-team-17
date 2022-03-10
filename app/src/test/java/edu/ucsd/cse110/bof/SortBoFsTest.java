@@ -26,11 +26,14 @@ public class SortBoFsTest {
     private AppDatabase db;
     private static int courseId = 1;
     private static int userId;
-
     ActivityScenario<HomePageActivity> scenario;
 
+    private static final String someUUID1 = "a4ca50b6-941b-11ec-b909-0242ac120002";
+    private static final String someUUID2 = "232dc5a5-b428-4ff0-88af-8817afc8e098";
     private static final String bobPhoto = "https://upload.wikimedia" +
             ".org/wikipedia/en/c/c5/Bob_the_builder.jpg";
+    private static final String defaultPhoto = "https://commons.wikimedia" +
+            ".org/wiki/File:Default_pfp.jpg";
 
     //create Ava's courses
     private static final Course c1 = new Course(
@@ -105,14 +108,14 @@ public class SortBoFsTest {
         scenario.moveToState(Lifecycle.State.CREATED);
 
         //create students
-        Bob = new Student("Bob", bobPhoto);
+        Bob = new Student("Bob", bobPhoto, someUUID1);
 
         bobCourses = new ArrayList<>();
         bobCourses.add(c1);
         bobCourses.add(c2);
         bobCourses.add(c3);
 
-        Casey = new Student("Casey","");
+        Casey = new Student("Casey", defaultPhoto, someUUID2);
         caseyCourses = new ArrayList<>();
         caseyCourses.add(c4);
         caseyCourses.add(c5);

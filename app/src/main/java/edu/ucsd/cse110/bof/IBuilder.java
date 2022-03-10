@@ -9,7 +9,7 @@ public interface IBuilder {
 
     IBuilder setStuName(String name);
     IBuilder setStuPhotoURL(String photoURL);
-    IBuilder setStuID(int iD);
+    IBuilder setStuUUID(String UUID);
     IBuilder addCourse(int year, String quarter, String subj,
                               String number, String size);
     IBuilder setCourses(List<Course> courses);
