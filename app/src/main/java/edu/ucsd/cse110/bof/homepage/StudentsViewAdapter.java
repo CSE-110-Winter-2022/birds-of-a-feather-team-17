@@ -110,6 +110,7 @@ public class StudentsViewAdapter extends RecyclerView.Adapter<StudentsViewAdapte
 
         this.students.clear();
         this.notifyDataSetChanged();
+        Log.d(TAG, "list cleared");
     }
 
     //sort the students list by specified priority algorithm

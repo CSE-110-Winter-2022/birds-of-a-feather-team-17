@@ -255,8 +255,9 @@ public class HomePageActivity extends AppCompatActivity {
 
     @Override
     protected void onResume() {
+        Log.d(TAG, "onResume called");
         super.onResume();
-        if (mockedStudent != null && fakedMessageListener != null) {
+        if (mockedStudent != null && session != null) {
             Log.d(TAG, "onResume: updating fakedMessageListener with current mockedStudent " +
                     mockedStudent.getStudent().getName());
             this.fakedMessageListener = new FakedMessageListener(this.realListener, 3,
@@ -322,10 +323,14 @@ public class HomePageActivity extends AppCompatActivity {
 
         Toast.makeText(this, "Session saved", Toast.LENGTH_SHORT).show();
         //Log.d(TAG, "Saved Session with name: " + sessionName);
+
+        session = null;
+        sessionId = 0;
     }
 
     //removes fakedMessageListener if created
     public void removeFakedML() {
+        Log.d(TAG, "removeFakedML called");
         if (fakedMessageListener != null) {
             Log.d(TAG, "MessagesClient.unsubscribe: " +
                     "unsubscribing and destroying fakedMessageListener...");
@@ -410,7 +415,7 @@ public class HomePageActivity extends AppCompatActivity {
             return;
         }
         else {
-            Log.d(TAG, "student not in homepage list nor database");
+            Log.d(TAG, "student not in homepage list");
 
             //use BoFsTracker to find common classes
             ArrayList<Course> commonCourses = (ArrayList<Course>)
