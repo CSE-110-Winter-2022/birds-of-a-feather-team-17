@@ -31,7 +31,7 @@ public class NameActivity extends AppCompatActivity {
     public void confirmName(View view) {
         username = usernameInput.getText().toString();
 
-        //no-blank string validity TODO: test
+        //no-blank string validity
         if (username.equals("")) {
             Toast.makeText(this,"Invalid name", Toast.LENGTH_SHORT).show();
             return;

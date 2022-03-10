@@ -13,6 +13,7 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -40,8 +41,11 @@ import java.io.ObjectInput;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.sql.SQLOutput;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import edu.ucsd.cse110.bof.BoFsTracker;
 import edu.ucsd.cse110.bof.FakedMessageListener;
@@ -54,6 +58,8 @@ import edu.ucsd.cse110.bof.StudentWithCourses;
 import edu.ucsd.cse110.bof.model.IStudent;
 import edu.ucsd.cse110.bof.model.db.AppDatabase;
 import edu.ucsd.cse110.bof.model.db.Course;
+import edu.ucsd.cse110.bof.model.db.ListConverter;
+import edu.ucsd.cse110.bof.model.db.Session;
 import edu.ucsd.cse110.bof.model.db.Student;
 
 public class HomePageActivity extends AppCompatActivity {
@@ -63,8 +69,15 @@ public class HomePageActivity extends AppCompatActivity {
     private Message selfMessage;
 
     List<Student> myBoFs;
+    Session session = null;
+    int sessionId;
+
     ToggleButton toggleSearch;
     Spinner p_spinner;
+    private Date currDate = null;
+    @SuppressLint("ConstantLocale")
+    private static final SimpleDateFormat sdf =
+            new SimpleDateFormat("MM/dd/yy hh:mmaa", Locale.getDefault());
 
     RecyclerView studentsRecyclerView;
     RecyclerView.LayoutManager studentsLayoutManager;
@@ -72,7 +85,7 @@ public class HomePageActivity extends AppCompatActivity {
 
     private static final String TAG = "HomePageReceiver";
     private MessageListener realListener;
-    private FakedMessageListener fakedMessageListener;
+    private FakedMessageListener fakedMessageListener = null;
     private MockedStudentFactory mockedStudentFactory;
 
     private StudentWithCourses selfStudentWithCourses;
@@ -124,7 +137,6 @@ public class HomePageActivity extends AppCompatActivity {
         p_spinner.setAdapter(p_adapter);
 
         //set thisStudent and thisStudentCourses
-        Intent intent = getIntent();
         db = AppDatabase.singleton(this);
         thisStudent = db.studentsDao().get(1);
         thisStudentCourses = db.coursesDao().getForStudent(1);
@@ -243,8 +255,9 @@ public class HomePageActivity extends AppCompatActivity {
 
     @Override
     protected void onResume() {
+        Log.d(TAG, "onResume called");
         super.onResume();
-        if (mockedStudent != null) {
+        if (mockedStudent != null && session != null) {
             Log.d(TAG, "onResume: updating fakedMessageListener with current mockedStudent " +
                     mockedStudent.getStudent().getName());
             this.fakedMessageListener = new FakedMessageListener(this.realListener, 3,
@@ -257,6 +270,17 @@ public class HomePageActivity extends AppCompatActivity {
     // made, it should immediately call realListener's onFound(), which calls
     // updateList()
     public void onStartSearchingClicked() {
+        //clear students list every time Start is clicked
+        if (!studentsViewAdapter.getStudents().isEmpty()) {
+            studentsViewAdapter.clearStudents();
+        }
+
+        //get current date when Start Searching is clicked
+        currDate = new Date();
+        String currDateFormatted = sdf.format(currDate);
+        Log.d(TAG, "Start clicked at time: " + currDateFormatted);
+        createSession();
+
         //set up mock listener if a mockedStudent was made
         if (mockedStudent!=null) {
             Log.d(TAG, "MessagesClient.subscribe: mocked student found, " +
@@ -278,10 +302,35 @@ public class HomePageActivity extends AppCompatActivity {
         //actual listener (not necessary for project)
         Log.d(TAG, "MessagesClient.unsubscribe: unsubscribing realListener...");
         Nearby.getMessagesClient(this).unsubscribe(realListener);
+
+        //Stop clicked, create session
+        Log.d(TAG, "Stop clicked");
+        saveSession();
+    }
+
+    private void createSession() {
+        String currDateFormatted = sdf.format(currDate);
+        session = new Session("", currDateFormatted, currDateFormatted);
+        Log.d(TAG, "created session at time: " + currDateFormatted);
+
+        db.sessionsDao().insert(session);
+        sessionId = db.sessionsDao().maxId();
+    }
+
+    private void saveSession() {
+        //TODO: save/rename session with pop-up window (DialogFragment)
+        //String sessionName = "";
+
+        Toast.makeText(this, "Session saved", Toast.LENGTH_SHORT).show();
+        //Log.d(TAG, "Saved Session with name: " + sessionName);
+
+        session = null;
+        sessionId = 0;
     }
 
     //removes fakedMessageListener if created
     public void removeFakedML() {
+        Log.d(TAG, "removeFakedML called");
         if (fakedMessageListener != null) {
             Log.d(TAG, "MessagesClient.unsubscribe: " +
                     "unsubscribing and destroying fakedMessageListener...");
@@ -300,12 +349,12 @@ public class HomePageActivity extends AppCompatActivity {
 
         activityLauncher.launch(intent);
     }
-
-    public void onHistoryClicked(View view) {
+  
+    public void onSessionsClicked(View view) {
         removeFakedML();
 
-        Log.d(TAG, "going to History");
-        Intent intent = new Intent(this, HistoryActivity.class);
+        Log.d(TAG, "going to Sessions");
+        Intent intent = new Intent(this, SessionsActivity.class);
         startActivity(intent);
     }
 
@@ -366,7 +415,7 @@ public class HomePageActivity extends AppCompatActivity {
             return;
         }
         else {
-            Log.d(TAG, "student not in homepage list nor database");
+            Log.d(TAG, "student not in homepage list");
 
             //use BoFsTracker to find common classes
             ArrayList<Course> commonCourses = (ArrayList<Course>)
@@ -399,6 +448,11 @@ public class HomePageActivity extends AppCompatActivity {
 
                     int insertedId = db.studentsDao().maxId();
                     newStudent.setStudentId(insertedId);
+
+                    //add to session, update database
+                    String updatedList = (db.sessionsDao().get(sessionId).studentIDList) + "," + insertedId;
+                    db.sessionsDao().updateStudentList(sessionId, updatedList);
+
                     int insertedCourseId = db.coursesDao().maxId();
 
                     //only common courses need to be added to db
@@ -410,6 +464,14 @@ public class HomePageActivity extends AppCompatActivity {
                 }
                 else {
                     Log.d(TAG, "Student " + newName + " already in database");
+
+                    //set student id based on entry in database
+                    int dbId = db.studentsDao().getAll().indexOf(newStudent) + 1;
+                    newStudent.setStudentId(dbId);
+
+                    //add to session, update database
+                    String updatedList = (db.sessionsDao().get(sessionId).studentIDList) + "," + dbId;
+                    db.sessionsDao().updateStudentList(sessionId, updatedList);
                 }
 
                 Log.d(TAG, "preparing to add Student " + newName + " to recycler view");

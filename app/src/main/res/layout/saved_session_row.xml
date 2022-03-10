@@ -13,24 +13,25 @@
         android:layout_height="match_parent">
 
         <TextView
-            android:id="@+id/course_info"
+            android:id="@+id/session_info"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Course Info"
+            android:text="Session Name"
             android:textSize="20sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <Button
-            android:id="@+id/remove_course_button"
+            android:id="@+id/rename_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Delete"
+            android:text="Rename"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             tools:layout_editor_absoluteY="0dp" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </FrameLayout>

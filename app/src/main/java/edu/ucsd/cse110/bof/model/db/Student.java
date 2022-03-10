@@ -4,6 +4,7 @@ import android.content.Context;
 
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
+import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
 import java.util.List;
@@ -44,6 +45,7 @@ public class Student implements IStudent {
     }
 
     // Student default constructor
+    @Ignore
     public Student() {
         this.name = "Ava";
         this.photoURL = "ava.jpg";
