@@ -8,6 +8,15 @@
     android:layout_marginRight="@dimen/margin"
     android:gravity="center_vertical">
 
+    <ImageView
+        android:id="@+id/wave_received_icon"
+        android:layout_width="36dp"
+        android:layout_height="42dp"
+        android:translationX="200sp"
+        android:translationY="11sp"
+        android:visibility="invisible"
+        app:srcCompat="@drawable/wave_filled" />
+
     <TextView
         android:id="@+id/student_row_name"
         android:layout_width="wrap_content"
@@ -29,13 +38,16 @@
         android:text="-1"
         android:textSize="24sp"
         android:textStyle="bold"
-        android:translationX="175sp" />
+        android:translationX="250sp" />
 
     <ImageView
         android:id="@+id/student_row_photo"
+        android:contentDescription="@string/student_photo"
         android:layout_width="80dp"
         android:layout_height="51dp"
-        android:translationX="300sp"
+        android:translationX="280sp"
         android:translationY="6sp"
         tools:srcCompat="@tools:sample/avatars" />
 </FrameLayout>
+
+<!--@dimen/list_item_height-->

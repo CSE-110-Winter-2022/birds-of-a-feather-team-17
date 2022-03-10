@@ -18,6 +18,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Comparator;
@@ -29,6 +30,7 @@ import java.util.concurrent.Executors;
 import javax.net.ssl.HttpsURLConnection;
 
 import edu.ucsd.cse110.bof.R;
+import edu.ucsd.cse110.bof.model.StudentWithCourses;
 import edu.ucsd.cse110.bof.model.IStudent;
 import edu.ucsd.cse110.bof.model.db.Student;
 import edu.ucsd.cse110.bof.viewProfile.StudentDetailActivity;
@@ -111,19 +113,20 @@ public class StudentsViewAdapter extends RecyclerView.Adapter<StudentsViewAdapte
         Log.d(TAG, "list cleared");
     }
 
+    //TODO test: Sorted according to waves, original order preserved
     //sort the students list by specified priority algorithm
     public void sortList(String priority) {
         if (priority.equals("recent")) {
             students.sort((Comparator<IStudent>) (o1, o2) ->
-                    Integer.compare(o2.getRecencyWeight(), o1.getRecencyWeight()));
+                    Integer.compare(o2.getRecencyWeight() + o2.waveMultiplier(), o1.getRecencyWeight() + o1.waveMultiplier()));
         }
         else if (priority.equals("small classes")) {
             students.sort((Comparator<IStudent>) (o1, o2) ->
-                    Float.compare(o2.getClassSizeWeight(), o1.getClassSizeWeight()));
+                    Float.compare(o2.getClassSizeWeight() + o2.waveMultiplier(), o1.getClassSizeWeight() + o1.waveMultiplier()));
         }
         else if (priority.equals("common classes")) {
             students.sort((Comparator<IStudent>) (o1, o2) ->
-                    Integer.compare(o2.getMatches(), o1.getMatches()));
+                    Integer.compare(o2.getMatches() + o2.waveMultiplier(), o1.getMatches() + o1.waveMultiplier()));
         }
         this.notifyDataSetChanged();
     }
@@ -143,6 +146,8 @@ public class StudentsViewAdapter extends RecyclerView.Adapter<StudentsViewAdapte
         private final TextView studentNameView;
         private final TextView studentMatchesView;
         private final ImageView studentPhotoView;
+        private final ImageView studentWaveIcon;
+
 
         private IStudent student;
 
@@ -151,6 +156,7 @@ public class StudentsViewAdapter extends RecyclerView.Adapter<StudentsViewAdapte
             this.studentNameView = itemView.findViewById(R.id.student_row_name);
             this.studentMatchesView = itemView.findViewById(R.id.student_row_matches);
             this.studentPhotoView = itemView.findViewById(R.id.student_row_photo);
+            this.studentWaveIcon = itemView.findViewById(R.id.wave_received_icon);
             itemView.setOnClickListener(this);
         }
 
@@ -159,6 +165,9 @@ public class StudentsViewAdapter extends RecyclerView.Adapter<StudentsViewAdapte
             this.studentNameView.setText(student.getName());
             this.studentMatchesView.setText(String.format(US, "%d",
                     student.getMatches()));
+            if(student.isWavedAtMe()) {
+                this.studentWaveIcon.setVisibility(View.VISIBLE);
+            }
         }
 
         public void setPhoto(Bitmap photoBitmap) {
@@ -176,6 +185,7 @@ public class StudentsViewAdapter extends RecyclerView.Adapter<StudentsViewAdapte
         }
     }
 
+    //test method
     public List<Student> getStudents() {
         return this.students;
     }
