@@ -74,6 +74,10 @@ public class HomePageActivity extends AppCompatActivity {
 
     private Context context;
 
+    private String UUID;
+
+    private String priority;
+
     //for getting the csv from NMMActivity
     ActivityResultLauncher<Intent> activityLauncher = registerForActivityResult(
         new ActivityResultContracts.StartActivityForResult(),
@@ -105,6 +109,9 @@ public class HomePageActivity extends AppCompatActivity {
 
         context = this;
 
+        //set priority to "common classes" as default
+        priority = "common classes";
+
         //create spinner (drop-down menu) for priorities/sorting algorithms
         p_spinner = findViewById(R.id.priority_spinner);
         ArrayAdapter<CharSequence> p_adapter = ArrayAdapter.createFromResource(this, R.array.priorities_array, android.R.layout.simple_spinner_item);
@@ -116,6 +123,10 @@ public class HomePageActivity extends AppCompatActivity {
         db = AppDatabase.singleton(this);
         thisStudent = db.studentsDao().get(1);
         thisStudentCourses = db.coursesDao().getForStudent(1);
+
+        //TODO test: OUTPUT current UUID for use with mocking
+        UUID = thisStudent.getUUID();
+        Log.d("UUID", UUID); //output UUID with tag UUID in console
 
         //set up RecyclerView
         myBoFs = new ArrayList<>();
@@ -135,7 +146,7 @@ public class HomePageActivity extends AppCompatActivity {
                     public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
 
                         Log.d(TAG, "Selecting priority...");
-                        String priority = parent.getItemAtPosition(pos).toString();
+                        priority = parent.getItemAtPosition(pos).toString();
                         studentsViewAdapter.sortList(priority);
                         Log.d(TAG, "List sorted based on priority: "+priority);
 
@@ -174,9 +185,11 @@ public class HomePageActivity extends AppCompatActivity {
                 } catch (IOException | ClassNotFoundException e) {
                     e.printStackTrace();
                 }
+                Log.d(TAG, "message's UUID is: " + receivedStudentWithCourses.getStudent().getUUID());
                 Log.d(TAG,
                         "message is a studentWithCourses named "
                                 + receivedStudentWithCourses.getStudent().getName());
+                Log.d(TAG, "message's waveTarget is: " + receivedStudentWithCourses.getStudent().getWaveTarget());
 
                 //update the recyclerview list
                 updateLists();
@@ -196,6 +209,7 @@ public class HomePageActivity extends AppCompatActivity {
 
         Log.d(TAG, "creating message to send through Nearby...");
         //create user's StudentWithCourses object to send to others via Bluetooth/Nearby API
+
         selfStudentWithCourses = new StudentWithCourses(thisStudent, thisStudentCourses);
 
         //make byte array for student and courses
@@ -345,14 +359,37 @@ public class HomePageActivity extends AppCompatActivity {
 
     // called from listener, checks whether the student needs to be added to
     // homepage list and database
+
+    //TODO: test
     private void updateLists()  {
 
         Student newStudent = receivedStudentWithCourses.getStudent();
         String newName = newStudent.getName();
+        int matchingIndex = -1;
+
+        //getMatchingStudent will throw NullPointerException if student doesn't exist
+        try {
+            matchingIndex = getMatchingStudent(newStudent);
+            Log.d(TAG, "Discovered matching student: " + matchingIndex);
+        }
+        catch (NullPointerException e) {
+            Log.d(TAG, "No matching student");
+        }
 
         //check that this student isn't in list nor in database
         if (studentsViewAdapter.getStudents().contains(newStudent)) {
             Log.d(TAG, "Student " + newName + " already in homepage list");
+            if (matchingIndex != -1) {
+                if (newStudent.getWaveTarget().equals(UUID)) {
+                    //set existing student's waveAtMe to true on studentsViewAdapter
+                    Log.d(TAG, "Discovered a matching wave");
+                    studentsViewAdapter.getStudents().get(matchingIndex).setWavedAtMe(true);
+                    //TODO test: update Adapter UI
+                    //TODO test: update Adapter Sorting
+                    studentsViewAdapter.sortList(priority);
+                    //TODO update DB
+                }
+            }
             return;
         }
         else {
@@ -415,6 +452,17 @@ public class HomePageActivity extends AppCompatActivity {
 
             }
         }
+    }
+
+    //Helper function to find the existing student matching the new student
+    private int getMatchingStudent(Student newStudent) {
+        for(int i = 0; i < studentsViewAdapter.getStudents().size(); i++) {
+            Log.d(TAG, "Index " + i + "'s UUID: " + studentsViewAdapter.getStudents().get(i).getUUID());
+            if (studentsViewAdapter.getStudents().get(i).getUUID().equals(newStudent.getUUID())) {
+                return i;
+            }
+        }
+        return -1;
     }
 
     //for testing, need to be able to make mocked student without going to NMM

@@ -32,8 +32,8 @@ public class InputCourseActivity extends AppCompatActivity {
 
     private static final String TAG = "InputCourseActivity";
 
-    //user's studentID is 1, first one inserted into database
-    private static final int USER_ID = 1;
+    //TODO test: changed from USER_ID = 1 to getting USER_ID from InputCourseHandler
+    private int USER_ID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,6 +63,7 @@ public class InputCourseActivity extends AppCompatActivity {
 
         //create InputCourseHandler
         inputCourseHandler = new InputCourseHandler(this);
+        USER_ID = inputCourseHandler.getUserId();
 
         //insert user into database (student_id=1, first element in database)
         db = AppDatabase.singleton(this);
@@ -92,14 +93,14 @@ public class InputCourseActivity extends AppCompatActivity {
         //move to home page
         if (onHomePage) {
             Log.d(TAG, "Arrived from homepage, returning to HomePageActivity");
-            finish();
         }
         else {
             Intent intent = new Intent(this, HomePageActivity.class);
-            intent.putExtra("student_id", USER_ID);
+            intent.putExtra("student_id", USER_ID); //TODO remove unused line
             startActivity(intent);
-            finish();
         }
+
+        finish();
     }
 
     public void onAddCourseClicked(View view) {
