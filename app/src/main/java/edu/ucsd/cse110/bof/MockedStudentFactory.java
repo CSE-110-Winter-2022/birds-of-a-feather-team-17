@@ -7,16 +7,12 @@ import java.util.Scanner;
 
 import edu.ucsd.cse110.bof.model.db.Course;
 import edu.ucsd.cse110.bof.model.db.Student;
-
+/*
 public class MockedStudentFactory {
 
     private static final String TAG = "McokedStudentFactoryLog";
 
-    /**
-     * Parses CSV and returns a StudentWithCourses
-     * @param csv csv to parse as a String
-     * @return StudentWithCourses
-     */
+
     public StudentWithCourses makeMockedStudent(String csv) {
         Log.d(TAG, "Within factory, reading csv: " + csv);
         if (csv == null || csv.isEmpty()) {
@@ -56,3 +52,4 @@ public class MockedStudentFactory {
         return new StudentWithCourses(mockStudent, mockStuCourses);
     }
 }
+*/

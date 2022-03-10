@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.google.android.gms.nearby.Nearby;
 import com.google.android.gms.nearby.messages.Message;
@@ -29,10 +30,8 @@ import edu.ucsd.cse110.bof.model.db.Student;
 import edu.ucsd.cse110.bof.StudentWithCourses;
 
 public class NearbyMessageMockActivity extends AppCompatActivity {
-    private static final String TAG = "MockingReceiver";
-    private MessageListener realListener;
+    private static final String TAG = "MockingInputActivity";
     private EditText mockStudentInput;
-    private MockedStudentFactory mockedStudentFactory;
     private String csv;
 
     @Override
@@ -49,8 +48,10 @@ public class NearbyMessageMockActivity extends AppCompatActivity {
      * seconds)
      */
     public void onConfirmMockedStudent(View view) {
-
         csv = mockStudentInput.getText().toString();
+        if (csv.equals("")) {
+            Toast.makeText(this, "Please input csv", Toast.LENGTH_SHORT).show();
+        }
         mockStudentInput.setText("");
     }
 
