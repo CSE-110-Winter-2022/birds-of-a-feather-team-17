@@ -64,6 +64,7 @@ public class TestCreateProfile {
     }
 
     //skips google login (can't ui test)
+    //tests process of inputting name, photoURL, and courses.
     @Test
     public void testCreateProfile() {
         ViewInteraction appCompatEditText01 = onView(

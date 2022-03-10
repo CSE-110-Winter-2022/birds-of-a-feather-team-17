@@ -16,6 +16,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withParent;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.anything;
 import static org.hamcrest.Matchers.is;
 
 import android.content.Context;
@@ -77,25 +78,64 @@ public class TestHomePageFeatures {
             "2022,WI,CSE,110,Large\n" +
             "2022,SP,CSE,110,Gigantic\n";
 
+    // should come first when ordering by matches since he has 2 common
+    // courses with Ava
+    private static final String JerryCSV = "Jerry,,,,\n" +
+            "https://lh3.googleusercontent.com/pw/AM-JKLXQ2ix4dg-PzLrPOSMOOy6M3PSUrijov9jCLXs4IGSTwN73B4kr-F6Nti_4KsiUU8LzDSGPSWNKnFdKIPqCQ2dFTRbARsW76pevHPBzc51nceZDZrMPmDfAYyI4XNOnPrZarGlLLUZW9wal6j-z9uA6WQ=w854-h924-no?authuser=0,,,,\n" +
+            "2016,FA,CSE,210,Gigantic\n" +
+            "2016,WI,CSE,200,Gigantic\n";
 
+    //should come first when ordering by size since he has a tiny common class
+    private static final String BarryCSV = "Barry,,,,\n" +
+            "https://lh3.googleusercontent.com/pw/AM-JKLXQ2ix4dg-PzLrPOSMOOy6M3PSUrijov9jCLXs4IGSTwN73B4kr-F6Nti_4KsiUU8LzDSGPSWNKnFdKIPqCQ2dFTRbARsW76pevHPBzc51nceZDZrMPmDfAYyI4XNOnPrZarGlLLUZW9wal6j-z9uA6WQ=w854-h924-no?authuser=0,,,,\n" +
+            "2018,FA,CSE,99,Tiny\n";
+
+    //should come first when ordering by recent since he has a FA22 class
+    private static final String HarryCSV = "Harry,,,,\n" +
+            "https://lh3.googleusercontent.com/pw/AM-JKLXQ2ix4dg-PzLrPOSMOOy6M3PSUrijov9jCLXs4IGSTwN73B4kr-F6Nti_4KsiUU8LzDSGPSWNKnFdKIPqCQ2dFTRbARsW76pevHPBzc51nceZDZrMPmDfAYyI4XNOnPrZarGlLLUZW9wal6j-z9uA6WQ=w854-h924-no?authuser=0,,,,\n" +
+            "2022,FA,CSE,110,Large\n";
+
+
+    //create Ava and her courses
     private static final Student Ava = new Student();
-    //create Ava's courses
-    private static final Course cse12FA21S = new Course(
+
+    //common with Jerry
+    private static final Course cse210FA16G = new Course(
             courseId++,
             userId,
-            2021,
+            2016,
             "FA",
             "CSE",
-            "12",
-            "Small");
-    private static final Course cse100FA21S = new Course(
+            "210",
+            "Gigantic");
+    //common with Jerry
+    private static final Course cse200WI16G = new Course(
             courseId++,
             userId,
-            2021,
+            2016,
+            "WI",
+            "CSE",
+            "200",
+            "Gigantic");
+    //common with Barry
+    private static final Course cse99FA18T = new Course(
+            courseId++,
+            userId,
+            2018,
             "FA",
             "CSE",
-            "100",
-            "Small");
+            "99",
+            "Tiny");
+    //common with Harry
+    private static final Course cse110FA22L = new Course(
+            courseId++,
+            userId,
+            2022,
+            "FA",
+            "CSE",
+            "110",
+            "Large");
+    //common with Bill and Bob
     private static final Course cse110WI22L = new Course(
             courseId++,
             userId,
@@ -121,13 +161,16 @@ public class TestHomePageFeatures {
         userId = db.studentsDao().maxId();
 
         //add Ava's courses to db
-        db.coursesDao().insert(cse12FA21S);
-        db.coursesDao().insert(cse100FA21S);
+        db.coursesDao().insert(cse200WI16G);
+        db.coursesDao().insert(cse99FA18T);
         db.coursesDao().insert(cse110WI22L);
+        db.coursesDao().insert(cse210FA16G);
+        db.coursesDao().insert(cse110FA22L);
 
         rule.launchActivity(null);
     }
 
+    //tests mocking a student and confirms that they are added to recyclerview
     @Test
     public void testMockStudentIsAddedToRecycler() {
         Assert.assertEquals(1, db.studentsDao().getAll().size());
@@ -331,31 +374,129 @@ public class TestHomePageFeatures {
         bobDetailNameView.check(matches(withText("Bob")));
     }
 
-    /*
-    public static Matcher<View> withIndex(final Matcher<View> matcher, final int index) {
-        return new BoundedMatcher<View, RecyclerView>(RecyclerView.class) {
-            int currentIndex = 0;
+    // adds two students to the viewAdapter, then confirms that updating the
+    // priorities will affect the order
+    @Test
+    public void testPrioritiesChangeRecyclerViewOrder() {
+        //only Ava in db right now
+        Assert.assertEquals(1, db.studentsDao().getAll().size());
 
-            @Override
-            public void describeTo(Description description) {
-                description.appendText("with index: ");
-                description.appendValue(index);
-                matcher.describeTo(description);
-            }
+        //click button to start search
+        ViewInteraction searchBtn = onView(
+                allOf(withId(R.id.search_button),
+                        isDisplayed()));
+        searchBtn.perform(click());
 
-            @Override
-            public boolean matchesSafely(final RecyclerView view) {
-                RecyclerView.ViewHolder viewHolder =
-                        view.findViewHolderForAdapterPosition(index);
-                if (viewHolder == null) {
-                    // has no item on such position
-                    return false;
-                }
-                return matcher.matches(viewHolder.itemView);
-            }
-        };
+        //go to activity to mock students
+        ViewInteraction mockStuBtnView = onView(
+                allOf(withId(R.id.mock_activity_btn),
+                        isDisplayed()));
+        mockStuBtnView.perform(click());
+
+        //input JerryCSV text into view
+        ViewInteraction csvInputView = onView(
+                allOf(withId(R.id.input_csv),
+                        isDisplayed()));
+        csvInputView.perform(replaceText(JerryCSV));
+
+        //click confirm
+        ViewInteraction confirmMockedStudentBtn = onView(
+                allOf(withId(R.id.confirmButton),
+                        isDisplayed()));
+        confirmMockedStudentBtn.perform(click());
+
+        //go back to homepage:
+        ViewInteraction toHomeFromCSVBtn = onView(
+                allOf(withId(R.id.button2),
+                        isDisplayed()));
+        toHomeFromCSVBtn.perform(click());
+
+        //repeat with Barry and Harry
+        mockStuBtnView.perform(click());
+        csvInputView.perform(replaceText(BarryCSV));
+        confirmMockedStudentBtn.perform(click());
+        toHomeFromCSVBtn.perform(click());
+
+        mockStuBtnView.perform(click());
+        csvInputView.perform(replaceText(HarryCSV));
+        confirmMockedStudentBtn.perform(click());
+        toHomeFromCSVBtn.perform(click());
+
+        //confirm all students added to db
+        Assert.assertEquals(4, db.studentsDao().getAll().size());
+
+        //confirm that sorting by "common classes"
+        ViewInteraction prioritySpinner = onView(
+                allOf(withId(R.id.priority_spinner),
+                        isDisplayed()));
+        prioritySpinner.perform(click());
+
+        DataInteraction optionNumber = onData(anything())
+                .inAdapterView(childAtPosition(
+                        withClassName(is("android.widget.PopupWindow$PopupBackgroundView")),
+                        0))
+                .atPosition(0);
+        optionNumber.perform(click());
+
+        //confirm that homePageViewAdapter has all 3 students
+        ViewInteraction homePageRecyclerView = onView(
+                allOf(withId(R.id.students_view),
+                        childAtPosition(
+                                withClassName(is("androidx.constraintlayout.widget.ConstraintLayout")),
+                                0)));
+        homePageRecyclerView.check(matches(hasChildCount(3)));
+
+        //click into first student
+        homePageRecyclerView.perform(actionOnItemAtPosition(0, click()));
+
+        //confirm that the first is Jerry
+        ViewInteraction stuDetailName = onView(
+                allOf(withId(R.id.profile_name),
+                        isDisplayed()));
+        stuDetailName.check(matches(withText("Jerry")));
+
+        //return to homepage
+        ViewInteraction stuDetailBackBtn = onView(
+                allOf(withId(R.id.button_back),
+                        isDisplayed()));
+        stuDetailBackBtn.perform(click());
+
+        //now change priority to recent
+        prioritySpinner.perform(click());
+
+        DataInteraction optionRecent = onData(anything())
+                .inAdapterView(childAtPosition(
+                        withClassName(is("android.widget.PopupWindow$PopupBackgroundView")),
+                        0))
+                .atPosition(1);
+        optionRecent.perform(click());
+
+        //click into first student
+        homePageRecyclerView.perform(actionOnItemAtPosition(0, click()));
+
+        //confirm that the first is now Harry
+        stuDetailName.check(matches(withText("Harry")));
+
+        //return to homepage
+        stuDetailBackBtn.perform(click());
+
+        //now change priority to size
+        prioritySpinner.perform(click());
+
+        DataInteraction optionSize = onData(anything())
+                .inAdapterView(childAtPosition(
+                        withClassName(is("android.widget.PopupWindow$PopupBackgroundView")),
+                        0))
+                .atPosition(2);
+        optionSize.perform(click());
+
+        //click into first student
+        homePageRecyclerView.perform(actionOnItemAtPosition(0, click()));
+
+        //confirm that the first is now Barry
+        stuDetailName.check(matches(withText("Barry")));
     }
-    */
+
     private static Matcher<View> childAtPosition(
             final Matcher<View> parentMatcher, final int position) {
 
