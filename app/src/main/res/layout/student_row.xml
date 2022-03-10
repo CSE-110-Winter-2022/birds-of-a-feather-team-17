@@ -8,6 +8,17 @@
     android:layout_marginRight="@dimen/margin"
     android:gravity="center_vertical">
 
+    <ImageButton
+        android:id="@+id/starButton"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:background="?android:selectableItemBackground"
+        android:contentDescription="Unfavorited"
+        android:scaleType="fitCenter"
+        android:translationX="100sp"
+        android:translationY="17sp"
+        app:srcCompat="@drawable/star_hollow" />
+
     <TextView
         android:id="@+id/student_row_name"
         android:layout_width="wrap_content"
@@ -29,7 +40,7 @@
         android:text="-1"
         android:textSize="24sp"
         android:textStyle="bold"
-        android:translationX="175sp" />
+        android:translationX="250sp" />
 
     <ImageView
         android:id="@+id/student_row_photo"

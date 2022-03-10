@@ -90,7 +90,7 @@ public class Student implements IStudent {
 
     public boolean getIsFav() { return isFav; }
 
-    public void setIsFav() { this.isFav = true; }
+    public void setIsFav(boolean isFav) { this.isFav = isFav; }
 
     // pass in a context to receive singleton database instance
     public List<Course> getCourses(Context context) {
