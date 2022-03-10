@@ -71,12 +71,15 @@ public class StudentDetailActivity extends AppCompatActivity {
 
         //get courses and student info from data base using studentID
         db = AppDatabase.singleton(this);
+    }
 
 
+    @Override
+    protected void onStart() {
+        super.onStart();
         //get student and their courses
         student = db.studentsDao().get(studentID);
         courses = db.coursesDao().getForStudent(studentID);
-
 
         //sets student name and picture
         studentName = findViewById(R.id.profile_name);
@@ -108,7 +111,6 @@ public class StudentDetailActivity extends AppCompatActivity {
             });
         });
 
-
         //finds recycler for courses list
         coursesRecyclerView = findViewById(R.id.list_classes_recycler);
 
@@ -119,14 +121,13 @@ public class StudentDetailActivity extends AppCompatActivity {
         //uses CoursesViewAdapter class to set courses into recycler
         coursesListViewAdapter = new CoursesListViewAdapter(courses);
         coursesRecyclerView.setAdapter(coursesListViewAdapter);
-
     }
 
     public void onBackClicked(View view) {
         finish();
     }
 
-    public void onWaveClicked(View view) {
+    public void onWaveClicked() {
         if(!waveOn) {
             waveOn = true;
 
@@ -137,9 +138,10 @@ public class StudentDetailActivity extends AppCompatActivity {
             //TODO Send wave through Nearby
             //probably should write a SendStudent function
 
+            //reinsert student to db with isWavedTo field set
+            db.studentsDao().delete((Student) student);
             student.setWavedTo(true);
-
-            //TODO update DB
+            db.studentsDao().insert((Student)student);
 
             //Display a toast declaring wave was sent
             Toast.makeText(this, "Wave sent!", Toast.LENGTH_SHORT).show();
@@ -161,4 +163,15 @@ public class StudentDetailActivity extends AppCompatActivity {
         }
     }
 
+    // testing, need to set Db after onCreate to have views populate with
+    // test student
+    public void setDb(AppDatabase db) {
+        this.db = db;
+    }
+
+    // testing, need to set id after onCreate to have views populate with
+    // test student
+    public void setStudentID(int studentID) {
+        this.studentID = studentID;
+    }
 }
