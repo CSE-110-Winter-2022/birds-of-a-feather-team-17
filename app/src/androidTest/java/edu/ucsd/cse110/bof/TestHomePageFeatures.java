@@ -374,7 +374,7 @@ public class TestHomePageFeatures {
         bobDetailNameView.check(matches(withText("Bob")));
     }
 
-    // adds two students to the viewAdapter, then confirms that updating the
+    // adds three students to the viewAdapter, then confirms that updating the
     // priorities will affect the order
     @Test
     public void testPrioritiesChangeRecyclerViewOrder() {
