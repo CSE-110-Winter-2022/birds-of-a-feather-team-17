@@ -50,7 +50,7 @@ public class MockedStudentFactory {
             reader.nextLine();
             if (!reader.hasNext()) { break; }
 
-            try {
+           if(reader.hasNextInt()) {
                 year = Integer.parseInt(reader.next());
                 quarter = reader.next();
                 subject = reader.next();
@@ -59,7 +59,8 @@ public class MockedStudentFactory {
 
                 mockStuCourses.add(new Course(1, 1, year,
                         quarter, subject, courseNum, courseSize));
-            } catch (NumberFormatException e) { //TODO test: if this way works
+            }
+           else {
                 targetUUID = reader.next();
                 if(reader.next().equals("wave")) //TODO test: possibly unexpected behavior from second part
                     mockStudent.setWaveTarget(targetUUID);
