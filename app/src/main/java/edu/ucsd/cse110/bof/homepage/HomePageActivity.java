@@ -349,7 +349,7 @@ public class HomePageActivity extends AppCompatActivity {
 
         activityLauncher.launch(intent);
     }
-
+  
     public void onSessionsClicked(View view) {
         removeFakedML();
 
