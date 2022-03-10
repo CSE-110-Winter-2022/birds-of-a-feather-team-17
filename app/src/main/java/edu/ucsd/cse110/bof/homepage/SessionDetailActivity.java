@@ -49,15 +49,16 @@ public class SessionDetailActivity extends AppCompatActivity {
 
         //Retrieve session_id sent from NameActivity
         Bundle extras = getIntent().getExtras();
-        int session_id = extras.getInt("session_id",1);
+        int session_id = extras.getInt("session_id");
 
         db = AppDatabase.singleton(this);
         Session session = db.sessionsDao().get(session_id);
+        List<Integer> studentIDList = session.getStudentList();
 
         Log.d(TAG, "Received Session id: " + session_id + " with name: " + session.dispName);
 
         discoveredStudents = new ArrayList<>();
-        for (int id : session.studentIDList) {
+        for (int id : studentIDList) {
             discoveredStudents.add(db.studentsDao().get(id));
         }
 
@@ -68,6 +69,8 @@ public class SessionDetailActivity extends AppCompatActivity {
         studentsRecyclerView.setLayoutManager(studentsLayoutManager);
 
         studentsViewAdapter = new StudentsViewAdapter(discoveredStudents);
+        studentsViewAdapter.setContext(this);
+
         studentsRecyclerView.setAdapter(studentsViewAdapter);
 
         p_spinner.setOnItemSelectedListener(

@@ -12,7 +12,6 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 
 @Database(entities = {Student.class, Course.class, Session.class}, version = 1)
-@TypeConverters({ListConverter.class})
 public abstract class AppDatabase extends RoomDatabase {
     private static AppDatabase singletonInstance;
 

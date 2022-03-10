@@ -58,6 +58,7 @@ import edu.ucsd.cse110.bof.StudentWithCourses;
 import edu.ucsd.cse110.bof.model.IStudent;
 import edu.ucsd.cse110.bof.model.db.AppDatabase;
 import edu.ucsd.cse110.bof.model.db.Course;
+import edu.ucsd.cse110.bof.model.db.ListConverter;
 import edu.ucsd.cse110.bof.model.db.Session;
 import edu.ucsd.cse110.bof.model.db.Student;
 
@@ -68,6 +69,9 @@ public class HomePageActivity extends AppCompatActivity {
     private Message selfMessage;
 
     List<Student> myBoFs;
+    Session session = null;
+    int sessionId;
+
     ToggleButton toggleSearch;
     Spinner p_spinner;
     private Date currDate = null;
@@ -81,7 +85,7 @@ public class HomePageActivity extends AppCompatActivity {
 
     private static final String TAG = "HomePageReceiver";
     private MessageListener realListener;
-    private FakedMessageListener fakedMessageListener;
+    private FakedMessageListener fakedMessageListener = null;
     private MockedStudentFactory mockedStudentFactory;
 
     private StudentWithCourses selfStudentWithCourses;
@@ -246,19 +250,13 @@ public class HomePageActivity extends AppCompatActivity {
                 "): unpublishing selfMessage (StudentWithCourses)...");
         Nearby.getMessagesClient(this).unpublish(selfMessage);
         Log.d(TAG, "unpublished selfMessage");
-
-        //TODO: save session if still "Start searching"...Test
-        if (toggleSearch.isChecked()) {
-            saveSession();
-        }
-
         super.onDestroy();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        if (mockedStudent != null) {
+        if (mockedStudent != null && fakedMessageListener != null) {
             Log.d(TAG, "onResume: updating fakedMessageListener with current mockedStudent " +
                     mockedStudent.getStudent().getName());
             this.fakedMessageListener = new FakedMessageListener(this.realListener, 3,
@@ -271,10 +269,16 @@ public class HomePageActivity extends AppCompatActivity {
     // made, it should immediately call realListener's onFound(), which calls
     // updateList()
     public void onStartSearchingClicked() {
+        //clear students list every time Start is clicked
+        if (!studentsViewAdapter.getStudents().isEmpty()) {
+            studentsViewAdapter.clearStudents();
+        }
+
         //get current date when Start Searching is clicked
         currDate = new Date();
         String currDateFormatted = sdf.format(currDate);
         Log.d(TAG, "Start clicked at time: " + currDateFormatted);
+        createSession();
 
         //set up mock listener if a mockedStudent was made
         if (mockedStudent!=null) {
@@ -303,21 +307,21 @@ public class HomePageActivity extends AppCompatActivity {
         saveSession();
     }
 
-    private void saveSession() {
-        Log.d(TAG, "creating session...");
-        List<Integer> studentIDList = new ArrayList<>();
-        for (Student stu : myBoFs) {
-            studentIDList.add(stu.getStudentId());
-        }
-
+    private void createSession() {
         String currDateFormatted = sdf.format(currDate);
-        //TODO: save/rename session with pop-up window
-        String sessionName = currDateFormatted;
+        session = new Session("", currDateFormatted, currDateFormatted);
+        Log.d(TAG, "created session at time: " + currDateFormatted);
 
-        db.sessionsDao().insert(new Session(studentIDList, currDateFormatted, sessionName));
+        db.sessionsDao().insert(session);
+        sessionId = db.sessionsDao().maxId();
+    }
+
+    private void saveSession() {
+        //TODO: save/rename session with pop-up window (DialogFragment)
+        //String sessionName = "";
 
         Toast.makeText(this, "Session saved", Toast.LENGTH_SHORT).show();
-        Log.d(TAG, "Saved Session " + sessionName + " in database");
+        //Log.d(TAG, "Saved Session with name: " + sessionName);
     }
 
     //removes fakedMessageListener if created
@@ -439,6 +443,11 @@ public class HomePageActivity extends AppCompatActivity {
 
                     int insertedId = db.studentsDao().maxId();
                     newStudent.setStudentId(insertedId);
+
+                    //add to session, update database
+                    String updatedList = (db.sessionsDao().get(sessionId).studentIDList) + "," + insertedId;
+                    db.sessionsDao().updateStudentList(sessionId, updatedList);
+
                     int insertedCourseId = db.coursesDao().maxId();
 
                     //only common courses need to be added to db
@@ -450,6 +459,14 @@ public class HomePageActivity extends AppCompatActivity {
                 }
                 else {
                     Log.d(TAG, "Student " + newName + " already in database");
+
+                    //set student id based on entry in database
+                    int dbId = db.studentsDao().getAll().indexOf(newStudent) + 1;
+                    newStudent.setStudentId(dbId);
+
+                    //add to session, update database
+                    String updatedList = (db.sessionsDao().get(sessionId).studentIDList) + "," + dbId;
+                    db.sessionsDao().updateStudentList(sessionId, updatedList);
                 }
 
                 Log.d(TAG, "preparing to add Student " + newName + " to recycler view");

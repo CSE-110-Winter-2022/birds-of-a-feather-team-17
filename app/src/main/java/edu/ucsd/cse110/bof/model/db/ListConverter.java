@@ -7,8 +7,8 @@ import java.util.List;
 
 //TODO: test
 public class ListConverter {
-    @TypeConverter
-    public List<Integer> getListFromString(String studentIDs) {
+
+    public static List<Integer> getListFromString(String studentIDs) {
         List<Integer> list = new ArrayList<>();
 
         String[] array = studentIDs.split(",");
@@ -20,13 +20,13 @@ public class ListConverter {
         return list;
     }
 
-    @TypeConverter
-    public String getStringFromList(List<Integer> list) {
+    public static String getStringFromList(List<Integer> list) {
         StringBuilder studentIDs = new StringBuilder();
         int listSize = list.size();
         for (int i=0; i<listSize; i++) {
-            if (i==0) { studentIDs.append(i); continue; }
-            studentIDs.append(",").append(i);
+            if (i==0) { studentIDs.append(list.get(i)); continue; }
+            studentIDs.append(",").append(list.get(i));
         }
         return studentIDs.toString();
-    }}
+    }
+}

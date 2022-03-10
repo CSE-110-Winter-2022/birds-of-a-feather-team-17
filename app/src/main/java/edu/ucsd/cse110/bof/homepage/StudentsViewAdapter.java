@@ -105,6 +105,13 @@ public class StudentsViewAdapter extends RecyclerView.Adapter<StudentsViewAdapte
         Log.d(TAG, "notified RecyclerView that student was inserted");
     }
 
+    public void clearStudents() {
+        Log.d(TAG, "clearing all students from list...");
+
+        this.students.clear();
+        this.notifyDataSetChanged();
+    }
+
     //sort the students list by specified priority algorithm
     public void sortList(String priority) {
         if (priority.equals("recent")) {

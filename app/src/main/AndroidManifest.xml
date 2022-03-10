@@ -13,7 +13,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.BirdsOfAFeather">
-
+        <activity
+            android:name=".homepage.SessionsActivity"
+            android:exported="false" />
         <activity
             android:name=".homepage.SessionDetailActivity"
             android:exported="false" />

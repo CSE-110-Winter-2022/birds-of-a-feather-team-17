@@ -21,7 +21,7 @@ public class Session {
     public int sessionId = 0;
 
     @ColumnInfo(name = "student_list")
-    public List<Integer> studentIDList;
+    public String studentIDList;
 
     //internal identifier for creation time
     @ColumnInfo(name = "creation_time")
@@ -31,7 +31,7 @@ public class Session {
     public String dispName;
 
     // Course constructor
-    public Session(List<Integer> studentIDList, String creationTime, String dispName) {
+    public Session(String studentIDList, String creationTime, String dispName) {
         this.studentIDList = studentIDList;
         this.creationTime = creationTime;
         this.dispName = dispName;
@@ -42,19 +42,13 @@ public class Session {
         this.dispName = dispName;
     }
 
-    //add a student by adding to studentsIDList, then calling method to update stringJSON list
-//    public void addStudent(Integer studID){
-//        studentIDList.add(studID);
-//        //updateJSONList();
-//    }
-
     // getters
     public int getSessionID(){
         return sessionId;
     }
 
     public List<Integer> getStudentList() {
-        return studentIDList;
+        return ListConverter.getListFromString(this.studentIDList);
     }
 
     //Handles Name/creation time
