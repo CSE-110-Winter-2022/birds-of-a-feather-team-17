@@ -2,6 +2,7 @@ package edu.ucsd.cse110.bof;
 
 import java.util.List;
 
+import edu.ucsd.cse110.bof.model.StudentWithCourses;
 import edu.ucsd.cse110.bof.model.db.Course;
 
 public interface IBuilder {

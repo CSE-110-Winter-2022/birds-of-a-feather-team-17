@@ -1,4 +1,4 @@
-package edu.ucsd.cse110.bof;
+package edu.ucsd.cse110.bof.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;

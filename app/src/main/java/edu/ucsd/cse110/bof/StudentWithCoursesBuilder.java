@@ -6,8 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+import edu.ucsd.cse110.bof.model.StudentWithCourses;
 import edu.ucsd.cse110.bof.model.db.Course;
-import edu.ucsd.cse110.bof.Contract;
 import edu.ucsd.cse110.bof.model.db.Student;
 
 

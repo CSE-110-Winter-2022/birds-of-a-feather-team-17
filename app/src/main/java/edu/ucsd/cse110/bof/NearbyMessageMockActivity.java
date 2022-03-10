@@ -1,33 +1,12 @@
 package edu.ucsd.cse110.bof;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.Context;
 import android.content.Intent;
-import android.nfc.Tag;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
-
-import com.google.android.gms.nearby.Nearby;
-import com.google.android.gms.nearby.messages.Message;
-import com.google.android.gms.nearby.messages.MessageListener;
-
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.ObjectInput;
-import java.io.ObjectInputStream;
-import java.util.ArrayList;
-import java.util.Scanner;
-
-import edu.ucsd.cse110.bof.homepage.HomePageActivity;
-import edu.ucsd.cse110.bof.model.IStudent;
-import edu.ucsd.cse110.bof.model.db.Course;
-import edu.ucsd.cse110.bof.model.db.Student;
-import edu.ucsd.cse110.bof.StudentWithCourses;
 
 public class NearbyMessageMockActivity extends AppCompatActivity {
     private static final String TAG = "MockingInputActivity";
