@@ -1,7 +1,6 @@
 package edu.ucsd.cse110.bof;
 
 import android.content.Context;
-import android.util.Log;
 
 import androidx.lifecycle.Lifecycle;
 import androidx.test.core.app.ActivityScenario;
@@ -124,12 +123,12 @@ public class SortBoFsTest {
         scenario.onActivity( activity -> {
             //set weights for students
             Bob.setMatches(bobCourses.size());
-            Bob.setClassSizeWeight(HomePageActivity.calcClassSizeWeight(bobCourses));
-            Bob.setRecencyWeight(HomePageActivity.calcRecencyWeight(bobCourses));
+            Bob.setClassSizeWeight(BoFsTracker.calcClassSizeWeight(bobCourses));
+            Bob.setRecencyWeight(BoFsTracker.calcRecencyWeight(bobCourses));
 
             Casey.setMatches(caseyCourses.size());
-            Casey.setClassSizeWeight(HomePageActivity.calcClassSizeWeight(caseyCourses));
-            Casey.setRecencyWeight(HomePageActivity.calcRecencyWeight(caseyCourses));
+            Casey.setClassSizeWeight(BoFsTracker.calcClassSizeWeight(caseyCourses));
+            Casey.setRecencyWeight(BoFsTracker.calcRecencyWeight(caseyCourses));
 
             StudentsViewAdapter adp = activity.getStudentsViewAdapter();
             adp.setContext(activity.getApplicationContext());
@@ -161,12 +160,12 @@ public class SortBoFsTest {
         scenario.onActivity( activity -> {
             //set weights for students
             Bob.setMatches(bobCourses.size());
-            Bob.setClassSizeWeight(HomePageActivity.calcClassSizeWeight(bobCourses));
-            Bob.setRecencyWeight(HomePageActivity.calcRecencyWeight(bobCourses));
+            Bob.setClassSizeWeight(BoFsTracker.calcClassSizeWeight(bobCourses));
+            Bob.setRecencyWeight(BoFsTracker.calcRecencyWeight(bobCourses));
 
             Casey.setMatches(caseyCourses.size());
-            Casey.setClassSizeWeight(HomePageActivity.calcClassSizeWeight(caseyCourses));
-            Casey.setRecencyWeight(HomePageActivity.calcRecencyWeight(caseyCourses));
+            Casey.setClassSizeWeight(BoFsTracker.calcClassSizeWeight(caseyCourses));
+            Casey.setRecencyWeight(BoFsTracker.calcRecencyWeight(caseyCourses));
 
             StudentsViewAdapter adp = activity.getStudentsViewAdapter();
             adp.setContext(activity.getApplicationContext());

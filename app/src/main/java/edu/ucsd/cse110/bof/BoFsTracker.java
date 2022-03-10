@@ -47,6 +47,40 @@ public class BoFsTracker {
         return commonCoursesList;
     }
 
+    public static float calcClassSizeWeight(ArrayList<Course> courses) {
+        if(courses == null) { return 0; }
+        float sum = 0;
+        for(Course c : courses) {
+            switch(c.courseSize) {
+                case "Tiny": sum += 1.00; break;
+                case "Small": sum += 0.33; break;
+                case "Medium": sum += 0.18; break;
+                case "Large": sum += 0.10; break;
+                case "Huge": sum += 0.06; break;
+                case "Gigantic": sum += 0.01; break;
+            }
+        }
+        return sum;
+    }
+
+    public static int calcRecencyWeight(ArrayList<Course> courses) {
+        if(courses == null) { return 0; }
+        int sum = 0;
+        for(Course c : courses) {
+            if(2022 - c.year > 1) {
+                sum += 1;
+            } else {
+                switch (c.quarter) {
+                    case "FA": sum += 5; break;
+                    case "SP": sum += 3; break;
+                    case "WI": sum += 2; break;
+                    default: sum += 4;
+                }
+            }
+        }
+        return sum;
+    }
+
     static class SortbyYearAndQuarter implements Comparator<Course> {
         //sort from oldest to newest courses
         public int compare(Course a, Course b) {

@@ -373,40 +373,6 @@ public class HomePageActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    public static float calcClassSizeWeight(ArrayList<Course> courses) {
-        if(courses == null) { return 0; }
-        float sum = 0;
-        for(Course c : courses) {
-            switch(c.courseSize) {
-                case "Tiny": sum += 1.00; break;
-                case "Small": sum += 0.33; break;
-                case "Medium": sum += 0.18; break;
-                case "Large": sum += 0.10; break;
-                case "Huge": sum += 0.06; break;
-                case "Gigantic": sum += 0.01; break;
-            }
-        }
-        return sum;
-    }
-
-    public static int calcRecencyWeight(ArrayList<Course> courses) {
-        if(courses == null) { return 0; }
-        int sum = 0;
-        for(Course c : courses) {
-            if(2022 - c.year > 1) {
-                sum += 1;
-            } else {
-                switch (c.quarter) {
-                    case "FA": sum += 5; break;
-                    case "SP": sum += 3; break;
-                    case "WI": sum += 2; break;
-                    default: sum += 4;
-                }
-            }
-        }
-        return sum;
-    }
-
     // called from listener, checks whether the student needs to be added to
     // homepage list and database
     private synchronized void updateLists()  {
@@ -438,8 +404,8 @@ public class HomePageActivity extends AppCompatActivity {
 
         //set the weights
         mStudent.setMatches(commonCourses.size());
-        mStudent.setClassSizeWeight(calcClassSizeWeight(commonCourses));
-        mStudent.setRecencyWeight(calcRecencyWeight(commonCourses));
+        mStudent.setClassSizeWeight(BoFsTracker.calcClassSizeWeight(commonCourses));
+        mStudent.setRecencyWeight(BoFsTracker.calcRecencyWeight(commonCourses));
 
         //overwrite common courses in rSWC to add to db later
         receivedStudentWithCourses.setCourses(commonCourses);
