@@ -49,12 +49,13 @@ import java.util.Locale;
 
 import edu.ucsd.cse110.bof.BoFsTracker;
 import edu.ucsd.cse110.bof.FakedMessageListener;
+import edu.ucsd.cse110.bof.IBuilder;
 import edu.ucsd.cse110.bof.InputCourses.CoursesViewAdapter;
 import edu.ucsd.cse110.bof.InputCourses.InputCourseActivity;
-import edu.ucsd.cse110.bof.MockedStudentFactory;
 import edu.ucsd.cse110.bof.NearbyMessageMockActivity;
 import edu.ucsd.cse110.bof.R;
 import edu.ucsd.cse110.bof.StudentWithCourses;
+import edu.ucsd.cse110.bof.StudentWithCoursesBuilder;
 import edu.ucsd.cse110.bof.model.IStudent;
 import edu.ucsd.cse110.bof.model.db.AppDatabase;
 import edu.ucsd.cse110.bof.model.db.Course;
@@ -63,32 +64,33 @@ import edu.ucsd.cse110.bof.model.db.Session;
 import edu.ucsd.cse110.bof.model.db.Student;
 
 public class HomePageActivity extends AppCompatActivity {
-    private AppDatabase db;
-    private Student thisStudent;
-    private List<Course> thisStudentCourses;
-    private Message selfMessage;
+    private AppDatabase db;                     //database
+    private Student thisStudent;                //user
+    private List<Course> thisStudentCourses;    //user's courses
+    private Message selfMessage;                //a message containing this user
+    private StudentWithCourses selfStudentWithCourses; //SWC of user
 
-    List<Student> myBoFs;
-    Session session = null;
-    int sessionId;
-
-    ToggleButton toggleSearch;
-    Spinner p_spinner;
-    private Date currDate = null;
+    Session session = null;                     //current search session
+    int sessionId;                              //session id in database
+    private Date currDate = null;               //for setting session title
     @SuppressLint("ConstantLocale")
     private static final SimpleDateFormat sdf =
             new SimpleDateFormat("MM/dd/yy hh:mmaa", Locale.getDefault());
 
-    RecyclerView studentsRecyclerView;
-    RecyclerView.LayoutManager studentsLayoutManager;
-    StudentsViewAdapter studentsViewAdapter;
+    ToggleButton toggleSearch;                  //ref to search button
+    Spinner p_spinner;                          //ref to priority spinner
+    RecyclerView studentsRecyclerView;          //recyclerView containing BoFs
+    RecyclerView.LayoutManager studentsLayoutManager;   //for use with
+                                                        // recyclerView
+    StudentsViewAdapter studentsViewAdapter;    //for use with recyclerView
 
-    private static final String TAG = "HomePageReceiver";
-    private MessageListener realListener;
-    private FakedMessageListener fakedMessageListener = null;
-    private MockedStudentFactory mockedStudentFactory;
 
-    private StudentWithCourses selfStudentWithCourses;
+    private static final String TAG = "HomePageReceiver";   //for logging
+    private MessageListener realListener;                   //nearby listener
+    private FakedMessageListener fakedMessageListener = null;   // for mocking
+                                                                // nearby
+    private IBuilder builder = new StudentWithCoursesBuilder(); // for building
+                                                                // SWCs
 
     // Student received from listener(s) (if mockedStudent != null,
     // receivedStudentWithCourses will refer to same object as mockedStudent
@@ -96,31 +98,13 @@ public class HomePageActivity extends AppCompatActivity {
 
     //Student made on return from the NMMActivity
     private StudentWithCourses mockedStudent = null;
+    //String received from NMMActivity
     private String mockCSV = null;
-
-    private Context context;
-
     //for getting the csv from NMMActivity
-    ActivityResultLauncher<Intent> activityLauncher = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(),
-            new ActivityResultCallback<ActivityResult>() {
-                @Override
-                public void onActivityResult(ActivityResult result) {
-                    if (result.getResultCode() == 0) {
-                        Log.d(TAG, "Back from NMM");
-                        Intent intent = result.getData();
+    ActivityResultLauncher<Intent> activityLauncher = null;
 
-                        if (intent != null) {
-                            Log.d(TAG, "Making mocked student from csv");
-                            mockCSV = intent.getStringExtra("mockCSV");
-                            mockedStudent = mockedStudentFactory.makeMockedStudent(mockCSV);
-                            if (mockedStudent == null) { Log.d(TAG, "Mocked student is null, not created"); }
-                            else
-                                Log.d(TAG, "Mocked student " + mockedStudent.getStudent().getName() + " created");
-                        }
-                    }
-                }
-    });
+    //used to access this activity in other classes
+    private Context context;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -128,7 +112,13 @@ public class HomePageActivity extends AppCompatActivity {
         setContentView(R.layout.activity_home_page);
         setTitle("Birds of a Feather");
 
+        //set this context
         context = this;
+
+        //set thisStudent and thisStudentCourses
+        db = AppDatabase.singleton(this);
+        thisStudent = db.studentsDao().get(1);
+        thisStudentCourses = db.coursesDao().getForStudent(1);
 
         //create spinner (drop-down menu) for priorities/sorting algorithms
         p_spinner = findViewById(R.id.priority_spinner);
@@ -136,37 +126,30 @@ public class HomePageActivity extends AppCompatActivity {
         p_adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         p_spinner.setAdapter(p_adapter);
 
-        //set thisStudent and thisStudentCourses
-        db = AppDatabase.singleton(this);
-        thisStudent = db.studentsDao().get(1);
-        thisStudentCourses = db.coursesDao().getForStudent(1);
-
-        //set up RecyclerView
-        myBoFs = new ArrayList<>();
-
-        studentsRecyclerView = findViewById(R.id.students_view);
-
-        studentsLayoutManager = new LinearLayoutManager(this);
-        studentsRecyclerView.setLayoutManager(studentsLayoutManager);
-
-        studentsViewAdapter = new StudentsViewAdapter(myBoFs);
-        studentsRecyclerView.setAdapter(studentsViewAdapter);
-
+        //listener for changing priority of list
         p_spinner.setOnItemSelectedListener(
                 new AdapterView.OnItemSelectedListener() {
                     @Override
                     public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
-
                         Log.d(TAG, "Selecting priority...");
                         String priority = parent.getItemAtPosition(pos).toString();
                         studentsViewAdapter.sortList(priority);
                         Log.d(TAG, "List sorted based on priority: "+priority);
-
                     }
                     @Override
                     public void onNothingSelected(AdapterView<?> parent) {
                     }
                 });
+
+        //set up RecyclerView
+        studentsRecyclerView = findViewById(R.id.students_view);
+
+        studentsLayoutManager = new LinearLayoutManager(this);
+        studentsRecyclerView.setLayoutManager(studentsLayoutManager);
+
+        studentsViewAdapter = new StudentsViewAdapter(new ArrayList<>());
+        studentsRecyclerView.setAdapter(studentsViewAdapter);
+        studentsViewAdapter.setContext(context);
 
         //set up listener for search button:
         toggleSearch = findViewById(R.id.search_button);
@@ -178,10 +161,43 @@ public class HomePageActivity extends AppCompatActivity {
             }
         });
 
-        mockedStudentFactory = new MockedStudentFactory();
+        //create SWC builder
+        builder = new StudentWithCoursesBuilder();
 
+        //create activityLauncher for getting csv from NMM
+        activityLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                new ActivityResultCallback<ActivityResult>() {
+                    @Override
+                    public void onActivityResult(ActivityResult result) {
+                        if (result.getResultCode() != 0) {
+                            Log.d(TAG, "result invalid, exit onActivityResult");
+                            return;
+                        }
+
+                        Log.d(TAG, "Back from NMM");
+                        Intent intent = result.getData();
+
+                        if (intent == null) {
+                            Log.d(TAG, "intent invalid, exit onActivityResult");
+                            return;
+                        }
+
+                        Log.d(TAG, "Making mocked student from csv");
+                        mockCSV = intent.getStringExtra("mockCSV");
+
+                        if (mockCSV != null) {
+                            mockedStudent = builder.setFromCSV(mockCSV)
+                                    .getSWC();
+                            Log.d(TAG, "Mocked student " + mockedStudent.getStudent().getName() + " created");
+
+                        }
+                        else { Log.d(TAG, "Mocked student is null, not created"); }
+                    }
+                });
+
+        //real listener receives an SWC message, then updates lists as needed
         realListener = new MessageListener() {
-
             @Override
             public void onFound(@NonNull Message message) {
                 //make StudentWithCourses from byte array received
@@ -202,7 +218,9 @@ public class HomePageActivity extends AppCompatActivity {
                                 + receivedStudentWithCourses.getStudent().getName());
 
                 //update the recyclerview list
-                updateLists();
+                runOnUiThread(() -> {
+                    updateLists();
+                });
             }
             @Override
             public void onLost(@NonNull Message message) {
@@ -404,89 +422,81 @@ public class HomePageActivity extends AppCompatActivity {
 
     // called from listener, checks whether the student needs to be added to
     // homepage list and database
-    private void updateLists()  {
+    private synchronized void updateLists()  {
 
-        Student newStudent = receivedStudentWithCourses.getStudent();
-        String newName = newStudent.getName();
+        Student mStudent = receivedStudentWithCourses.getStudent();
+        String mName = mStudent.getName();
 
-        //check that this student isn't in list nor in database
-        if (studentsViewAdapter.getStudents().contains(newStudent)) {
-            Log.d(TAG, "Student " + newName + " already in homepage list");
+        //exit early if student already on homepage
+        if (studentsViewAdapter.getStudents().contains(mStudent)) {
+            Log.d(TAG, "Student " + mName + " already in homepage list");
             return;
         }
-        else {
-            Log.d(TAG, "student not in homepage list");
 
-            //use BoFsTracker to find common classes
-            ArrayList<Course> commonCourses = (ArrayList<Course>)
-                    BoFsTracker.getCommonCourses(
-                            thisStudentCourses,
-                            receivedStudentWithCourses.getCourses());
+        Log.d(TAG, "student not in homepage list, checking common courses");
 
-            //if at least 1 common course, add this student to list of students
-            //and the database
-            if (commonCourses.size() == 0) {
-                Log.d(TAG, "Student " + newName + " has no common courses");
-                return;
-            }
-            else {
-                Log.d(TAG,"studentWithCourses has a common class");
+        //use BoFsTracker to find common classes
+        ArrayList<Course> commonCourses = (ArrayList<Course>)
+                BoFsTracker.getCommonCourses(
+                        thisStudentCourses,
+                        receivedStudentWithCourses.getCourses());
 
-                //add this student to viewAdapter list
-                newStudent.setMatches(commonCourses.size());
+        //exit early if the student has no common courses
+        if (commonCourses.size() == 0) {
+            Log.d(TAG, "Student " + mName + " has no common courses");
+            return;
+        }
 
-                newStudent.setClassSizeWeight(calcClassSizeWeight(commonCourses));
+        Log.d(TAG,"studentWithCourses has a common class");
 
-                newStudent.setRecencyWeight(calcRecencyWeight(commonCourses));
+        //set the weights
+        mStudent.setMatches(commonCourses.size());
+        mStudent.setClassSizeWeight(calcClassSizeWeight(commonCourses));
+        mStudent.setRecencyWeight(calcRecencyWeight(commonCourses));
 
-                receivedStudentWithCourses.setCourses(commonCourses);
+        //overwrite common courses in rSWC to add to db later
+        receivedStudentWithCourses.setCourses(commonCourses);
 
-                //only add to db if not already in db
-                if (!db.studentsDao().getAll().contains(newStudent)) {
-                    Log.d(TAG, "Student " + newName + " will be added to database");
-                    db.studentsDao().insert(newStudent);
+        //only add to db if not already in db
+        if (!db.studentsDao().getAll().contains(mStudent)) {
+            Log.d(TAG, "Student " + mName + " will be added to database");
 
-                    int insertedId = db.studentsDao().maxId();
-                    newStudent.setStudentId(insertedId);
+            //insert the student and get its id in the db
+            db.studentsDao().insert(mStudent);
+            int insertedStuId = db.studentsDao().maxId();
+            mStudent.setStudentId(insertedStuId);
 
-                    //add to session, update database
-                    String updatedList = (db.sessionsDao().get(sessionId).studentIDList) + "," + insertedId;
-                    db.sessionsDao().updateStudentList(sessionId, updatedList);
-
-                    int insertedCourseId = db.coursesDao().maxId();
-
-                    //only common courses need to be added to db
-                    for (Course receivedCourse : commonCourses) {
-                        receivedCourse.setStudentId(insertedId);
-                        receivedCourse.setCourseId(++insertedCourseId);
-                        db.coursesDao().insert(receivedCourse);
-                    }
-                }
-                else {
-                    Log.d(TAG, "Student " + newName + " already in database");
-
-                    //set student id based on entry in database
-                    int dbId = db.studentsDao().getAll().indexOf(newStudent) + 1;
-                    newStudent.setStudentId(dbId);
-
-                    //add to session, update database
-                    String updatedList = (db.sessionsDao().get(sessionId).studentIDList) + "," + dbId;
-                    db.sessionsDao().updateStudentList(sessionId, updatedList);
-                }
-
-                Log.d(TAG, "preparing to add Student " + newName + " to recycler view");
-
-                studentsViewAdapter.setContext(context);
-                studentsViewAdapter.addStudent(receivedStudentWithCourses.getStudent());
-                //studentsViewAdapter.setContext(null);
-
-                //resort the list
-                Log.d(TAG, "student added, resorting the list...");
-                studentsViewAdapter.sortList(p_spinner.getSelectedItem().toString());
-                Log.d(TAG, "students list sorted");
-
+            //get the id for courses to insert
+            int currentMaxCourseId = db.coursesDao().maxId();
+            for (Course receivedCourse : commonCourses) { //only common courses
+                                                          //need to be added to db
+                receivedCourse.setStudentId(insertedStuId);
+                receivedCourse.setCourseId(++currentMaxCourseId);
+                db.coursesDao().insert(receivedCourse);
             }
         }
+        else {
+            Log.d(TAG, "Student " + mName + " already in database");
+
+            //set student id based on entry in database
+            int dbId = db.studentsDao().getAll().indexOf(mStudent) + 1;
+            mStudent.setStudentId(dbId);
+        }
+
+        //add to session, update database
+        Log.d(TAG, "Preparing to add to student to session");
+        String updatedList = (db.sessionsDao().get(sessionId).studentIDList)
+                + "," + mStudent.getStudentId();
+        db.sessionsDao().updateStudentList(sessionId, updatedList);
+
+        //add this student to viewAdapter list
+        Log.d(TAG, "preparing to add Student " + mName + " to recycler view");
+        studentsViewAdapter.addStudent(receivedStudentWithCourses.getStudent());
+
+        //resort the list
+        Log.d(TAG, "student added, resorting the list...");
+        studentsViewAdapter.sortList(p_spinner.getSelectedItem().toString());
+        Log.d(TAG, "students list sorted");
     }
 
     //for testing, need to be able to make mocked student without going to NMM
