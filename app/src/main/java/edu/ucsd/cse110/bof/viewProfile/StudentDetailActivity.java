@@ -7,6 +7,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.Image;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -35,11 +36,12 @@ import edu.ucsd.cse110.bof.R;
 import edu.ucsd.cse110.bof.model.IStudent;
 import edu.ucsd.cse110.bof.model.db.AppDatabase;
 import edu.ucsd.cse110.bof.model.db.Course;
-import edu.ucsd.cse110.bof.viewProfile.CoursesListViewAdapter;
+import edu.ucsd.cse110.bof.model.db.Student;
 
 
 public class StudentDetailActivity extends AppCompatActivity {
 
+    private static final String TAG = "Within Student Profile: ";
     private AppDatabase db;
     int studentID;
     private IStudent student;
@@ -158,4 +160,5 @@ public class StudentDetailActivity extends AppCompatActivity {
             return null;
         }
     }
+
 }

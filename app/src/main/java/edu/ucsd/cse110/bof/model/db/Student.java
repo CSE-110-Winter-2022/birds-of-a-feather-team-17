@@ -17,6 +17,7 @@ import edu.ucsd.cse110.bof.model.IStudent;
 public class Student implements IStudent {
     //add constant for putting wavedAtMe students on top while preserving inherent sorting order
     public static final int WAVE_CONSTANT = 2000000;
+    public static final int FAV_CONSTANT = 1000000;
 
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "student_id")
@@ -52,6 +53,9 @@ public class Student implements IStudent {
     //TODO test: waves in DB
     @ColumnInfo(name = "waveTarget")
     public String waveTarget;
+
+    @ColumnInfo(name = "isFav")
+    public boolean isFav = false;
 
     // Student constructor
     public Student(String name, String photoURL, String UUID) {
@@ -121,6 +125,10 @@ public class Student implements IStudent {
 
     public void setRecencyWeight(int weight) { this.recencyWeight = weight; }
 
+    public boolean getIsFav() { return isFav; }
+
+    public void setIsFav(boolean isFav) { this.isFav = isFav; }
+
     public boolean isWavedAtMe() {
         return wavedAtMe;
     }
@@ -149,6 +157,13 @@ public class Student implements IStudent {
     public int waveMultiplier() {
         if(wavedAtMe)
             return WAVE_CONSTANT;
+        else
+            return 0;
+    }
+
+    public int favMultiplier() {
+        if(isFav)
+            return FAV_CONSTANT;
         else
             return 0;
     }

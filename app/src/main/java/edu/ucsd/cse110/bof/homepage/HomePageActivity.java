@@ -18,6 +18,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
@@ -40,6 +41,7 @@ import java.util.Locale;
 import edu.ucsd.cse110.bof.BoFsTracker;
 import edu.ucsd.cse110.bof.FakedMessageListener;
 import edu.ucsd.cse110.bof.IBuilder;
+import edu.ucsd.cse110.bof.InputCourses.CoursesViewAdapter;
 import edu.ucsd.cse110.bof.InputCourses.InputCourseActivity;
 import edu.ucsd.cse110.bof.NearbyMessageMockActivity;
 import edu.ucsd.cse110.bof.R;
@@ -277,6 +279,7 @@ public class HomePageActivity extends AppCompatActivity {
     protected void onResume() {
         Log.d(TAG, "onResume called");
         super.onResume();
+        studentsViewAdapter.sortList(priority);
         if (mockedStudent != null && session != null) {
             Log.d(TAG, "onResume: updating fakedMessageListener with current mockedStudent " +
                     mockedStudent.getStudent().getName());
@@ -389,7 +392,7 @@ public class HomePageActivity extends AppCompatActivity {
     }
 
     // called from listener, checks whether the student needs to be added to
-    // homepage list and database
+    // homepage list and database //TODO: test
     private synchronized void updateLists()  {
 
         Student mStudent = receivedStudentWithCourses.getStudent();

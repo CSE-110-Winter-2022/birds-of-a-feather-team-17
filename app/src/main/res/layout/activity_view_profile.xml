@@ -78,5 +78,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/list_classes_recycler"
-        app:srcCompat="@drawable/wave_hollow" />
+        app:layout_constraintVertical_bias="0.261"
+        app:srcCompat = "@drawable/wave_hollow"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

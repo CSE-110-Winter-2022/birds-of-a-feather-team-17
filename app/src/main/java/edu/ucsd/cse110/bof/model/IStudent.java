@@ -20,6 +20,8 @@ public interface IStudent extends Serializable {
     boolean isWavedTo();
     String getWaveTarget();
     int waveMultiplier();
+    int favMultiplier();
+    boolean getIsFav();
 
     void setUUID(String UUID);
     void setMatches(int numMatches);
@@ -28,4 +30,5 @@ public interface IStudent extends Serializable {
     void setWavedAtMe(boolean waved);
     void setWavedTo(boolean waved);
     void setWaveTarget(String waveTarget);
+    void setIsFav(boolean isFav);
 }
