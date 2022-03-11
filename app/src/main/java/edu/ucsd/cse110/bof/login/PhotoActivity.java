@@ -11,10 +11,13 @@ import android.widget.EditText;
 import edu.ucsd.cse110.bof.InputCourses.InputCourseActivity;
 import edu.ucsd.cse110.bof.R;
 import edu.ucsd.cse110.bof.model.db.AppDatabase;
+import edu.ucsd.cse110.bof.model.db.Session;
 import edu.ucsd.cse110.bof.model.db.Student;
 
 import android.webkit.URLUtil;
 import android.widget.Toast;
+
+import java.util.UUID;
 
 public class PhotoActivity extends AppCompatActivity {
     private String photoURL;
@@ -57,8 +60,14 @@ public class PhotoActivity extends AppCompatActivity {
 
         Log.d(TAG, "Received user's photoURL: " + photoURL);
 
+        //Generate a random UUID for the user
+        String uuid = UUID.randomUUID().toString();
+
         //insert user into database (student_id=1, first element in database)
-        db.studentsDao().insert(new Student(username, photoURL));
+        db.studentsDao().insert(new Student(username, photoURL, uuid));
+
+        //create a new session called Favorites
+        db.sessionsDao().insert(new Session("","","Favorites"));
 
         //Link to InputCourseActivity
         Intent intent = new Intent(this, InputCourseActivity.class);

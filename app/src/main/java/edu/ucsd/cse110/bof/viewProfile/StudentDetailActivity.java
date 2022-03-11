@@ -1,18 +1,24 @@
 package edu.ucsd.cse110.bof.viewProfile;
 
+//TODO get rid of unused imports
+
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.media.Image;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
-import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.gms.nearby.Nearby;
+import com.google.android.gms.nearby.messages.Message;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -26,25 +32,30 @@ import java.util.concurrent.Executors;
 
 import javax.net.ssl.HttpsURLConnection;
 
-import edu.ucsd.cse110.bof.InputCourses.CoursesViewAdapter;
 import edu.ucsd.cse110.bof.R;
-import edu.ucsd.cse110.bof.model.IStudent;
+import edu.ucsd.cse110.bof.model.StudentWithCourses;
 import edu.ucsd.cse110.bof.model.db.AppDatabase;
 import edu.ucsd.cse110.bof.model.db.Course;
-import edu.ucsd.cse110.bof.viewProfile.CoursesListViewAdapter;
+import edu.ucsd.cse110.bof.model.db.Student;
+import edu.ucsd.cse110.bof.studentWithCoursesBytesFactory;
 
 
 public class StudentDetailActivity extends AppCompatActivity {
 
+    private static final String TAG = "StudentDetailActivityLog: ";
     private AppDatabase db;
     int studentID;
-    private IStudent student;
+    private Student student;
+    private Student userStudent;
     private List<Course> courses;
+    private List<Course> userCourses;
     private String studentImageURL;
+    private boolean waveOn = false;
 
     protected TextView studentName;
     protected ImageView studentImage;
     protected RecyclerView coursesRecyclerView;
+    protected ImageButton waveButton;
     protected RecyclerView.LayoutManager coursesLayoutManager;
     protected CoursesListViewAdapter coursesListViewAdapter;
 
@@ -56,16 +67,24 @@ public class StudentDetailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_profile);
 
+        waveButton = findViewById(R.id.wave_icon);
+
         Intent intent = getIntent();
         studentID = intent.getIntExtra("student_id", 0); //get student id
 
         //get courses and student info from data base using studentID
         db = AppDatabase.singleton(this);
+    }
 
 
+    @Override
+    protected void onStart() {
+        super.onStart();
         //get student and their courses
         student = db.studentsDao().get(studentID);
         courses = db.coursesDao().getForStudent(studentID);
+        userStudent = db.studentsDao().get(1);
+        userCourses = db.coursesDao().getForStudent(1);
 
 
         //sets student name and picture
@@ -98,7 +117,6 @@ public class StudentDetailActivity extends AppCompatActivity {
             });
         });
 
-
         //finds recycler for courses list
         coursesRecyclerView = findViewById(R.id.list_classes_recycler);
 
@@ -110,10 +128,44 @@ public class StudentDetailActivity extends AppCompatActivity {
         coursesListViewAdapter = new CoursesListViewAdapter(courses);
         coursesRecyclerView.setAdapter(coursesListViewAdapter);
 
+        //Set wave to be pre-filled if already waved
+        if(student.isWavedTo())
+        {
+            waveOn = true;
+            //Change image icon and accompanying description
+            waveButton.setImageResource(R.drawable.wave_filled);
+            waveButton.setContentDescription(getApplicationContext().getString(R.string.wave_on));
+        }
     }
 
     public void onBackClicked(View view) {
         finish();
+    }
+
+    public void onWaveClicked() {
+        if(!waveOn) {
+            waveOn = true;
+
+            //Change image icon and accompanying description
+            waveButton.setImageResource(R.drawable.wave_filled);
+            waveButton.setContentDescription(getApplicationContext().getString(R.string.wave_on));
+
+            db.studentsDao().updateWaveTo(student.getStudentId(), true);
+
+            //Create a studentWithCourses, convert it into a byte array, and make it into a message
+            StudentWithCourses swc = new StudentWithCourses(userStudent, userCourses, student.getUUID());
+            byte[] finalStudentWithCoursesBytes = studentWithCoursesBytesFactory.convert(swc);
+            Message selfMessage = new Message(finalStudentWithCoursesBytes);
+
+            //Send the new message of the current student with a WaveTo
+            Log.d(TAG, "MessagesClient.publish ("+ Nearby.getMessagesClient(this).getClass().getSimpleName()+
+                    "): publishing selfMessage (StudentWithCourses)...");
+            Nearby.getMessagesClient(this).publish(selfMessage);
+            Log.d(TAG, "published selfMessage via Nearby API");
+
+            //Display a toast declaring wave was sent
+            Toast.makeText(this, "Wave sent!", Toast.LENGTH_SHORT).show();
+        }
     }
 
     public static Bitmap getBitmapFromURL(String src) {
@@ -131,4 +183,15 @@ public class StudentDetailActivity extends AppCompatActivity {
         }
     }
 
+    // testing, need to set Db after onCreate to have views populate with
+    // test student
+    public void setDb(AppDatabase db) {
+        this.db = db;
+    }
+
+    // testing, need to set id after onCreate to have views populate with
+    // test student
+    public void setStudentID(int studentID) {
+        this.studentID = studentID;
+    }
 }

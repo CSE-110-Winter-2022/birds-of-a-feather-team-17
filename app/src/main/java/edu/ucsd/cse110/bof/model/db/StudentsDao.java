@@ -28,4 +28,13 @@ public interface StudentsDao {
 
     @Delete
     void delete(Student student);
+
+    @Query("UPDATE students SET isFav=:updatedFav WHERE student_id=:id")
+    void updateFav(int id, boolean updatedFav);
+
+    @Query("UPDATE students SET wavedAtMe=:updatedWaveMe WHERE student_id=:id")
+    void updateWaveMe(int id, boolean updatedWaveMe);
+
+    @Query("UPDATE students SET wavedTo=:updatedWaveTo WHERE student_id=:id")
+    void updateWaveTo(int id, boolean updatedWaveTo);
 }

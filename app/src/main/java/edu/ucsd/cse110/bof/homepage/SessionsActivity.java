@@ -42,7 +42,7 @@ public class SessionsActivity extends AppCompatActivity {
         sessionsRecyclerView.setLayoutManager(sessionsLayoutManager);
 
         //TODO: implement rename function in adapter
-        sessionsViewAdapter = new SessionsViewAdapter(sessions);
+        sessionsViewAdapter = new SessionsViewAdapter(sessions, db);
         sessionsRecyclerView.setAdapter(sessionsViewAdapter);
 
 }
