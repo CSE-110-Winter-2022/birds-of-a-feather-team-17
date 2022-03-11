@@ -411,12 +411,11 @@ public class HomePageActivity extends AppCompatActivity implements RenameDialogF
 
                     Student matchingStudent = studentsViewAdapter.getStudents().get(matchingIndex);
                     boolean wavedAlready = db.studentsDao().get(matchingStudent.getStudentId()).isWavedTo();
-                    db.studentsDao().delete(matchingStudent);
 
                     matchingStudent.setWavedAtMe(true);
                     matchingStudent.setWavedTo(wavedAlready);
 
-                    db.studentsDao().insert(matchingStudent);
+                    db.studentsDao().updateWaveMe(matchingStudent.getStudentId(), true);
 
                     studentsViewAdapter.sortList(priority);
                 }

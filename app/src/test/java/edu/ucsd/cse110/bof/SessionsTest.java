@@ -92,7 +92,8 @@ public class SessionsTest {
         bobCourses.add(cse110WI22L);
         bobCourses.add(cse210FA21S);
 
-        StudentWithCourses BobAndCourses = new StudentWithCourses(Bob, bobCourses);
+        StudentWithCourses BobAndCourses = new StudentWithCourses(Bob,
+                bobCourses, "");
 
         //move to CREATED to make necessary objects
         scenario.moveToState(Lifecycle.State.CREATED);
@@ -144,7 +145,7 @@ public class SessionsTest {
         bobCourses.add(cse110WI22L);
         bobCourses.add(cse210FA21S);
 
-        StudentWithCourses BobAndCourses = new StudentWithCourses(Bob, bobCourses);
+        StudentWithCourses BobAndCourses = new StudentWithCourses(Bob, bobCourses, "");
 
 
         //make Carrie and her courses to mock:
@@ -155,7 +156,7 @@ public class SessionsTest {
         carrieCourses.add(cse210FA21S);
 
         StudentWithCourses CarrieAndCourses = new StudentWithCourses(Carrie,
-                carrieCourses);
+                carrieCourses, "");
 
         //move to CREATED to make necessary objects
         scenario.moveToState(Lifecycle.State.CREATED);

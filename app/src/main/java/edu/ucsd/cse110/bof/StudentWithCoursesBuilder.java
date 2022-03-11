@@ -20,6 +20,7 @@ public class StudentWithCoursesBuilder implements IBuilder {
     private String stuName;
     private String stuPhotoURL;
     private String stuUUID;
+    private String stuWaveTarget;
     private List<Course> stuCourses;
 
     public StudentWithCoursesBuilder() {
@@ -92,6 +93,14 @@ public class StudentWithCoursesBuilder implements IBuilder {
     }
 
     @Override
+    public IBuilder setWaveTarget(String waveTarget) {
+        Contract.REQUIRE(waveTarget != null, "waveTarget not null");
+
+        this.stuWaveTarget = waveTarget;
+        return null;
+    }
+
+    @Override
     public IBuilder setFromCSV(String csv) {
         Log.d(TAG, "Within builder, reading csv: " + csv);
         Contract.REQUIRE(csv != null && !csv.equals(""),
@@ -118,14 +127,20 @@ public class StudentWithCoursesBuilder implements IBuilder {
         while (reader.hasNextLine()) {
             reader.nextLine();
             if (!reader.hasNext()) { break; }
-            year = Integer.parseInt(reader.next());
-            quarter = reader.next();
-            subject = reader.next();
-            courseNum = reader.next();
-            courseSize = reader.next();
+            String next = reader.next();
+            try {
+                year = Integer.parseInt(next);
+                quarter = reader.next();
+                subject = reader.next();
+                courseNum = reader.next();
+                courseSize = reader.next();
 
-            localCourses.add(new Course(1, 1, year,
-                    quarter, subject, courseNum, courseSize));
+                localCourses.add(new Course(1, 1, year,
+                        quarter, subject, courseNum, courseSize));
+            } catch (Exception e) {
+                setWaveTarget(next);
+            }
+
         }
 
         setCourses(localCourses);
@@ -143,7 +158,8 @@ public class StudentWithCoursesBuilder implements IBuilder {
                 "stuPhotoURL not null or empty");
 
         StudentWithCourses retVal = new StudentWithCourses(
-                new Student(stuName, stuPhotoURL, stuUUID), stuCourses);
+                new Student(stuName, stuPhotoURL, stuUUID), stuCourses,
+                stuWaveTarget);
 
         reset();
         return retVal;

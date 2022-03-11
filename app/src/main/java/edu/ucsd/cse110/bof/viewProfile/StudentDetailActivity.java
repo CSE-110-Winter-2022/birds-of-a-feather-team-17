@@ -5,11 +5,9 @@ package edu.ucsd.cse110.bof.viewProfile;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.media.Image;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -34,13 +32,10 @@ import java.util.concurrent.Executors;
 
 import javax.net.ssl.HttpsURLConnection;
 
-import edu.ucsd.cse110.bof.InputCourses.CoursesViewAdapter;
 import edu.ucsd.cse110.bof.R;
 import edu.ucsd.cse110.bof.model.StudentWithCourses;
-import edu.ucsd.cse110.bof.model.IStudent;
 import edu.ucsd.cse110.bof.model.db.AppDatabase;
 import edu.ucsd.cse110.bof.model.db.Course;
-import edu.ucsd.cse110.bof.viewProfile.CoursesListViewAdapter;
 import edu.ucsd.cse110.bof.model.db.Student;
 import edu.ucsd.cse110.bof.studentWithCoursesBytesFactory;
 
@@ -72,7 +67,7 @@ public class StudentDetailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_profile);
 
-        waveButton = findViewById(R.id.imageButton);
+        waveButton = findViewById(R.id.wave_icon);
 
         Intent intent = getIntent();
         studentID = intent.getIntExtra("student_id", 0); //get student id
@@ -155,7 +150,6 @@ public class StudentDetailActivity extends AppCompatActivity {
             waveButton.setImageResource(R.drawable.wave_filled);
             waveButton.setContentDescription(getApplicationContext().getString(R.string.wave_on));
 
-            //TODO: test database updates properly
             db.studentsDao().updateWaveTo(student.getStudentId(), true);
 
             //Create a studentWithCourses, convert it into a byte array, and make it into a message

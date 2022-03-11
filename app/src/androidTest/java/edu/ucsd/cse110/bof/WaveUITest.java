@@ -14,7 +14,6 @@ import static org.hamcrest.Matchers.not;
 
 import android.view.View;
 
-import androidx.test.core.app.ActivityScenario;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
 import org.junit.Before;
@@ -48,7 +47,7 @@ public class WaveUITest {
         String waveOn = getApplicationContext().getString(R.string.wave_on);
 
         //Simulate wave button click
-        onView(withId(R.id.imageButton))
+        onView(withId(R.id.wave_icon))
                 .perform(click());
 
         //Check if toast is displayed with "Wave sent!"
@@ -57,7 +56,7 @@ public class WaveUITest {
                 .check(matches(isDisplayed()));
 
         //Check if wave icon has changed
-        onView(withId(R.id.imageButton))
+        onView(withId(R.id.wave_icon))
                 .check(matches(withContentDescription(waveOn)));
     }
 }

@@ -16,6 +16,7 @@ public interface IBuilder {
     IBuilder addCourse(int year, String quarter, String subj,
                               String number, String size);
     IBuilder setCourses(List<Course> courses);
+    IBuilder setWaveTarget(String waveTarget);
     IBuilder setFromCSV(String csv);
     StudentWithCourses getSWC();
     void reset();
