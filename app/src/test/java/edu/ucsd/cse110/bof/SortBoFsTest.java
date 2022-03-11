@@ -75,7 +75,6 @@ public class SortBoFsTest {
             "130",
             "Huge");
 
-    private Student Ava;
     private Student Bob;
     private Student Casey;
     private ArrayList<Course> bobCourses;
@@ -87,6 +86,7 @@ public class SortBoFsTest {
         Context context = ApplicationProvider.getApplicationContext();
         AppDatabase.useTestSingleton(context);
         db = AppDatabase.singleton(context);
+        userId = 0;
 
         //add Ava's courses to db
         db.coursesDao().insert(c1);
