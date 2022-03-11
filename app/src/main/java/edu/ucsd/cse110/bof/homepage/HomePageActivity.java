@@ -1,32 +1,25 @@
 package edu.ucsd.cse110.bof.homepage;
 
-import static java.lang.System.err;
-
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
+import androidx.fragment.app.DialogFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
@@ -40,7 +33,6 @@ import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.sql.SQLOutput;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -49,20 +41,18 @@ import java.util.Locale;
 
 import edu.ucsd.cse110.bof.BoFsTracker;
 import edu.ucsd.cse110.bof.FakedMessageListener;
-import edu.ucsd.cse110.bof.InputCourses.CoursesViewAdapter;
 import edu.ucsd.cse110.bof.InputCourses.InputCourseActivity;
 import edu.ucsd.cse110.bof.MockedStudentFactory;
 import edu.ucsd.cse110.bof.NearbyMessageMockActivity;
 import edu.ucsd.cse110.bof.R;
 import edu.ucsd.cse110.bof.StudentWithCourses;
-import edu.ucsd.cse110.bof.model.IStudent;
 import edu.ucsd.cse110.bof.model.db.AppDatabase;
 import edu.ucsd.cse110.bof.model.db.Course;
-import edu.ucsd.cse110.bof.model.db.ListConverter;
 import edu.ucsd.cse110.bof.model.db.Session;
 import edu.ucsd.cse110.bof.model.db.Student;
+import edu.ucsd.cse110.bof.RenameDialogFragment;
 
-public class HomePageActivity extends AppCompatActivity {
+public class HomePageActivity extends AppCompatActivity implements RenameDialogFragment.renameDialogListener {
     private AppDatabase db;
     private Student thisStudent;
     private List<Course> thisStudentCourses;
@@ -299,13 +289,16 @@ public class HomePageActivity extends AppCompatActivity {
     public void onStopSearchingClicked() {
         removeFakedML();
 
+        DialogFragment dialog = new RenameDialogFragment();
+
+        dialog.show(getSupportFragmentManager(), "Rename dialog");
+
         //actual listener (not necessary for project)
         Log.d(TAG, "MessagesClient.unsubscribe: unsubscribing realListener...");
         Nearby.getMessagesClient(this).unsubscribe(realListener);
 
         //Stop clicked, create session
         Log.d(TAG, "Stop clicked");
-        saveSession();
     }
 
     private void createSession() {
@@ -502,5 +495,19 @@ public class HomePageActivity extends AppCompatActivity {
     //test method
     public StudentsViewAdapter getStudentsViewAdapter() {
         return studentsViewAdapter;
+    }
+
+    @Override
+    public void onDialogConfirmed(RenameDialogFragment dialog) {
+        EditText name = dialog.getView().findViewById(R.id.dialog_session_name);
+        db.sessionsDao().updateDispName(sessionId, name.getText().toString());
+        saveSession();
+        Log.d(TAG, "Dialog confirmed");
+    }
+
+    @Override
+    public void onDialogCanceled() {
+        saveSession();
+        Log.d(TAG, "Dialog canceled");
     }
 }

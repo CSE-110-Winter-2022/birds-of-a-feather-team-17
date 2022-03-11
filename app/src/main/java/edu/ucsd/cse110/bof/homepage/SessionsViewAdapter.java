@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -13,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
 
 import edu.ucsd.cse110.bof.R;
+import edu.ucsd.cse110.bof.model.db.AppDatabase;
 import edu.ucsd.cse110.bof.model.db.Session;
 
 public class SessionsViewAdapter extends RecyclerView.Adapter<SessionsViewAdapter.ViewHolder> {
@@ -20,9 +23,11 @@ public class SessionsViewAdapter extends RecyclerView.Adapter<SessionsViewAdapte
     private static final String TAG = "SessionsViewAdapterLog";
 
     private final List<Session> sessions;
+    private final AppDatabase db;
 
-    public SessionsViewAdapter(List<Session> sessions) {
+    public SessionsViewAdapter(List<Session> sessions, AppDatabase db) {
         super();
+        this.db = db;
         this.sessions = sessions;
     }
 
@@ -33,7 +38,7 @@ public class SessionsViewAdapter extends RecyclerView.Adapter<SessionsViewAdapte
                 .from(parent.getContext())
                 .inflate(R.layout.saved_session_row, parent, false);
 
-        return new ViewHolder(view);
+        return new ViewHolder(view, this.db);
     }
 
     @Override
@@ -50,18 +55,25 @@ public class SessionsViewAdapter extends RecyclerView.Adapter<SessionsViewAdapte
             extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         private final TextView sessionNameView;
+        private final Button renameButton;
+        private final AppDatabase db;
         private Session session;
 
-        public ViewHolder(View itemView) {
+        public ViewHolder(View itemView, AppDatabase db) {
             super(itemView);
+            this.db = db;
             this.sessionNameView = itemView.findViewById(R.id.session_info);
+            this.renameButton = itemView.findViewById(R.id.rename_button);
+            this.renameButton.setOnClickListener(view -> {
+                this.session.setDispName(sessionNameView.getText().toString());
+                this.db.sessionsDao().updateDispName(this.session.getSessionID(), sessionNameView.getText().toString());
+            });
             itemView.setOnClickListener(this);
         }
 
         public void setSession(Session session){
             this.session = session;
             this.sessionNameView.setText(session.toString());
-
         }
 
         @Override
