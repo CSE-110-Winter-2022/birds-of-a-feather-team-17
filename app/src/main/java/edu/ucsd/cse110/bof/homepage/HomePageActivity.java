@@ -9,7 +9,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
+import androidx.fragment.app.DialogFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -71,8 +71,9 @@ import edu.ucsd.cse110.bof.model.db.ListConverter;
 import edu.ucsd.cse110.bof.model.db.Session;
 import edu.ucsd.cse110.bof.model.db.Student;
 import edu.ucsd.cse110.bof.studentWithCoursesBytesFactory;
+import edu.ucsd.cse110.bof.RenameDialogFragment;
 
-public class HomePageActivity extends AppCompatActivity {
+public class HomePageActivity extends AppCompatActivity implements RenameDialogFragment.renameDialogListener {
     private AppDatabase db;
     private Student thisStudent;
     private List<Course> thisStudentCourses;
@@ -308,6 +309,9 @@ public class HomePageActivity extends AppCompatActivity {
 
     public void onStopSearchingClicked() {
         removeFakedML();
+
+        DialogFragment dialog = new RenameDialogFragment();
+        dialog.show(getSupportFragmentManager(), "Rename dialog");
 
         //actual listener (not necessary for project)
         Log.d(TAG, "MessagesClient.unsubscribe: unsubscribing realListener...");
@@ -552,5 +556,19 @@ public class HomePageActivity extends AppCompatActivity {
     //test method
     public StudentsViewAdapter getStudentsViewAdapter() {
         return studentsViewAdapter;
+    }
+
+    @Override
+    public void onDialogConfirmed(RenameDialogFragment dialog) {
+        EditText name = dialog.getView().findViewById(R.id.dialog_session_name);
+        db.sessionsDao().updateDispName(sessionId, name.getText().toString());
+        saveSession();
+        Log.d(TAG, "Dialog confirmed");
+    }
+
+    @Override
+    public void onDialogCanceled() {
+        saveSession();
+        Log.d(TAG, "Dialog canceled");
     }
 }
