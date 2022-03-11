@@ -34,6 +34,7 @@ import edu.ucsd.cse110.bof.R;
 import edu.ucsd.cse110.bof.model.StudentWithCourses;
 import edu.ucsd.cse110.bof.model.IStudent;
 import edu.ucsd.cse110.bof.model.db.AppDatabase;
+import edu.ucsd.cse110.bof.model.db.ListConverter;
 import edu.ucsd.cse110.bof.model.db.Student;
 import edu.ucsd.cse110.bof.viewProfile.StudentDetailActivity;
 
@@ -117,12 +118,14 @@ public class StudentsViewAdapter extends RecyclerView.Adapter<StudentsViewAdapte
         Log.d(TAG, "list cleared");
     }
 
-    //TODO test: Sorted according to waves, original order preserved
     //sort the students list by specified priority algorithm
     public void sortList(String priority) {
         updateStudentList();
         if(priority == null || priority == "") {
             priority = this.priority;
+        }
+        else {
+            this.priority = priority;
         }
         if(priority.equals("common classes")) {
             students.sort((Comparator<IStudent>) (o1, o2) ->
@@ -144,11 +147,13 @@ public class StudentsViewAdapter extends RecyclerView.Adapter<StudentsViewAdapte
             Log.d(TAG, "students updated");
             for (Student i : students) {
                 i.setIsFav(db.studentsDao().get(i.getStudentId()).getIsFav());
+                i.setWavedAtMe(db.studentsDao().get(i.getStudentId()).isWavedAtMe());
                 Log.d(TAG, "Student name: " + i.getName());
                 Log.d(TAG, "Student matches: " + i.getMatches());
                 Log.d(TAG, "Student class size weight: " + i.getClassSizeWeight());
                 Log.d(TAG, "Student recency weight: " + i.getRecencyWeight());
                 Log.d(TAG, "Student is fav: " + i.getIsFav());
+                Log.d(TAG, "Student waved at me: " + i.isWavedAtMe());
             }
         }
     }
@@ -185,9 +190,22 @@ public class StudentsViewAdapter extends RecyclerView.Adapter<StudentsViewAdapte
             this.db = db;
             this.favButton = itemView.findViewById(R.id.starButton);
             this.favButton.setOnClickListener(view -> {
-                this.db.studentsDao().delete((Student) student);
-                student.setIsFav(!student.getIsFav());
-                this.db.studentsDao().insert((Student) student);
+                boolean oppositeFav = !student.getIsFav();
+                this.db.studentsDao().updateFav(student.getStudentId(), oppositeFav);
+
+                //add favorited student to Favorites Session, update database
+                if (!student.getIsFav()) {
+                    String updatedList = (db.sessionsDao().get(1).studentIDList) + "," + this.student.getStudentId();
+                    db.sessionsDao().updateStudentList(1, updatedList);
+                }
+                //remove unfavorited student
+                else {
+                    List<Integer> originalList = ListConverter.getListFromString(db.sessionsDao().get(1).studentIDList);
+                    originalList.remove((Integer) this.student.getStudentId());
+                    String updatedList = ListConverter.getStringFromList(originalList);
+                    db.sessionsDao().updateStudentList(1, updatedList);
+                }
+
                 sva.sortList("");
                 Log.d(TAG, "Favorite clicked");
             });
@@ -202,6 +220,9 @@ public class StudentsViewAdapter extends RecyclerView.Adapter<StudentsViewAdapte
                     student.getMatches()));
             if(student.isWavedAtMe()) {
                 this.studentWaveIcon.setVisibility(View.VISIBLE);
+            }
+            else {
+                this.studentWaveIcon.setVisibility(View.GONE);
             }
             this.favButton.setImageResource(student.getIsFav() ? R.drawable.star_filled : R.drawable.star_hollow);
         }
@@ -225,4 +246,6 @@ public class StudentsViewAdapter extends RecyclerView.Adapter<StudentsViewAdapte
     public List<Student> getStudents() {
         return this.students;
     }
+
+    public void setStudents(List<Student> students) { this.students = students; }
 }

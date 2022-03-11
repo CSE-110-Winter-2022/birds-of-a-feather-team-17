@@ -320,6 +320,7 @@ public class HomePageActivity extends AppCompatActivity implements RenameDialogF
 
         //Stop clicked, create session
         Log.d(TAG, "Stop clicked");
+        saveSession();
     }
 
     private void createSession() {

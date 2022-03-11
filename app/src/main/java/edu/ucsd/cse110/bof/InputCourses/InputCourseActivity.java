@@ -96,7 +96,6 @@ public class InputCourseActivity extends AppCompatActivity {
         }
         else {
             Intent intent = new Intent(this, HomePageActivity.class);
-            intent.putExtra("student_id", USER_ID); //TODO remove unused line
             startActivity(intent);
         }
 

@@ -40,7 +40,6 @@ public class SessionDetailActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_history);
-        setTitle("Students in Session: ");
 
         Spinner p_spinner = findViewById(R.id.priority_spinner2);
         ArrayAdapter<CharSequence> p_adapter = ArrayAdapter.createFromResource(this, R.array.priorities_array, android.R.layout.simple_spinner_item);
@@ -54,6 +53,8 @@ public class SessionDetailActivity extends AppCompatActivity {
         db = AppDatabase.singleton(this);
         Session session = db.sessionsDao().get(session_id);
         List<Integer> studentIDList = session.getStudentList();
+
+        setTitle("Students in Session: " + session.dispName);
 
         Log.d(TAG, "Received Session id: " + session_id + " with name: " + session.dispName);
 

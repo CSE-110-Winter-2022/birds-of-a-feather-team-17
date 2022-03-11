@@ -40,13 +40,14 @@ import edu.ucsd.cse110.bof.model.StudentWithCourses;
 import edu.ucsd.cse110.bof.model.IStudent;
 import edu.ucsd.cse110.bof.model.db.AppDatabase;
 import edu.ucsd.cse110.bof.model.db.Course;
+import edu.ucsd.cse110.bof.viewProfile.CoursesListViewAdapter;
 import edu.ucsd.cse110.bof.model.db.Student;
 import edu.ucsd.cse110.bof.studentWithCoursesBytesFactory;
 
 
 public class StudentDetailActivity extends AppCompatActivity {
 
-    private static final String TAG = "Within Student Profile: ";
+    private static final String TAG = "StudentDetailActivityLog: ";
     private AppDatabase db;
     int studentID;
     private Student student;
@@ -89,6 +90,7 @@ public class StudentDetailActivity extends AppCompatActivity {
         courses = db.coursesDao().getForStudent(studentID);
         userStudent = db.studentsDao().get(1);
         userCourses = db.coursesDao().getForStudent(1);
+
 
         //sets student name and picture
         studentName = findViewById(R.id.profile_name);
@@ -153,20 +155,11 @@ public class StudentDetailActivity extends AppCompatActivity {
             waveButton.setImageResource(R.drawable.wave_filled);
             waveButton.setContentDescription(getApplicationContext().getString(R.string.wave_on));
 
-            //Delete from db
-            db.studentsDao().delete(student);
-            db.studentsDao().delete(userStudent);
-
-            //Set relevant fields for sending a wave
-            student.setWavedTo(true);
-            userStudent.setWaveTarget(student.getUUID());
-
-            //Reinsert to db after update
-            db.studentsDao().insert(student);
-            db.studentsDao().insert(userStudent);
+            //TODO: test database updates properly
+            db.studentsDao().updateWaveTo(student.getStudentId(), true);
 
             //Create a studentWithCourses, convert it into a byte array, and make it into a message
-            StudentWithCourses swc = new StudentWithCourses(userStudent, userCourses);
+            StudentWithCourses swc = new StudentWithCourses(userStudent, userCourses, student.getUUID());
             byte[] finalStudentWithCoursesBytes = studentWithCoursesBytesFactory.convert(swc);
             Message selfMessage = new Message(finalStudentWithCoursesBytes);
 

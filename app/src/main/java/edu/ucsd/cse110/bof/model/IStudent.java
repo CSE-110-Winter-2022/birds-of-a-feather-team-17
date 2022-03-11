@@ -29,6 +29,6 @@ public interface IStudent extends Serializable {
     void setRecencyWeight(int weight);
     void setWavedAtMe(boolean waved);
     void setWavedTo(boolean waved);
-    void setWaveTarget(String waveTarget);
     void setIsFav(boolean isFav);
+    void setWaveTarget(String waveTarget);
 }

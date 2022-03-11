@@ -11,6 +11,7 @@ import android.widget.EditText;
 import edu.ucsd.cse110.bof.InputCourses.InputCourseActivity;
 import edu.ucsd.cse110.bof.R;
 import edu.ucsd.cse110.bof.model.db.AppDatabase;
+import edu.ucsd.cse110.bof.model.db.Session;
 import edu.ucsd.cse110.bof.model.db.Student;
 
 import android.webkit.URLUtil;
@@ -64,6 +65,9 @@ public class PhotoActivity extends AppCompatActivity {
 
         //insert user into database (student_id=1, first element in database)
         db.studentsDao().insert(new Student(username, photoURL, uuid));
+
+        //create a new session called Favorites
+        db.sessionsDao().insert(new Session("","","Favorites"));
 
         //Link to InputCourseActivity
         Intent intent = new Intent(this, InputCourseActivity.class);

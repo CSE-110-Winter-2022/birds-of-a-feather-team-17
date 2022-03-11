@@ -13,10 +13,12 @@ import edu.ucsd.cse110.bof.model.db.Student;
 public class StudentWithCourses implements Serializable {
     private Student student;
     private List<Course> courses;
+    private String waveTarget;
 
-    public StudentWithCourses(Student student, List<Course> courses) {
+    public StudentWithCourses(Student student, List<Course> courses, String waveTarget) {
         this.student = student;
         this.courses = courses;
+        this.waveTarget = waveTarget;
     }
 
     public Student getStudent() {
@@ -26,6 +28,8 @@ public class StudentWithCourses implements Serializable {
     public List<Course> getCourses() {
         return courses;
     }
+
+    public String getWaveTarget() { return waveTarget; }
 
     public void setCourses(List<Course> courses) {
         this.courses = courses;
