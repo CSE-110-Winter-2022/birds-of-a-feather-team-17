@@ -402,6 +402,7 @@ public class HomePageActivity extends AppCompatActivity implements RenameDialogF
         if(courses == null) { return 0; }
         int sum = 0;
         for(Course c : courses) {
+            if (c.year == 2022 && c.quarter.equals("WI")) { sum+=5; continue;}
             if(2022 - c.year > 1) {
                 sum += 1;
             } else {
@@ -445,12 +446,11 @@ public class HomePageActivity extends AppCompatActivity implements RenameDialogF
 
                     Student matchingStudent = studentsViewAdapter.getStudents().get(matchingIndex);
                     boolean wavedAlready = db.studentsDao().get(matchingStudent.getStudentId()).isWavedTo();
-                    db.studentsDao().delete(matchingStudent);
 
                     matchingStudent.setWavedAtMe(true);
                     matchingStudent.setWavedTo(wavedAlready);
 
-                    db.studentsDao().insert(matchingStudent);
+                    db.studentsDao().updateWaveMe(matchingStudent.getStudentId(), true);
 
                     studentsViewAdapter.sortList(priority);
                 }

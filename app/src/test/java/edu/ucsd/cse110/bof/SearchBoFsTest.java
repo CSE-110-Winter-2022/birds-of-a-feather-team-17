@@ -98,7 +98,7 @@ public class SearchBoFsTest {
         bobCourses.add(cse110WI22L);
         bobCourses.add(cse210FA21S);
 
-        StudentWithCourses BobAndCourses = new StudentWithCourses(Bob, bobCourses);
+        StudentWithCourses BobAndCourses = new StudentWithCourses(Bob, bobCourses,"");
 
         //move to CREATED to make necessary objects
         scenario.moveToState(Lifecycle.State.CREATED);
@@ -168,7 +168,7 @@ public class SearchBoFsTest {
         bobCourses.add(cse110WI22L);
         bobCourses.add(cse210FA21S);
 
-        StudentWithCourses BobAndCourses = new StudentWithCourses(Bob, bobCourses);
+        StudentWithCourses BobAndCourses = new StudentWithCourses(Bob, bobCourses, "");
 
         scenario.onActivity( activity -> {
             //use test db and automatically mock Bill without going to NMM
