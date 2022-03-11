@@ -17,6 +17,8 @@ import edu.ucsd.cse110.bof.model.db.Student;
 import android.webkit.URLUtil;
 import android.widget.Toast;
 
+import java.util.UUID;
+
 public class PhotoActivity extends AppCompatActivity {
     private String photoURL;
     private EditText photoInput;
@@ -58,8 +60,11 @@ public class PhotoActivity extends AppCompatActivity {
 
         Log.d(TAG, "Received user's photoURL: " + photoURL);
 
+        //Generate a random UUID for the user
+        String uuid = UUID.randomUUID().toString();
+
         //insert user into database (student_id=1, first element in database)
-        db.studentsDao().insert(new Student(username, photoURL));
+        db.studentsDao().insert(new Student(username, photoURL, uuid));
 
         //create a new session called Favorites
         db.sessionsDao().insert(new Session("","","Favorites"));

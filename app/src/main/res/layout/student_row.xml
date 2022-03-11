@@ -8,6 +8,26 @@
     android:layout_marginRight="@dimen/margin"
     android:gravity="center_vertical">
 
+    <ImageView
+        android:id="@+id/wave_received_icon"
+        android:layout_width="36dp"
+        android:layout_height="42dp"
+        android:translationX="160sp"
+        android:translationY="11sp"
+        android:visibility="invisible"
+        app:srcCompat="@drawable/wave_filled" />
+
+    <ImageButton
+        android:id="@+id/starButton"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:background="?android:selectableItemBackground"
+        android:contentDescription="Unfavorited"
+        android:scaleType="fitCenter"
+        android:translationX="205sp"
+        android:translationY="14sp"
+        app:srcCompat="@drawable/star_hollow" />
+
     <TextView
         android:id="@+id/student_row_name"
         android:layout_width="wrap_content"
@@ -29,13 +49,14 @@
         android:text="-1"
         android:textSize="24sp"
         android:textStyle="bold"
-        android:translationX="175sp" />
+        android:translationX="250sp" />
 
     <ImageView
         android:id="@+id/student_row_photo"
+        android:contentDescription="@string/student_photo"
         android:layout_width="80dp"
         android:layout_height="51dp"
-        android:translationX="300sp"
+        android:translationX="280sp"
         android:translationY="6sp"
         tools:srcCompat="@tools:sample/avatars" />
 </FrameLayout>

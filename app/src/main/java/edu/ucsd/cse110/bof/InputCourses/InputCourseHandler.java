@@ -5,16 +5,17 @@ import android.widget.Toast;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.UUID;
 
 import edu.ucsd.cse110.bof.model.db.AppDatabase;
 import edu.ucsd.cse110.bof.model.db.Course;
 
 public class InputCourseHandler {
-    private static final int USER_ID = 1;   //id of user in db
-    private int numEntered;                 //number of courses entered by this
-    private final AppDatabase db;           //database instance
-    private boolean isDuplicate = false;    //true if last entered course is
-                                            // a duplicate
+    private final int USER_ID = 1;                 //id of user in db
+    private int numEntered;                        //number of courses entered by this
+    private final AppDatabase db;                  //database instance
+    private boolean isDuplicate = false;           //true if last entered course is
+                                                   //a duplicate
 
     /**
      * Constructor for InputCourseHandler
@@ -84,5 +85,13 @@ public class InputCourseHandler {
         List<Course> userCourses = db.coursesDao().getForStudent(USER_ID);
         HashSet<Course> stuCourses = new HashSet<>(userCourses);
         return stuCourses.contains(course);
+    }
+
+    /**
+     * Simple getter for InputCourseActivity to avoid DRY violation in InputCourseActivity
+     * @return USER_ID
+     */
+    public int getUserId() {
+        return USER_ID;
     }
 }

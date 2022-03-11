@@ -26,6 +26,10 @@ public class MockedStudentFactory {
         reader.useDelimiter("\\s*[,\n]\\s*");
 
         Student mockStudent = new Student();
+
+        mockStudent.setUUID(reader.next());
+        reader.nextLine();
+
         mockStudent.setName(reader.next());
         reader.nextLine();
 
@@ -37,22 +41,31 @@ public class MockedStudentFactory {
         int year;
         String quarter, subject, courseNum;
         String courseSize;
+        String targetUUID="";
 
         while (reader.hasNextLine()) {
             reader.nextLine();
             if (!reader.hasNext()) { break; }
-            year = Integer.parseInt(reader.next());
-            quarter = reader.next();
-            subject = reader.next();
-            courseNum = reader.next();
-            courseSize = reader.next();
 
-            mockStuCourses.add(new Course(1, 1, year,
-                    quarter, subject, courseNum, courseSize));
+            if(reader.hasNextInt()) {
+                year = Integer.parseInt(reader.next());
+                quarter = reader.next();
+                subject = reader.next();
+                courseNum = reader.next();
+                courseSize = reader.next();
+
+                mockStuCourses.add(new Course(1, 1, year,
+                        quarter, subject, courseNum, courseSize));
+            }
+            else {
+                targetUUID = reader.next();
+                //if(reader.next().equals("wave")) //TODO test: possibly unexpected behavior from second part
+
+            }
         }
 
         reader.close();
 
-        return new StudentWithCourses(mockStudent, mockStuCourses);
+        return new StudentWithCourses(mockStudent, mockStuCourses, targetUUID);
     }
 }

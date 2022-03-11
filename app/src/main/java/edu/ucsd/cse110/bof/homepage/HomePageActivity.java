@@ -30,6 +30,15 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.google.android.gms.nearby.Nearby;
 import com.google.android.gms.nearby.messages.Message;
 import com.google.android.gms.nearby.messages.MessageListener;
@@ -61,6 +70,7 @@ import edu.ucsd.cse110.bof.model.db.Course;
 import edu.ucsd.cse110.bof.model.db.ListConverter;
 import edu.ucsd.cse110.bof.model.db.Session;
 import edu.ucsd.cse110.bof.model.db.Student;
+import edu.ucsd.cse110.bof.studentWithCoursesBytesFactory;
 
 public class HomePageActivity extends AppCompatActivity {
     private AppDatabase db;
@@ -100,6 +110,10 @@ public class HomePageActivity extends AppCompatActivity {
 
     private Context context;
 
+    private String UUID;
+
+    private String priority;
+
     //for getting the csv from NMMActivity
     ActivityResultLauncher<Intent> activityLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
@@ -130,6 +144,9 @@ public class HomePageActivity extends AppCompatActivity {
 
         context = this;
 
+        //set priority to "common classes" as default
+        priority = "common classes";
+
         //create spinner (drop-down menu) for priorities/sorting algorithms
         p_spinner = findViewById(R.id.priority_spinner);
         ArrayAdapter<CharSequence> p_adapter = ArrayAdapter.createFromResource(this, R.array.priorities_array, android.R.layout.simple_spinner_item);
@@ -140,6 +157,10 @@ public class HomePageActivity extends AppCompatActivity {
         db = AppDatabase.singleton(this);
         thisStudent = db.studentsDao().get(1);
         thisStudentCourses = db.coursesDao().getForStudent(1);
+
+        //TODO test: OUTPUT current UUID for use with mocking
+        UUID = thisStudent.getUUID();
+        Log.d("UUID", UUID); //output UUID with tag UUID in console
 
         //set up RecyclerView
         myBoFs = new ArrayList<>();
@@ -158,7 +179,7 @@ public class HomePageActivity extends AppCompatActivity {
                     public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
 
                         Log.d(TAG, "Selecting priority...");
-                        String priority = parent.getItemAtPosition(pos).toString();
+                        priority = parent.getItemAtPosition(pos).toString();
                         studentsViewAdapter.sortList(priority);
                         Log.d(TAG, "List sorted based on priority: "+priority);
 
@@ -197,9 +218,11 @@ public class HomePageActivity extends AppCompatActivity {
                 } catch (IOException | ClassNotFoundException e) {
                     e.printStackTrace();
                 }
+                Log.d(TAG, "message's UUID is: " + receivedStudentWithCourses.getStudent().getUUID());
                 Log.d(TAG,
                         "message is a studentWithCourses named "
                                 + receivedStudentWithCourses.getStudent().getName());
+                Log.d(TAG, "message's waveTarget is: " + receivedStudentWithCourses.getWaveTarget());
 
                 //update the recyclerview list
                 updateLists();
@@ -219,23 +242,9 @@ public class HomePageActivity extends AppCompatActivity {
 
         Log.d(TAG, "creating message to send through Nearby...");
         //create user's StudentWithCourses object to send to others via Bluetooth/Nearby API
-        selfStudentWithCourses = new StudentWithCourses(thisStudent, thisStudentCourses);
+        selfStudentWithCourses = new StudentWithCourses(thisStudent, thisStudentCourses, "");
 
-        //make byte array for student and courses
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        ObjectOutputStream out = null;
-        byte[] studentWithCoursesBytes = new byte[0];
-        try {
-            out = new ObjectOutputStream(bos);
-            out.writeObject(selfStudentWithCourses);
-            out.flush();
-            studentWithCoursesBytes = bos.toByteArray();
-            bos.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        byte[] finalStudentWithCoursesBytes = studentWithCoursesBytes;
+        byte[] finalStudentWithCoursesBytes = studentWithCoursesBytesFactory.convert(selfStudentWithCourses);
 
         selfMessage = new Message(finalStudentWithCoursesBytes);
         Log.d(TAG, "MessagesClient.publish ("+Nearby.getMessagesClient(this).getClass().getSimpleName()+
@@ -257,6 +266,7 @@ public class HomePageActivity extends AppCompatActivity {
     protected void onResume() {
         Log.d(TAG, "onResume called");
         super.onResume();
+        studentsViewAdapter.sortList(p_spinner.getSelectedItem().toString());
         if (mockedStudent != null && session != null) {
             Log.d(TAG, "onResume: updating fakedMessageListener with current mockedStudent " +
                     mockedStudent.getStudent().getName());
@@ -404,14 +414,43 @@ public class HomePageActivity extends AppCompatActivity {
 
     // called from listener, checks whether the student needs to be added to
     // homepage list and database
+
+    //TODO: test
     private void updateLists()  {
 
         Student newStudent = receivedStudentWithCourses.getStudent();
         String newName = newStudent.getName();
+        int matchingIndex = -1;
+
+        //getMatchingStudent will throw NullPointerException if student doesn't exist
+        try {
+            matchingIndex = getMatchingStudent(newStudent);
+            Log.d(TAG, "Discovered matching student: " + matchingIndex);
+        }
+        catch (NullPointerException e) {
+            Log.d(TAG, "No matching student");
+        }
 
         //check that this student isn't in list nor in database
         if (studentsViewAdapter.getStudents().contains(newStudent)) {
             Log.d(TAG, "Student " + newName + " already in homepage list");
+            if (matchingIndex != -1) {
+                if (receivedStudentWithCourses.getWaveTarget().equals(UUID)) {
+                    //set existing student's waveAtMe to true on studentsViewAdapter
+                    Log.d(TAG, "Discovered a matching wave");
+
+                    Student matchingStudent = studentsViewAdapter.getStudents().get(matchingIndex);
+                    boolean wavedAlready = db.studentsDao().get(matchingStudent.getStudentId()).isWavedTo();
+                    db.studentsDao().delete(matchingStudent);
+
+                    matchingStudent.setWavedAtMe(true);
+                    matchingStudent.setWavedTo(wavedAlready);
+
+                    db.studentsDao().insert(matchingStudent);
+
+                    studentsViewAdapter.sortList(priority);
+                }
+            }
             return;
         }
         else {
@@ -487,6 +526,17 @@ public class HomePageActivity extends AppCompatActivity {
 
             }
         }
+    }
+
+    //Helper function to find the existing student matching the new student
+    private int getMatchingStudent(Student newStudent) {
+        for(int i = 0; i < studentsViewAdapter.getStudents().size(); i++) {
+            Log.d(TAG, "Index " + i + "'s UUID: " + studentsViewAdapter.getStudents().get(i).getUUID());
+            if (studentsViewAdapter.getStudents().get(i).getUUID().equals(newStudent.getUUID())) {
+                return i;
+            }
+        }
+        return -1;
     }
 
     //for testing, need to be able to make mocked student without going to NMM

@@ -18,19 +18,19 @@ public class MockStudentFromCSVTest {
 
     private final MockedStudentFactory factory = new MockedStudentFactory();
 
-    private static final String billCSV = "Bill,,,,\n" +
+    private static final String billCSV = "a4ca50b6-941b-11ec-b909-0242ac120150,,,,\n" + "Bill,,,,\n" +
             "https://lh3.googleusercontent.com/pw/AM-JKLXQ2ix4dg-PzLrPOSMOOy6M3PSUrijov9jCLXs4IGSTwN73B4kr-F6Nti_4KsiUU8LzDSGPSWNKnFdKIPqCQ2dFTRbARsW76pevHPBzc51nceZDZrMPmDfAYyI4XNOnPrZarGlLLUZW9wal6j-z9uA6WQ=w854-h924-no?authuser=0,,,,\n" +
             "2021,FA,CSE,210,Large\n" +
             "2022,WI,CSE,110,Tiny\n" +
             "2022,SP,CSE,110,Gigantic\n";
 
-    private static final String bobCSV = "Bob,,,,\n" +
+    private static final String bobCSV = "a4ca50b6-941b-11ec-b909-0242ac120151,,,,\n" + "Bob,,,,\n" +
             "https://upload.wikimedia.org/wikipedia/en/c/c5/Bob_the_builder.jpg,,,,\n";
 
     @Test
     public void factoryParsesBillCSV() {
         // expected values
-        Student billExpected = new Student("Bill", "https://lh3.googleusercontent.com/pw/AM-JKLXQ2ix4dg-PzLrPOSMOOy6M3PSUrijov9jCLXs4IGSTwN73B4kr-F6Nti_4KsiUU8LzDSGPSWNKnFdKIPqCQ2dFTRbARsW76pevHPBzc51nceZDZrMPmDfAYyI4XNOnPrZarGlLLUZW9wal6j-z9uA6WQ=w854-h924-no?authuser=0");
+        Student billExpected = new Student("Bill", "https://lh3.googleusercontent.com/pw/AM-JKLXQ2ix4dg-PzLrPOSMOOy6M3PSUrijov9jCLXs4IGSTwN73B4kr-F6Nti_4KsiUU8LzDSGPSWNKnFdKIPqCQ2dFTRbARsW76pevHPBzc51nceZDZrMPmDfAYyI4XNOnPrZarGlLLUZW9wal6j-z9uA6WQ=w854-h924-no?authuser=0", "a4ca50b6-941b-11ec-b909-0242ac120150");
         List<Course> coursesExpected = new ArrayList<>();
         coursesExpected.add(new Course(1 ,1 ,2021,
                 "FA", "CSE", "210", "Large"));
@@ -54,7 +54,7 @@ public class MockStudentFromCSVTest {
     @Test
     public void factoryParsesBobCSV() {
         // expected values
-        Student bobExpected = new Student("Bob", "https://upload.wikimedia.org/wikipedia/en/c/c5/Bob_the_builder.jpg");
+        Student bobExpected = new Student("Bob", "https://upload.wikimedia.org/wikipedia/en/c/c5/Bob_the_builder.jpg", "a4ca50b6-941b-11ec-b909-0242ac120151");
         List<Course> coursesExpected = new ArrayList<>();
 
         // factory handles parsing, should return a StudentWithCourses
