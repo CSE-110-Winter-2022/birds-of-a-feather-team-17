@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -62,7 +63,7 @@ public class StudentsViewAdapter extends RecyclerView.Adapter<StudentsViewAdapte
                 .from(parent.getContext())
                 .inflate(R.layout.student_row, parent, false);
 
-        return new ViewHolder(view, this.db, this);
+        return new ViewHolder(view, this.db, this.context, this);
     }
 
     @Override
@@ -178,16 +179,18 @@ public class StudentsViewAdapter extends RecyclerView.Adapter<StudentsViewAdapte
 
         private final ImageButton favButton;
         private final AppDatabase db;
+        private final Context context;
 
         private IStudent student;
 
-        public ViewHolder(View itemView, AppDatabase db, StudentsViewAdapter sva) {
+        public ViewHolder(View itemView, AppDatabase db, Context context, StudentsViewAdapter sva) {
             super(itemView);
             this.studentNameView = itemView.findViewById(R.id.student_row_name);
             this.studentMatchesView = itemView.findViewById(R.id.student_row_matches);
             this.studentPhotoView = itemView.findViewById(R.id.student_row_photo);
             this.studentWaveIcon = itemView.findViewById(R.id.wave_received_icon);
             this.db = db;
+            this.context = context;
             this.favButton = itemView.findViewById(R.id.starButton);
             this.favButton.setOnClickListener(view -> {
                 boolean oppositeFav = !student.getIsFav();
@@ -195,11 +198,13 @@ public class StudentsViewAdapter extends RecyclerView.Adapter<StudentsViewAdapte
 
                 //add favorited student to Favorites Session, update database
                 if (!student.getIsFav()) {
+                    Toast.makeText(context, "Saved to Favorites", Toast.LENGTH_SHORT).show();
                     String updatedList = (db.sessionsDao().get(1).studentIDList) + "," + this.student.getStudentId();
                     db.sessionsDao().updateStudentList(1, updatedList);
                 }
                 //remove unfavorited student
                 else {
+                    Toast.makeText(context, "Removed From Favorites", Toast.LENGTH_SHORT).show();
                     List<Integer> originalList = ListConverter.getListFromString(db.sessionsDao().get(1).studentIDList);
                     originalList.remove((Integer) this.student.getStudentId());
                     String updatedList = ListConverter.getStringFromList(originalList);

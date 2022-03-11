@@ -159,7 +159,6 @@ public class HomePageActivity extends AppCompatActivity implements RenameDialogF
         thisStudent = db.studentsDao().get(1);
         thisStudentCourses = db.coursesDao().getForStudent(1);
 
-        //TODO test: OUTPUT current UUID for use with mocking
         UUID = thisStudent.getUUID();
         Log.d("UUID", UUID); //output UUID with tag UUID in console
 
@@ -332,11 +331,7 @@ public class HomePageActivity extends AppCompatActivity implements RenameDialogF
     }
 
     private void saveSession() {
-        //TODO: save/rename session with pop-up window (DialogFragment)
-        //String sessionName = "";
-
         Toast.makeText(this, "Session saved", Toast.LENGTH_SHORT).show();
-        //Log.d(TAG, "Saved Session with name: " + sessionName);
 
         session = null;
         sessionId = 0;
@@ -419,8 +414,6 @@ public class HomePageActivity extends AppCompatActivity implements RenameDialogF
 
     // called from listener, checks whether the student needs to be added to
     // homepage list and database
-
-    //TODO: test
     private void updateLists()  {
 
         Student newStudent = receivedStudentWithCourses.getStudent();
