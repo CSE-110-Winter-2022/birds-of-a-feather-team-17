@@ -152,7 +152,6 @@ public class StudentDetailActivity extends AppCompatActivity {
             waveButton.setImageResource(R.drawable.wave_filled);
             waveButton.setContentDescription(getApplicationContext().getString(R.string.wave_on));
 
-            //TODO: test database updates properly
             db.studentsDao().updateWaveTo(student.getStudentId(), true);
 
             //Create a studentWithCourses, convert it into a byte array, and make it into a message

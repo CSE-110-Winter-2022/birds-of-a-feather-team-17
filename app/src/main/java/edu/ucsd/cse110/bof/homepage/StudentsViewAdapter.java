@@ -34,6 +34,7 @@ import edu.ucsd.cse110.bof.R;
 import edu.ucsd.cse110.bof.StudentWithCourses;
 import edu.ucsd.cse110.bof.model.IStudent;
 import edu.ucsd.cse110.bof.model.db.AppDatabase;
+import edu.ucsd.cse110.bof.model.db.ListConverter;
 import edu.ucsd.cse110.bof.model.db.Student;
 import edu.ucsd.cse110.bof.viewProfile.StudentDetailActivity;
 
@@ -191,6 +192,20 @@ public class StudentsViewAdapter extends RecyclerView.Adapter<StudentsViewAdapte
             this.favButton.setOnClickListener(view -> {
                 boolean oppositeFav = !student.getIsFav();
                 this.db.studentsDao().updateFav(student.getStudentId(), oppositeFav);
+
+                //add favorited student to Favorites Session, update database
+                if (!student.getIsFav()) {
+                    String updatedList = (db.sessionsDao().get(1).studentIDList) + "," + this.student.getStudentId();
+                    db.sessionsDao().updateStudentList(1, updatedList);
+                }
+                //remove unfavorited student
+                else {
+                    List<Integer> originalList = ListConverter.getListFromString(db.sessionsDao().get(1).studentIDList);
+                    originalList.remove((Integer) this.student.getStudentId());
+                    String updatedList = ListConverter.getStringFromList(originalList);
+                    db.sessionsDao().updateStudentList(1, updatedList);
+                }
+
                 sva.sortList("");
                 Log.d(TAG, "Favorite clicked");
             });
@@ -230,4 +245,6 @@ public class StudentsViewAdapter extends RecyclerView.Adapter<StudentsViewAdapte
     public List<Student> getStudents() {
         return this.students;
     }
+
+    public void setStudents(List<Student> students) { this.students = students; }
 }

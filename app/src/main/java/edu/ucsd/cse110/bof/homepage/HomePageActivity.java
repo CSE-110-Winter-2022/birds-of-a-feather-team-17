@@ -189,6 +189,7 @@ public class HomePageActivity extends AppCompatActivity implements RenameDialogF
         realListener = new MessageListener() {
             @Override
             public void onFound(@NonNull Message message) {
+                Toast.makeText(getApplicationContext(), "Found message!",Toast.LENGTH_SHORT).show();
                 // Make StudentWithCourses from byte array received
                 Log.d(TAG, "found a (nonnull) message: " + new String(message.getContent()));
                 ByteArrayInputStream bis =
@@ -317,7 +318,6 @@ public class HomePageActivity extends AppCompatActivity implements RenameDialogF
 
         // Stop clicked, create session
         Log.d(TAG, "Stop clicked");
-        saveSession();
     }
 
     /**
@@ -426,6 +426,7 @@ public class HomePageActivity extends AppCompatActivity implements RenameDialogF
         if(courses == null) { return 0; }
         int sum = 0;
         for(Course c : courses) {
+            if (c.year == 2022 && c.quarter.equals("WI")) { sum+=5; continue;}
             if(2022 - c.year > 1) {
                 sum += 1;
             } else {
@@ -468,12 +469,11 @@ public class HomePageActivity extends AppCompatActivity implements RenameDialogF
 
                     Student matchingStudent = studentsViewAdapter.getStudents().get(matchingIndex);
                     boolean wavedAlready = db.studentsDao().get(matchingStudent.getStudentId()).isWavedTo();
-                    db.studentsDao().delete(matchingStudent);
 
                     matchingStudent.setWavedAtMe(true);
                     matchingStudent.setWavedTo(wavedAlready);
 
-                    db.studentsDao().insert(matchingStudent);
+                    db.studentsDao().updateWaveMe(matchingStudent.getStudentId(), true);
 
                     studentsViewAdapter.sortList(priority);
                 }

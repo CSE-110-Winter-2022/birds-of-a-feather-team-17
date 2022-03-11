@@ -85,13 +85,13 @@ public class SessionsTest {
                 ActivityScenario.launch(HomePageActivity.class);
 
         //make Bob and his courses to mock:
-        Student Bob = new Student("Bob", bobPhoto);
+        Student Bob = new Student("Bob", bobPhoto, "a");
 
         List<Course> bobCourses = new ArrayList<>();
         bobCourses.add(cse110WI22L);
         bobCourses.add(cse210FA21S);
 
-        StudentWithCourses BobAndCourses = new StudentWithCourses(Bob, bobCourses);
+        StudentWithCourses BobAndCourses = new StudentWithCourses(Bob, bobCourses, "");
 
         //move to CREATED to make necessary objects
         scenario.moveToState(Lifecycle.State.CREATED);
@@ -137,24 +137,24 @@ public class SessionsTest {
                 ActivityScenario.launch(HomePageActivity.class);
 
         //make Bob and his courses to mock:
-        Student Bob = new Student("Bob", bobPhoto);
+        Student Bob = new Student("Bob", bobPhoto, "a");
 
         List<Course> bobCourses = new ArrayList<>();
         bobCourses.add(cse110WI22L);
         bobCourses.add(cse210FA21S);
 
-        StudentWithCourses BobAndCourses = new StudentWithCourses(Bob, bobCourses);
+        StudentWithCourses BobAndCourses = new StudentWithCourses(Bob, bobCourses, "");
 
 
         //make Carrie and her courses to mock:
-        Student Carrie = new Student("Carrie", bobPhoto);
+        Student Carrie = new Student("Carrie", bobPhoto, "b");
 
         List<Course> carrieCourses = new ArrayList<>();
         carrieCourses.add(cse110WI22L);
         carrieCourses.add(cse210FA21S);
 
         StudentWithCourses CarrieAndCourses = new StudentWithCourses(Carrie,
-                carrieCourses);
+                carrieCourses, "");
 
         //move to CREATED to make necessary objects
         scenario.moveToState(Lifecycle.State.CREATED);
