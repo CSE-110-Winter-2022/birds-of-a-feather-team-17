@@ -112,7 +112,7 @@ public class StudentDetailActivity extends AppCompatActivity {
 
     }
 
-    public void onHomeClicked(View view) {
+    public void onBackClicked(View view) {
         finish();
     }
 
