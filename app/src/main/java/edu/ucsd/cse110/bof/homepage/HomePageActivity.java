@@ -206,6 +206,7 @@ public class HomePageActivity extends AppCompatActivity implements RenameDialogF
 
             @Override
             public void onFound(@NonNull Message message) {
+                Toast.makeText(getApplicationContext(), "Found message!",Toast.LENGTH_SHORT).show();
                 //make StudentWithCourses from byte array received
                 Log.d(TAG, "found a (nonnull) message: " + new String(message.getContent()));
                 ByteArrayInputStream bis =
