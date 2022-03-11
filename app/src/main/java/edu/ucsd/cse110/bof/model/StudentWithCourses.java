@@ -18,7 +18,7 @@ public class StudentWithCourses implements Serializable {
     public StudentWithCourses(Student student, List<Course> courses, String waveTarget) {
         this.student = student;
         this.courses = courses;
-        this.waveTarget = waveTarget;
+        this.waveTarget = (waveTarget == null) ? "" : waveTarget;
     }
 
     public Student getStudent() {

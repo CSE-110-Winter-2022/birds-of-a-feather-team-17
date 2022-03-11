@@ -142,7 +142,7 @@ public class StudentDetailActivity extends AppCompatActivity {
         finish();
     }
 
-    public void onWaveClicked() {
+    public void onWaveClicked(View view) {
         if(!waveOn) {
             waveOn = true;
 

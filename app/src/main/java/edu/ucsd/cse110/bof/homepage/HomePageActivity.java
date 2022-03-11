@@ -354,6 +354,7 @@ public class HomePageActivity extends AppCompatActivity implements RenameDialogF
             Log.d(TAG, "unsubscribed fakedMessageListener");
             fakedMessageListener = null;
         }
+        mockedStudent = null;
     }
 
     public void onGoToMockStudents(View view) {
@@ -384,10 +385,11 @@ public class HomePageActivity extends AppCompatActivity implements RenameDialogF
     }
 
     // called from listener, checks whether the student needs to be added to
-    // homepage list and database //TODO: test
+    // homepage list and database
     private synchronized void updateLists()  {
 
         Student mStudent = receivedStudentWithCourses.getStudent();
+        mStudent.setWaveTarget(receivedStudentWithCourses.getWaveTarget());
         String mName = mStudent.getName();
 
         int matchingIndex = -1;
@@ -401,7 +403,7 @@ public class HomePageActivity extends AppCompatActivity implements RenameDialogF
             Log.d(TAG, "No matching student");
         }
 
-        //exit early if student already on homepage
+        //if in homepage, only check if now waving
         if (studentsViewAdapter.getStudents().contains(mStudent)) {
             Log.d(TAG, "Student " + mName + " already in homepage list");
             if (matchingIndex != -1) {

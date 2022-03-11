@@ -1,6 +1,7 @@
 package edu.ucsd.cse110.bof;
 
 
+import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static androidx.test.espresso.Espresso.onData;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
@@ -13,6 +14,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.hasChildCount;
 import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withClassName;
+import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withParent;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
@@ -64,6 +66,7 @@ public class TestHomePageFeatures {
     private static int courseId = 1;
     private static int userId = 1;
 
+    private static final String AvaUUID = "6db89afd-6844-4975-bba7-a3a7d94d5003";
     private static final String someUUID1 = "a4ca50b6-941b-11ec-b909-0242ac120002";
     private static final String someUUID2 = "232dc5a5-b428-4ff0-88af-8817afc8e098";
     private static final String someUUID3 = "7299ef8f-3b21-45d3-b105-f9ceddca48bf";
@@ -84,6 +87,8 @@ public class TestHomePageFeatures {
             "2021,FA,CSE,210,Tiny\n" +
             "2022,WI,CSE,110,Large\n" +
             "2022,SP,CSE,110,Gigantic\n";
+
+    private static final String waveAtAvaCSV = AvaUUID + ",wave,,,\n";
 
     // should come first when ordering by matches since he has 2 common
     // courses with Ava
@@ -166,6 +171,7 @@ public class TestHomePageFeatures {
         //db = AppDatabase.singleton(context);
 
         //Add Ava into db, then get her dbID
+        Ava.setUUID(AvaUUID);
         db.studentsDao().insert(Ava);
         Ava.setStudentId(db.studentsDao().maxId());
         userId = db.studentsDao().maxId();
@@ -396,6 +402,102 @@ public class TestHomePageFeatures {
         //in profile view, the name should be Bob
         bobDetailNameView.check(matches(isDisplayed()));
         bobDetailNameView.check(matches(withText("Bob")));
+    }
+
+    // tests mocking Barry and Jerry, then re-mocking Barry with a wave to
+    // Ava's UUID to move Harry to the top
+    @Test
+    public void testBobStartsWavingAtAva() {
+        //only Ava in db
+        Assert.assertEquals(1, db.studentsDao().getAll().size());
+
+        //click button to start search
+        ViewInteraction searchBtn = onView(
+                allOf(withId(R.id.search_button),
+                        isDisplayed()));
+        searchBtn.perform(click());
+
+        //go to activity to mock students
+        ViewInteraction mockStuBtnView = onView(
+                allOf(withId(R.id.mock_activity_btn),
+                        isDisplayed()));
+        mockStuBtnView.perform(click());
+
+        //input JerryCSV text into view
+        ViewInteraction csvInputView = onView(
+                allOf(withId(R.id.input_csv),
+                        isDisplayed()));
+        csvInputView.perform(replaceText(JerryCSV));
+
+        //click confirm
+        ViewInteraction confirmMockedStudentBtn = onView(
+                allOf(withId(R.id.confirmButton),
+                        isDisplayed()));
+        confirmMockedStudentBtn.perform(click());
+
+        //go back to homepage:
+        ViewInteraction toHomeFromCSVBtn = onView(
+                allOf(withId(R.id.button2),
+                        isDisplayed()));
+        toHomeFromCSVBtn.perform(click());
+
+        //repeat with Barry
+        mockStuBtnView.perform(click());
+        csvInputView.perform(replaceText(BarryCSV));
+        confirmMockedStudentBtn.perform(click());
+        toHomeFromCSVBtn.perform(click());
+
+        //confirm 3 students in db
+        Assert.assertEquals(3, db.studentsDao().getAll().size());
+
+        //confirm that homePageViewAdapter has 2 students
+        ViewInteraction homePageRecyclerView = onView(
+                allOf(withId(R.id.students_view),
+                        childAtPosition(
+                                withClassName(is("androidx.constraintlayout.widget.ConstraintLayout")),
+                                0)));
+        //homePageRecyclerView.check(matches(hasChildCount(2)));
+
+        //Jerry is at position 0, Barry at position 1
+        //click into first student
+        homePageRecyclerView.perform(actionOnItemAtPosition(0, click()));
+
+        //confirm that the first is Jerry
+        ViewInteraction stuDetailName = onView(
+                allOf(withId(R.id.profile_name),
+                        isDisplayed()));
+        stuDetailName.check(matches(withText("Jerry")));
+
+        //return to homepage
+        ViewInteraction stuDetailBackBtn = onView(
+                allOf(withId(R.id.button_back),
+                        isDisplayed()));
+        stuDetailBackBtn.perform(click());
+
+        //click into second student
+        homePageRecyclerView.perform(actionOnItemAtPosition(1, click()));
+
+        //confirm that the second is Barry
+        stuDetailName.check(matches(withText("Barry")));
+
+        //return to homepage
+        stuDetailBackBtn.perform(click());
+
+        //now go back to NMM and mock that Barry waves:
+        mockStuBtnView.perform(click());
+        csvInputView.perform(replaceText(BarryCSV + waveAtAvaCSV));
+        confirmMockedStudentBtn.perform(click());
+        toHomeFromCSVBtn.perform(click());
+
+        //the first student should now be Barry
+        homePageRecyclerView.perform(actionOnItemAtPosition(0, click()));
+        stuDetailName.check(matches(withText("Barry")));
+        stuDetailBackBtn.perform(click());
+
+        //confirm that wave icon is set:
+        //String waveOn = getApplicationContext().getString(R.string.wave_on);
+        //onView(withId(R.id.wave_received_icon))
+        //        .check(matches(withContentDescription(waveOn)));
     }
 
     // adds three students to the viewAdapter, then confirms that updating the
