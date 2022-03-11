@@ -106,14 +106,14 @@ public class SortBoFsTest {
         scenario.moveToState(Lifecycle.State.CREATED);
 
         //create students
-        Bob = new Student("Bob", bobPhoto);
+        Bob = new Student("Bob", bobPhoto, "ffc910fd-e52f-4829-a649-5f2c44a9fce4");
 
         bobCourses = new ArrayList<>();
         bobCourses.add(c1);
         bobCourses.add(c2);
         bobCourses.add(c3);
 
-        Casey = new Student("Casey","");
+        Casey = new Student("Casey","", "efc910fd-e52f-4829-a649-5f2c44a9fce4" );
         caseyCourses = new ArrayList<>();
         caseyCourses.add(c4);
         caseyCourses.add(c5);
