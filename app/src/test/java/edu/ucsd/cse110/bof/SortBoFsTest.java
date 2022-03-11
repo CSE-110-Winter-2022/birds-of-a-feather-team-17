@@ -88,12 +88,6 @@ public class SortBoFsTest {
         AppDatabase.useTestSingleton(context);
         db = AppDatabase.singleton(context);
 
-        //create Ava (user) and insert her into db, then get her dbID
-        Ava = new Student();
-        db.studentsDao().insert(Ava);
-        Ava.setStudentId(db.studentsDao().maxId());
-        userId = db.studentsDao().maxId();
-
         //add Ava's courses to db
         db.coursesDao().insert(c1);
         db.coursesDao().insert(c2);
@@ -117,6 +111,12 @@ public class SortBoFsTest {
         caseyCourses = new ArrayList<>();
         caseyCourses.add(c4);
         caseyCourses.add(c5);
+
+        db.studentsDao().insert(Bob);
+        Bob.setStudentId(db.studentsDao().maxId());
+
+        db.studentsDao().insert(Casey);
+        Casey.setStudentId(db.studentsDao().maxId());
     }
 
     @Test
