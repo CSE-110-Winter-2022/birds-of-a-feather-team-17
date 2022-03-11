@@ -31,7 +31,7 @@ public class MainActivity extends AppCompatActivity {
         }
         else {
             Log.d(TAG, "User not found, go to Login to start making new user");
-            Intent intent = new Intent(this, LoginActivity.class);
+            Intent intent = new Intent(this, NameActivity.class);
             this.startActivity(intent);
         }
         finish();

@@ -52,6 +52,7 @@ import edu.ucsd.cse110.bof.model.db.AppDatabase;
 import edu.ucsd.cse110.bof.model.db.Course;
 import edu.ucsd.cse110.bof.model.db.Session;
 import edu.ucsd.cse110.bof.model.db.Student;
+import edu.ucsd.cse110.bof.studentWithCoursesBytesFactory;
 import edu.ucsd.cse110.bof.RenameDialogFragment;
 
 public class HomePageActivity extends AppCompatActivity implements RenameDialogFragment.renameDialogListener {
@@ -245,21 +246,7 @@ public class HomePageActivity extends AppCompatActivity implements RenameDialogF
                                         .setCourses(thisStudentCourses)
                                         .getSWC();
 
-        //make byte array for student and courses
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        ObjectOutputStream out = null;
-        byte[] studentWithCoursesBytes = new byte[0];
-        try {
-            out = new ObjectOutputStream(bos);
-            out.writeObject(selfStudentWithCourses);
-            out.flush();
-            studentWithCoursesBytes = bos.toByteArray();
-            bos.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        byte[] finalStudentWithCoursesBytes = studentWithCoursesBytes;
+        byte[] finalStudentWithCoursesBytes = studentWithCoursesBytesFactory.convert(selfStudentWithCourses);
 
         selfMessage = new Message(finalStudentWithCoursesBytes);
         Log.d(TAG, "MessagesClient.publish ("+Nearby.getMessagesClient(this).getClass().getSimpleName()+
@@ -420,11 +407,17 @@ public class HomePageActivity extends AppCompatActivity implements RenameDialogF
                 if (mStudent.getWaveTarget().equals(UUID)) {
                     //set existing student's waveAtMe to true on studentsViewAdapter
                     Log.d(TAG, "Discovered a matching wave");
-                    studentsViewAdapter.getStudents().get(matchingIndex).setWavedAtMe(true);
-                    //TODO test: update Adapter UI
-                    //TODO test: update Adapter Sorting
+
+                    Student matchingStudent = studentsViewAdapter.getStudents().get(matchingIndex);
+                    boolean wavedAlready = db.studentsDao().get(matchingStudent.getStudentId()).isWavedTo();
+                    db.studentsDao().delete(matchingStudent);
+
+                    matchingStudent.setWavedAtMe(true);
+                    matchingStudent.setWavedTo(wavedAlready);
+
+                    db.studentsDao().insert(matchingStudent);
+
                     studentsViewAdapter.sortList(priority);
-                    //TODO update DB
                 }
             }
             return;

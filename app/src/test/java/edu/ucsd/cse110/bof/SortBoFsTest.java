@@ -119,6 +119,12 @@ public class SortBoFsTest {
         caseyCourses = new ArrayList<>();
         caseyCourses.add(c4);
         caseyCourses.add(c5);
+
+        db.studentsDao().insert(Bob);
+        Bob.setStudentId(db.studentsDao().maxId());
+
+        db.studentsDao().insert(Casey);
+        Casey.setStudentId(db.studentsDao().maxId());
     }
 
     @Test

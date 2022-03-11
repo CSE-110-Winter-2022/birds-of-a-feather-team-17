@@ -55,7 +55,7 @@ public class Student implements IStudent {
     public String waveTarget;
 
     @ColumnInfo(name = "isFav")
-    public boolean isFav = false;
+    public boolean isFav;
 
     // Student constructor
     public Student(String name, String photoURL, String UUID) {
@@ -68,6 +68,7 @@ public class Student implements IStudent {
         this.wavedAtMe = false;
         this.wavedTo = false;
         this.waveTarget = "";
+        this.isFav = false;
     }
 
     // Student default constructor
@@ -82,6 +83,7 @@ public class Student implements IStudent {
         this.wavedAtMe = false;
         this.wavedTo = false;
         this.waveTarget = "";
+        this.isFav = false;
     }
 
     // getters and setters
