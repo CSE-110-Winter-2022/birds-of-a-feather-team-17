@@ -19,6 +19,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.gms.nearby.Nearby;
+import com.google.android.gms.nearby.messages.Message;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -33,10 +36,12 @@ import javax.net.ssl.HttpsURLConnection;
 
 import edu.ucsd.cse110.bof.InputCourses.CoursesViewAdapter;
 import edu.ucsd.cse110.bof.R;
+import edu.ucsd.cse110.bof.StudentWithCourses;
 import edu.ucsd.cse110.bof.model.IStudent;
 import edu.ucsd.cse110.bof.model.db.AppDatabase;
 import edu.ucsd.cse110.bof.model.db.Course;
 import edu.ucsd.cse110.bof.model.db.Student;
+import edu.ucsd.cse110.bof.studentWithCoursesBytesFactory;
 
 
 public class StudentDetailActivity extends AppCompatActivity {
@@ -44,8 +49,10 @@ public class StudentDetailActivity extends AppCompatActivity {
     private static final String TAG = "Within Student Profile: ";
     private AppDatabase db;
     int studentID;
-    private IStudent student;
+    private Student student;
+    private Student userStudent;
     private List<Course> courses;
+    private List<Course> userCourses;
     private String studentImageURL;
     private boolean waveOn = false;
 
@@ -76,6 +83,8 @@ public class StudentDetailActivity extends AppCompatActivity {
         //get student and their courses
         student = db.studentsDao().get(studentID);
         courses = db.coursesDao().getForStudent(studentID);
+        userStudent = db.studentsDao().get(1);
+        userCourses = db.coursesDao().getForStudent(1);
 
 
         //sets student name and picture
@@ -120,6 +129,14 @@ public class StudentDetailActivity extends AppCompatActivity {
         coursesListViewAdapter = new CoursesListViewAdapter(courses);
         coursesRecyclerView.setAdapter(coursesListViewAdapter);
 
+        //Set wave to be pre-filled if already waved
+        if(student.isWavedTo())
+        {
+            waveOn = true;
+            //Change image icon and accompanying description
+            waveButton.setImageResource(R.drawable.wave_filled);
+            waveButton.setContentDescription(getApplicationContext().getString(R.string.wave_on));
+        }
     }
 
     public void onHomeClicked(View view) {
@@ -134,12 +151,28 @@ public class StudentDetailActivity extends AppCompatActivity {
             waveButton.setImageResource(R.drawable.wave_filled);
             waveButton.setContentDescription(getApplicationContext().getString(R.string.wave_on));
 
-            //TODO Send wave through Nearby
-            //probably should write a SendStudent function
+            //Delete from db
+            db.studentsDao().delete(student);
+            db.studentsDao().delete(userStudent);
 
+            //Set relevant fields for sending a wave
             student.setWavedTo(true);
+            userStudent.setWaveTarget(student.getUUID());
 
-            //TODO update DB
+            //Reinsert to db after update
+            db.studentsDao().insert(student);
+            db.studentsDao().insert(userStudent);
+
+            //Create a studentWithCourses, convert it into a byte array, and make it into a message
+            StudentWithCourses swc = new StudentWithCourses(userStudent, userCourses);
+            byte[] finalStudentWithCoursesBytes = studentWithCoursesBytesFactory.convert(swc);
+            Message selfMessage = new Message(finalStudentWithCoursesBytes);
+
+            //Send the new message of the current student with a WaveTo
+            Log.d(TAG, "MessagesClient.publish ("+ Nearby.getMessagesClient(this).getClass().getSimpleName()+
+                    "): publishing selfMessage (StudentWithCourses)...");
+            Nearby.getMessagesClient(this).publish(selfMessage);
+            Log.d(TAG, "published selfMessage via Nearby API");
 
             //Display a toast declaring wave was sent
             Toast.makeText(this, "Wave sent!", Toast.LENGTH_SHORT).show();
