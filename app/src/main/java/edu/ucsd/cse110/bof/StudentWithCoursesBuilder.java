@@ -53,6 +53,17 @@ public class StudentWithCoursesBuilder implements IBuilder {
     }
 
     @Override
+    public IBuilder setStudent(Student student) {
+        Contract.REQUIRE(student != null, "student not null");
+
+        setStuName(student.getName());
+        setStuPhotoURL(student.getPhotoUrl());
+        setStuUUID(student.getUUID());
+
+        return this;
+    }
+
+    @Override
     public IBuilder addCourse(int year, String quarter, String subj, String number, String size) {
         int sizePre = stuCourses.size();
 

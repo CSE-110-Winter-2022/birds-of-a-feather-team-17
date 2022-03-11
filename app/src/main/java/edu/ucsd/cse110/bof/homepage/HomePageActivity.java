@@ -241,7 +241,9 @@ public class HomePageActivity extends AppCompatActivity {
 
         Log.d(TAG, "creating message to send through Nearby...");
         //create user's StudentWithCourses object to send to others via Bluetooth/Nearby API
-        selfStudentWithCourses = new StudentWithCourses(thisStudent, thisStudentCourses);
+        selfStudentWithCourses = builder.setStudent(thisStudent)
+                                        .setCourses(thisStudentCourses)
+                                        .getSWC();
 
         //make byte array for student and courses
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
