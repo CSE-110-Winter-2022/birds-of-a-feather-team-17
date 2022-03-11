@@ -290,7 +290,6 @@ public class HomePageActivity extends AppCompatActivity implements RenameDialogF
         removeFakedML();
 
         DialogFragment dialog = new RenameDialogFragment();
-
         dialog.show(getSupportFragmentManager(), "Rename dialog");
 
         //actual listener (not necessary for project)

@@ -10,6 +10,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 
 import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 public class RenameDialogFragment extends DialogFragment {
     private View view;
@@ -45,7 +47,17 @@ public class RenameDialogFragment extends DialogFragment {
     @Override
     public void onCancel(DialogInterface dialog) {
         listener.onDialogCanceled();
-        Log.d("Dialog: ", "Canceled");
+    }
+
+    @Override
+    public void show(FragmentManager manager, String tag) {
+        try {
+            FragmentTransaction ft = manager.beginTransaction();
+            ft.add(this, tag);
+            ft.commit();
+        } catch (IllegalStateException e) {
+            Log.d("Dialog Fragment", "Exception", e);
+        }
     }
 
     @Override
