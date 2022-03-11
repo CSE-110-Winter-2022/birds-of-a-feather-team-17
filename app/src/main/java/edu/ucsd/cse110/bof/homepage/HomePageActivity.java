@@ -6,6 +6,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.DialogFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -17,8 +18,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
@@ -51,8 +52,9 @@ import edu.ucsd.cse110.bof.model.db.AppDatabase;
 import edu.ucsd.cse110.bof.model.db.Course;
 import edu.ucsd.cse110.bof.model.db.Session;
 import edu.ucsd.cse110.bof.model.db.Student;
+import edu.ucsd.cse110.bof.RenameDialogFragment;
 
-public class HomePageActivity extends AppCompatActivity {
+public class HomePageActivity extends AppCompatActivity implements RenameDialogFragment.renameDialogListener {
     private AppDatabase db;                     //database
     private Student thisStudent;                //user
     private List<Course> thisStudentCourses;    //user's courses
@@ -222,9 +224,7 @@ public class HomePageActivity extends AppCompatActivity {
                 Log.d(TAG, "message's waveTarget is: " + receivedStudentWithCourses.getStudent().getWaveTarget());
 
                 //update the recyclerview list
-                runOnUiThread(() -> {
-                    updateLists();
-                });
+                updateLists();
             }
             @Override
             public void onLost(@NonNull Message message) {
@@ -324,13 +324,15 @@ public class HomePageActivity extends AppCompatActivity {
     public void onStopSearchingClicked() {
         removeFakedML();
 
+        DialogFragment dialog = new RenameDialogFragment();
+        dialog.show(getSupportFragmentManager(), "Rename dialog");
+
         //actual listener (not necessary for project)
         Log.d(TAG, "MessagesClient.unsubscribe: unsubscribing realListener...");
         Nearby.getMessagesClient(this).unsubscribe(realListener);
 
         //Stop clicked, create session
         Log.d(TAG, "Stop clicked");
-        saveSession();
     }
 
     private void createSession() {
@@ -518,5 +520,19 @@ public class HomePageActivity extends AppCompatActivity {
     //test method
     public StudentsViewAdapter getStudentsViewAdapter() {
         return studentsViewAdapter;
+    }
+
+    @Override
+    public void onDialogConfirmed(RenameDialogFragment dialog) {
+        EditText name = dialog.getView().findViewById(R.id.dialog_session_name);
+        db.sessionsDao().updateDispName(sessionId, name.getText().toString());
+        saveSession();
+        Log.d(TAG, "Dialog confirmed");
+    }
+
+    @Override
+    public void onDialogCanceled() {
+        saveSession();
+        Log.d(TAG, "Dialog canceled");
     }
 }
