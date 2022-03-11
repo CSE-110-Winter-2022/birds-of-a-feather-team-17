@@ -77,7 +77,7 @@ public class SearchBoFsTest {
                 ActivityScenario.launch(HomePageActivity.class);
 
         //make Bob and his courses to mock:
-        Student Bob = new Student("Bob", bobPhoto);
+        Student Bob = new Student("Bob", bobPhoto, "ffc910fd-e52f-4829-a649-5f2c44a9fce4");
 
         Course cse110WI22L = new Course(    //this should appear in the list
                 courseId++,
@@ -149,7 +149,7 @@ public class SearchBoFsTest {
         scenario.moveToState(Lifecycle.State.CREATED);
 
         //make Bob and his courses to mock:
-        Student Bob = new Student("Bob", bobPhoto);
+        Student Bob = new Student("Bob", bobPhoto, "ffc910fd-e52f-4829-a649-5f2c44a9fce4");
 
         Course cse110WI22L = new Course(    //this should appear in the list
                 courseId++,
