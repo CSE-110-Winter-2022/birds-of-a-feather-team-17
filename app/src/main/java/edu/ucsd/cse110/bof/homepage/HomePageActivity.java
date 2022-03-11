@@ -530,4 +530,8 @@ public class HomePageActivity extends AppCompatActivity implements RenameDialogF
         saveSession();
         Log.d(TAG, "Dialog canceled");
     }
+
+    public MessageListener getRealListener() {
+        return this.realListener;
+    }
 }

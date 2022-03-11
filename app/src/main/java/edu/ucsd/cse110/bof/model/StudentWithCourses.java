@@ -34,5 +34,9 @@ public class StudentWithCourses implements Serializable {
     public void setCourses(List<Course> courses) {
         this.courses = courses;
     }
+
+    public void setWaveTarget(String waveTarget) {
+        this.waveTarget = waveTarget;
+    }
 }
 

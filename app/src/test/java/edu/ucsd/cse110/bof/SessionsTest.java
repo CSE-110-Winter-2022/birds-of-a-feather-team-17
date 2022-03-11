@@ -210,4 +210,82 @@ public class SessionsTest {
             Assert.assertEquals(secondExpectedList, sessions.get(1).getStudentList());
         });
     }
+
+    @Test
+    public void createAndRenameSession() {
+        ActivityScenario<HomePageActivity> scenario =
+                ActivityScenario.launch(HomePageActivity.class);
+
+        //make Bob and his courses to mock:
+        Student Bob = new Student("Bob", bobPhoto, someUUID);
+
+        List<Course> bobCourses = new ArrayList<>();
+        bobCourses.add(cse110WI22L);
+        bobCourses.add(cse210FA21S);
+
+        StudentWithCourses BobAndCourses = new StudentWithCourses(Bob, bobCourses, "");
+
+
+        //make Carrie and her courses to mock:
+        Student Carrie = new Student("Carrie", bobPhoto, someUUID);
+
+        List<Course> carrieCourses = new ArrayList<>();
+        carrieCourses.add(cse110WI22L);
+        carrieCourses.add(cse210FA21S);
+
+        StudentWithCourses CarrieAndCourses = new StudentWithCourses(Carrie,
+                carrieCourses, "");
+
+        //move to CREATED to make necessary objects
+        scenario.moveToState(Lifecycle.State.CREATED);
+
+        scenario.onActivity( activity -> {
+            //use test db
+            activity.setDb(db);
+
+            // Mock Bob and start searching to create a session: (only Bob)
+            activity.setMockedStudent(BobAndCourses);
+            activity.onStartSearchingClicked();
+            activity.onStopSearchingClicked();
+
+            //get Bob's database ID
+            BobAndCourses.getStudent().setStudentId(db.studentsDao().maxId());
+        });
+
+        scenario.recreate();
+        scenario.moveToState(Lifecycle.State.CREATED);
+
+        scenario.onActivity(activity -> {
+            //use test db
+            activity.setDb(db);
+
+            // now mock Carrie and start searching again to create another
+            // session: (only Carrie)
+            activity.setMockedStudent(CarrieAndCourses);
+            activity.onStartSearchingClicked();
+            activity.onStopSearchingClicked();
+
+            //get Carrie's database ID
+            CarrieAndCourses.getStudent().setStudentId(db.studentsDao().maxId());
+
+            List<Student> students = db.studentsDao().getAll();
+
+            // confirm that there are 2 sessions
+            List<Session> sessions = db.sessionsDao().getAll();
+            Assert.assertEquals(2, sessions.size());
+
+            //the first session found only Bob
+            List<Integer> firstExpectedList = new ArrayList<>();
+            firstExpectedList.add(BobAndCourses.getStudent().getStudentId());
+
+
+            Assert.assertEquals(firstExpectedList, sessions.get(0).getStudentList());
+
+            //the second session found only Carrie
+            List<Integer> secondExpectedList = new ArrayList<>();
+            secondExpectedList.add(CarrieAndCourses.getStudent().getStudentId());
+
+            Assert.assertEquals(secondExpectedList, sessions.get(1).getStudentList());
+        });
+    }
 }
