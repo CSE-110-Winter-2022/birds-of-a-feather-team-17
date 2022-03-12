@@ -1,11 +1,6 @@
 package edu.ucsd.cse110.bof.model;
 
-import android.content.Context;
-
 import java.io.Serializable;
-import java.util.List;
-
-import edu.ucsd.cse110.bof.model.db.Course;
 
 /**
  * Interface for a student
@@ -31,5 +26,4 @@ public interface IStudent extends Serializable {
     void setWavedAtMe(boolean waved);
     void setWavedTo(boolean waved);
     void setIsFav(boolean isFav);
-    void setWaveTarget(String waveTarget);
 }

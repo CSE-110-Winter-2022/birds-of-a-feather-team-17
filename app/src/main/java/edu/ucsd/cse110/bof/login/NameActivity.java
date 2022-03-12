@@ -48,7 +48,7 @@ public class NameActivity extends AppCompatActivity {
             return;
         }
 
-        Intent intent = new Intent(this, PhotoActivity.class); //
+        Intent intent = new Intent(this, PhotoActivity.class);
         intent.putExtra("student_name", username);
         startActivity(intent);
         finish();

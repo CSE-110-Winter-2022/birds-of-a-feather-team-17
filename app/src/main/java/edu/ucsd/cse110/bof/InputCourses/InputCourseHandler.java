@@ -28,7 +28,6 @@ public class InputCourseHandler {
         db = AppDatabase.singleton(context);
         numEntered = 0;
         isDuplicate = false;
-        String uniqueID = UUID.randomUUID().toString();
     }
 
     /**

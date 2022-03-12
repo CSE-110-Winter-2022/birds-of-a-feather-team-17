@@ -126,32 +126,4 @@ public class BuilderTest {
                 .getSWC();
         });
     }
-
-    @Test
-    public void builderParsesWaving() {
-        // expected values
-        Student billExpected = new Student("Bill", billPhotoURL, someUUID1);
-
-        //wave to UUID2
-        billExpected.setWaveTarget(someUUID2);
-
-        List<Course> coursesExpected = new ArrayList<>();
-        coursesExpected.add(new Course(1 ,1 ,2021,
-                "FA", "CSE", "210", "Large"));
-        coursesExpected.add(new Course(1 ,1 ,2022,
-                "WI", "CSE", "110", "Tiny"));
-        coursesExpected.add(new Course(1 ,1 ,2022,
-                "SP", "CSE", "110", "Gigantic"));
-
-        // builder handles parsing, should return a StudentWithCourses
-        StudentWithCourses actual =
-                builder.setFromCSV(billCSV + waveAtUUID2).getSWC();
-
-        Assert.assertEquals(billExpected, actual.getStudent());
-        Assert.assertEquals(coursesExpected, actual.getCourses());
-
-        //confirm that the actual waveTarget is set
-        Assert.assertEquals(someUUID2, actual.getWaveTarget());
-
-    }
 }

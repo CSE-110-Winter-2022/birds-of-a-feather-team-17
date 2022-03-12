@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -64,6 +65,7 @@ public class HomePageActivity extends AppCompatActivity implements RenameDialogF
     private Message selfMessage;                //a message containing this user
     private StudentWithCourses selfStudentWithCourses; //SWC of user
 
+    List<Student> myBoFs;
     Session session = null;                     //current search session
     int sessionId;                              //session id in database
     private Date currDate = null;               //for setting session title
@@ -156,13 +158,15 @@ public class HomePageActivity extends AppCompatActivity implements RenameDialogF
                     }
                 });
 
+        myBoFs = new ArrayList<>();
+
         // Set up RecyclerView
         studentsRecyclerView = findViewById(R.id.students_view);
 
         studentsLayoutManager = new LinearLayoutManager(this);
         studentsRecyclerView.setLayoutManager(studentsLayoutManager);
 
-        studentsViewAdapter = new StudentsViewAdapter(new ArrayList<>());
+        studentsViewAdapter = new StudentsViewAdapter(myBoFs);
         studentsRecyclerView.setAdapter(studentsViewAdapter);
         studentsViewAdapter.setContext(context);
 
@@ -214,7 +218,7 @@ public class HomePageActivity extends AppCompatActivity implements RenameDialogF
         // Initialize MessageListener for discovering nearby students
         realListener = new MessageListener() {
             @Override
-            public void onFound(@NonNull Message message) {
+            public void onFound(final Message message) {
                 Toast.makeText(getApplicationContext(), "Found message!",Toast.LENGTH_SHORT).show();
                 // Make StudentWithCourses from byte array received
                 Log.d(TAG, "found a (nonnull) message: " + new String(message.getContent()));
@@ -239,12 +243,19 @@ public class HomePageActivity extends AppCompatActivity implements RenameDialogF
                 updateLists();
             }
             @Override
-            public void onLost(@NonNull Message message) {
+            public void onLost(final Message message) {
                 Log.d(TAG, "Lost sight of message: " + new String(message.getContent()));
             }
         };
 
         Log.d(TAG, "realListener created");
+
+        //persistently store waveTargetUUID of current Message (starts with UUID="")
+        SharedPreferences preferences = getPreferences(MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putString("waveTargetUUID", "");
+        editor.apply();
+
     }
 
     /**
@@ -254,20 +265,47 @@ public class HomePageActivity extends AppCompatActivity implements RenameDialogF
     protected void onStart() {
         super.onStart();
 
+        if (toggleSearch.isChecked()) {
+            Log.d(TAG, "refresh messages...");
+            Nearby.getMessagesClient(this).unsubscribe(realListener);
+            Nearby.getMessagesClient(this).subscribe(realListener);
+        }
+
         // Create user's StudentWithCourses object to send to others via Bluetooth/Nearby API
         Log.d(TAG, "creating message to send through Nearby...");
         selfStudentWithCourses = builder.setStudent(thisStudent)
                                         .setCourses(thisStudentCourses)
                                         .getSWC();
 
+        //retrieve current waveTargetUUID from SharedPreferences
+        SharedPreferences preferences = getSharedPreferences("DEFAULT", MODE_PRIVATE);
+        String currWaveTarget = preferences.getString("waveTargetUUID","hey");
+        Log.d(TAG, "current wave target/ currWaveTarget is: " + currWaveTarget);
+
+        selfStudentWithCourses = new StudentWithCourses(thisStudent, thisStudentCourses, currWaveTarget);
         byte[] finalStudentWithCoursesBytes = studentWithCoursesBytesFactory.convert(selfStudentWithCourses);
         selfMessage = new Message(finalStudentWithCoursesBytes);
+
+        //Log the full message
+        Log.d(TAG, "message has waveTarget: " + currWaveTarget);
+        Log.d(TAG, "message has Student: " + thisStudent.getName());
+        Log.d(TAG, "message has Student UUID: " + thisStudent.getUUID());
 
         // Send the message through the NearbyMessages API
         Log.d(TAG, "MessagesClient.publish ("+Nearby.getMessagesClient(this).getClass().getSimpleName()+
                 "): publishing selfMessage (StudentWithCourses)...");
         Nearby.getMessagesClient(this).publish(selfMessage);
         Log.d(TAG, "published selfMessage via Nearby API");
+    }
+
+    @Override
+    protected void onStop() {
+        Log.d(TAG, "onStop called...");
+        Log.d(TAG, "MessagesClient.unpublish ("+Nearby.getMessagesClient(this).getClass().getSimpleName()+
+                "): unpublishing selfMessage (StudentWithCourses)...");
+        Nearby.getMessagesClient(this).unpublish(selfMessage);
+        Log.d(TAG, "unpublished selfMessage");
+        super.onStop();
     }
 
     /**
@@ -345,6 +383,7 @@ public class HomePageActivity extends AppCompatActivity implements RenameDialogF
         Log.d(TAG, "MessagesClient.unsubscribe: unsubscribing realListener...");
         Nearby.getMessagesClient(this).unsubscribe(realListener);
 
+        // Stop clicked, create session
         Log.d(TAG, "Stop clicked");
     }
 
@@ -431,27 +470,28 @@ public class HomePageActivity extends AppCompatActivity implements RenameDialogF
     private synchronized void updateLists()  {
 
         Student mStudent = receivedStudentWithCourses.getStudent();
-        mStudent.setWaveTarget(receivedStudentWithCourses.getWaveTarget());
         String mName = mStudent.getName();
+        mStudent.setStudentId(0);
+        Log.d(TAG, "Received student id (after): " + mStudent.getStudentId());
 
         int matchingIndex = -1;
 
         // GetMatchingStudent will throw NullPointerException if student doesn't exist
         try {
             matchingIndex = getMatchingStudent(mStudent);
-            Log.d(TAG, "Discovered matching student: " + matchingIndex);
+            Log.d(TAG, "Discovered matching student's index: " + matchingIndex);
         }
         catch (NullPointerException e) {
             Log.d(TAG, "No matching student");
         }
 
-        // check if student now waving
+        // Check if student isn't in list
         if (studentsViewAdapter.getStudents().contains(mStudent)) {
             Log.d(TAG, "Student " + mName + " already in homepage list");
             if (matchingIndex != -1) {
                 // If received message is actually a wave from an existing student
                 if (receivedStudentWithCourses.getWaveTarget().equals(UUID)) {
-                    //set existing student's waveAtMe to true on studentsViewAdapter
+                    // Set existing student's waveAtMe to true on studentsViewAdapter
                     Log.d(TAG, "Discovered a matching wave");
 
                     Student matchingStudent = studentsViewAdapter.getStudents().get(matchingIndex);
@@ -467,8 +507,8 @@ public class HomePageActivity extends AppCompatActivity implements RenameDialogF
             }
             return;
         }
-
-        Log.d(TAG, "student not in homepage list, checking common courses");
+        else {
+            Log.d(TAG, "student not in homepage list");
 
             // Use BoFsTracker to find common classes
             ArrayList<Course> commonCourses = (ArrayList<Course>)
@@ -476,62 +516,67 @@ public class HomePageActivity extends AppCompatActivity implements RenameDialogF
                             thisStudentCourses,
                             receivedStudentWithCourses.getCourses());
 
-        // If at least 1 common course, add this student to list of students and the database
-        if (commonCourses.size() == 0) {
-            Log.d(TAG, "Student " + mName + " has no common courses");
-            return;
-        }
+            // If at least 1 common course, add this student to list of students and the database
+            if (commonCourses.size() == 0) {
+                Log.d(TAG, "Student " + mName + " has no common courses");
+                return;
+            }
+            else {
+                Log.d(TAG, "studentWithCourses has a common class");
 
-        Log.d(TAG,"studentWithCourses has a common class");
+                // Set the weights
+                mStudent.setMatches(commonCourses.size());
+                mStudent.setClassSizeWeight(BoFsTracker.calcClassSizeWeight(commonCourses));
+                mStudent.setRecencyWeight(BoFsTracker.calcRecencyWeight(commonCourses));
 
-        //set the weights
-        mStudent.setMatches(commonCourses.size());
-        mStudent.setClassSizeWeight(BoFsTracker.calcClassSizeWeight(commonCourses));
-        mStudent.setRecencyWeight(BoFsTracker.calcRecencyWeight(commonCourses));
+                // Overwrite common courses in rSWC to add to db later
+                receivedStudentWithCourses.setCourses(commonCourses);
 
-        //overwrite common courses in rSWC to add to db later
-        receivedStudentWithCourses.setCourses(commonCourses);
+                //only add to db if not already in db
+                if (!db.studentsDao().getAll().contains(mStudent)) {
+                    Log.d(TAG, "Student " + mName + " will be added to database");
 
-        //only add to db if not already in db
-        if (!db.studentsDao().getAll().contains(mStudent)) {
-            Log.d(TAG, "Student " + mName + " will be added to database");
+                    //insert the student and get its id in the db
+                    db.studentsDao().insert(mStudent);
+                    int insertedStuId = db.studentsDao().maxId();
+                    mStudent.setStudentId(insertedStuId);
 
-            //insert the student and get its id in the db
-            db.studentsDao().insert(mStudent);
-            int insertedStuId = db.studentsDao().maxId();
-            mStudent.setStudentId(insertedStuId);
+                    // Add to session, update database
+                    String updatedList = (db.sessionsDao().get(sessionId).studentIDList) + "," + insertedStuId;
+                    db.sessionsDao().updateStudentList(sessionId, updatedList);
 
-            //get the id for courses to insert
-            int currentMaxCourseId = db.coursesDao().maxId();
-            for (Course receivedCourse : commonCourses) { //only common courses
-                                                          //need to be added to db
-                receivedCourse.setStudentId(insertedStuId);
-                receivedCourse.setCourseId(++currentMaxCourseId);
-                db.coursesDao().insert(receivedCourse);
+                    // Get the id for courses to insert
+                    int currentMaxCourseId = db.coursesDao().maxId();
+                    for (Course receivedCourse : commonCourses) { // Only common courses
+                        // Need to be added to db
+                        receivedCourse.setStudentId(insertedStuId);
+                        receivedCourse.setCourseId(++currentMaxCourseId);
+                        db.coursesDao().insert(receivedCourse);
+                    }
+                } else {
+                    Log.d(TAG, "Student " + mName + " already in database");
+
+                    // Set student id based on entry in database
+                    int dbId = db.studentsDao().getAll().indexOf(mStudent) + 1;
+                    mStudent.setStudentId(dbId);
+
+
+                    //add to session, update database
+                    Log.d(TAG, "Preparing to add to student to session");
+                    String updatedList = (db.sessionsDao().get(sessionId).studentIDList)
+                            + "," + mStudent.getStudentId();
+                    db.sessionsDao().updateStudentList(sessionId, updatedList);
+                }
+                //add this student to viewAdapter list
+                Log.d(TAG, "preparing to add Student " + mName + " to recycler view");
+                studentsViewAdapter.addStudent(receivedStudentWithCourses.getStudent());
+
+                //resort the list
+                Log.d(TAG, "student added, resorting the list...");
+                studentsViewAdapter.sortList(p_spinner.getSelectedItem().toString());
+                Log.d(TAG, "students list sorted");
             }
         }
-        else {
-            Log.d(TAG, "Student " + mName + " already in database");
-
-            //set student id based on entry in database
-            int dbId = db.studentsDao().getAll().indexOf(mStudent) + 1;
-            mStudent.setStudentId(dbId);
-        }
-
-        //add to session, update database
-        Log.d(TAG, "Preparing to add to student to session");
-        String updatedList = (db.sessionsDao().get(sessionId).studentIDList)
-                + "," + mStudent.getStudentId();
-        db.sessionsDao().updateStudentList(sessionId, updatedList);
-
-        //add this student to viewAdapter list
-        Log.d(TAG, "preparing to add Student " + mName + " to recycler view");
-        studentsViewAdapter.addStudent(receivedStudentWithCourses.getStudent());
-
-        //resort the list
-        Log.d(TAG, "student added, resorting the list...");
-        studentsViewAdapter.sortList(p_spinner.getSelectedItem().toString());
-        Log.d(TAG, "students list sorted");
     }
 
     /**

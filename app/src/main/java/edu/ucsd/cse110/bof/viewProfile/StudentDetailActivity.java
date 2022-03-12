@@ -1,6 +1,7 @@
 package edu.ucsd.cse110.bof.viewProfile;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -76,15 +77,8 @@ public class StudentDetailActivity extends AppCompatActivity {
 
         //get courses and student info from data base using studentID
         db = AppDatabase.singleton(this);
-    }
 
-    /**
-     * Get the info of the student from DB
-     */
-    @Override
-    protected void onStart() {
-        super.onStart();
-        // Get student and their courses
+        //get student and their courses
         student = db.studentsDao().get(studentID);
         courses = db.coursesDao().getForStudent(studentID);
         userStudent = db.studentsDao().get(1);
@@ -164,16 +158,13 @@ public class StudentDetailActivity extends AppCompatActivity {
 
             db.studentsDao().updateWaveTo(student.getStudentId(), true);
 
-            // Create a studentWithCourses, convert it into a byte array, and make it into a message
-            StudentWithCourses swc = new StudentWithCourses(userStudent, userCourses, student.getUUID());
-            byte[] finalStudentWithCoursesBytes = studentWithCoursesBytesFactory.convert(swc);
-            Message selfMessage = new Message(finalStudentWithCoursesBytes);
+            Log.d(TAG, "waveTarget has UUID: " + student.getUUID());
 
-            // Send the new message of the current student with a WaveTo
-            Log.d(TAG, "MessagesClient.publish ("+ Nearby.getMessagesClient(this).getClass().getSimpleName()+
-                    "): publishing selfMessage (StudentWithCourses)...");
-            Nearby.getMessagesClient(this).publish(selfMessage);
-            Log.d(TAG, "published selfMessage via Nearby API");
+            //edit waveTargetUUID in SharedPreferences to contain new wave target
+            SharedPreferences preferences = getSharedPreferences("DEFAULT",MODE_PRIVATE);
+            SharedPreferences.Editor editor = preferences.edit();
+            editor.putString("waveTargetUUID", student.getUUID());
+            editor.apply();
 
             // Display a toast declaring wave was sent
             Toast.makeText(this, "Wave sent!", Toast.LENGTH_SHORT).show();

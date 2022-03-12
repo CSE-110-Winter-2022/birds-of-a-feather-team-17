@@ -75,6 +75,11 @@ public class BoFsTracker {
         if(courses == null) { return 0; }
         int sum = 0;
         for(Course c : courses) {
+            if(c.year == 2022 && c.quarter.equals("WI")) {
+                sum += 5;
+                continue;
+            }
+
             if(2022 - c.year > 1) {
                 sum += 1;
             } else {
