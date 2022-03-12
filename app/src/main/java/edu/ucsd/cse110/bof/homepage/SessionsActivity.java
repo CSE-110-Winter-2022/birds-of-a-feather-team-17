@@ -17,6 +17,9 @@ import edu.ucsd.cse110.bof.model.db.AppDatabase;
 import edu.ucsd.cse110.bof.model.db.Session;
 import edu.ucsd.cse110.bof.model.db.Student;
 
+/**
+ * Presenter for displaying all saved sessions (including favorites)
+ */
 public class SessionsActivity extends AppCompatActivity {
     private AppDatabase db;
     List<Session> sessions;
@@ -25,27 +28,34 @@ public class SessionsActivity extends AppCompatActivity {
     private RecyclerView.LayoutManager sessionsLayoutManager;
     private SessionsViewAdapter sessionsViewAdapter;
 
+    /**
+     * Set up activity components
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list_sessions);
         setTitle("Past Sessions");
 
-        //get sessions from database
+        // Get sessions from database
         db = AppDatabase.singleton(this);
         sessions = db.sessionsDao().getAll();
 
-        //set up RecyclerView
+        // Set up RecyclerView
         sessionsRecyclerView = findViewById(R.id.sessions_view);
 
         sessionsLayoutManager = new LinearLayoutManager(this);
         sessionsRecyclerView.setLayoutManager(sessionsLayoutManager);
 
-        //TODO: implement rename function in adapter
         sessionsViewAdapter = new SessionsViewAdapter(sessions, db);
         sessionsRecyclerView.setAdapter(sessionsViewAdapter);
+    }
 
-}
+    /**
+     * Go back to home page when "Go back" is clicked
+     * @param view required for onClickListener
+     */
     public void onGoBackSessionsClicked(View view) {
         finish();
     }

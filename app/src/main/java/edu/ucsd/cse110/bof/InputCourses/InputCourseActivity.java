@@ -20,6 +20,9 @@ import edu.ucsd.cse110.bof.homepage.HomePageActivity;
 import edu.ucsd.cse110.bof.model.db.AppDatabase;
 import edu.ucsd.cse110.bof.model.db.Course;
 
+/**
+ * Activity to support inputting a user's courses
+ */
 public class InputCourseActivity extends AppCompatActivity {
     private AppDatabase db;
 
@@ -32,9 +35,12 @@ public class InputCourseActivity extends AppCompatActivity {
 
     private static final String TAG = "InputCourseActivity";
 
-    //TODO test: changed from USER_ID = 1 to getting USER_ID from InputCourseHandler
     private int USER_ID;
 
+    /**
+     * Initialize all the UI and backend components for inputting student courses
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,18 +63,18 @@ public class InputCourseActivity extends AppCompatActivity {
 
         setTitle("Enter class history");
 
-        //Retrieve onHomePage (boolean) sent from either PhotoActivity (false) or HomePageActivity (true)
+        // Retrieve onHomePage (boolean) sent from either PhotoActivity (false) or HomePageActivity (true)
         Bundle extras = getIntent().getExtras();
         onHomePage = extras.getBoolean("onHomePage");
 
-        //create InputCourseHandler
+        // Create InputCourseHandler
         inputCourseHandler = new InputCourseHandler(this);
         USER_ID = inputCourseHandler.getUserId();
 
-        //insert user into database (student_id=1, first element in database)
+        // Insert user into database (student_id=1, first element in database)
         db = AppDatabase.singleton(this);
 
-        //fetch courses list from user (student_id=1 in database)
+        // Fetch courses list from user (student_id=1 in database)
         List<Course> courses = db.coursesDao().getForStudent(1);
 
         coursesRecyclerView = findViewById(R.id.courses_view);
@@ -83,6 +89,10 @@ public class InputCourseActivity extends AppCompatActivity {
         coursesRecyclerView.setAdapter(coursesViewAdapter);
     }
 
+    /**
+     * Save the user's courses and move onto the home page
+     * @param view
+     */
     public void onDoneClicked(View view) {
         AppDatabase db = AppDatabase.singleton(this);
         if (db.coursesDao().getForStudent(USER_ID).isEmpty()) {
@@ -90,7 +100,7 @@ public class InputCourseActivity extends AppCompatActivity {
             return;
         }
 
-        //move to home page
+        // Move to home page
         if (onHomePage) {
             Log.d(TAG, "Arrived from homepage, returning to HomePageActivity");
         }
@@ -102,28 +112,32 @@ public class InputCourseActivity extends AppCompatActivity {
         finish();
     }
 
+    /**
+     * Adds a course from the user's entry
+     * @param view requierd for onClickListener
+     */
     public void onAddCourseClicked(View view) {
         int courseID = db.coursesDao().maxId() + 1;
 
-        //find inputs
+        // Find inputs
         Spinner newQuarterTextView = findViewById(R.id.input_qtr);
         Spinner newYearTextView = findViewById(R.id.input_year);
         TextView newSubjectTextView = findViewById(R.id.input_subject);
         TextView newCourseNumTextView = findViewById(R.id.input_course_number);
         Spinner newSizeTextView = findViewById(R.id.input_size);
 
-        //get info from inputs
+        // Get info from inputs
         String newQuarterText = newQuarterTextView.getSelectedItem().toString();
         int newYearText = Integer.parseInt(newYearTextView.getSelectedItem().toString());
         String newSubjectText = newSubjectTextView.getText().toString().toUpperCase();
         String newCourseNumText = newCourseNumTextView.getText().toString().toUpperCase();
         String newSizeText = newSizeTextView.getSelectedItem().toString();
 
-        //have inputCourseHandler insert the course
+        // Have inputCourseHandler insert the course
         Course newCourse = inputCourseHandler.inputCourse(courseID,newYearText,
                 newQuarterText, newSubjectText, newCourseNumText, newSizeText);
 
-        //check for null and duplicate
+        // Check for null and duplicate
         if (newCourse == null) {
             Toast.makeText(this, "Invalid class", Toast.LENGTH_SHORT).show();
         }
@@ -131,7 +145,7 @@ public class InputCourseActivity extends AppCompatActivity {
             Toast.makeText(this, "Course already entered", Toast.LENGTH_SHORT).show();
         }
         else {
-            //update the courseViewAdapter to show this new course
+            // Update the courseViewAdapter to show this new course
             coursesViewAdapter.addCourse(newCourse);
             Log.d("Database size after adding new course", Integer.toString(db.coursesDao().count()));
         }
