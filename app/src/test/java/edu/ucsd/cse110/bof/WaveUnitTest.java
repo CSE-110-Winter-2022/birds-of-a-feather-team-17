@@ -2,7 +2,6 @@ package edu.ucsd.cse110.bof;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.Bundle;
 
 import androidx.lifecycle.Lifecycle;
 import androidx.test.core.app.ActivityScenario;
@@ -16,9 +15,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,6 +34,8 @@ public class WaveUnitTest {
     private StudentWithCourses BobAndCourses;
     private StudentWithCourses CaseyAndCourses;
     private Context context;
+    private Student Bob;
+    private List<Course> bobCourses;
 
     private static final String avaUUID = "a4ca50b6-941b-11ec-b9090242ac120002";
     private static final String someUUID1 = "232dc5a5-b428-4ff0-88af-8817afc8e098";
@@ -118,10 +116,10 @@ public class WaveUnitTest {
         db.coursesDao().insert(cse110WI22L_Ava);
 
         //insert Bob and his courses into db:
-        Student Bob = new Student("Bob", bobPhoto, someUUID1);
+        Bob = new Student("Bob", bobPhoto, someUUID1);
         db.studentsDao().insert(Bob);
 
-        List<Course> bobCourses = new ArrayList<>();
+        bobCourses = new ArrayList<>();
         bobCourses.add(cse110WI22L_Bob);
         bobCourses.add(cse210FA21S_Bob);
 
@@ -129,7 +127,7 @@ public class WaveUnitTest {
         db.coursesDao().insert(cse110WI22L_Bob);
         db.coursesDao().insert(cse210FA21S_Bob);
 
-        BobAndCourses = new StudentWithCourses(Bob, bobCourses, "");
+        BobAndCourses = new StudentWithCourses(Bob, bobCourses, avaUUID);
 
         //add Casey to db
         Student Casey = new Student("Casey", caseyPhoto, someUUID2);
@@ -146,7 +144,11 @@ public class WaveUnitTest {
         CaseyAndCourses = new StudentWithCourses(Casey, caseyCourses, "");
     }
 
-    //tests that clicking wave icon updates the db (does not test if ui changes)
+    /**
+     * Given that I (Ava) see Bob as a BoF from my class and I've sent a wave to him
+     * When I go into his profile again
+     * Then I should see that I've already waved to him
+     */
     @Test
     public void testUserWavesAtBob() {
         Intent intent = new Intent(context, StudentDetailActivity.class);
@@ -163,9 +165,14 @@ public class WaveUnitTest {
     }
 
 
+    /**
+     * Given that I (Ava) see Bob as a BoF from my class
+     * When Bob sends a wave to me
+     * Then I should see that Bob has waved to me
+     */
     @Test
     public void testBobWavesAtUser() {
-        BobAndCourses.setWaveTarget(avaUUID);
+        BobAndCourses = new StudentWithCourses(Bob, bobCourses, "");
 
         ActivityScenario<HomePageActivity> scenario =
                 ActivityScenario.launch(HomePageActivity.class);
@@ -178,23 +185,30 @@ public class WaveUnitTest {
             activity.setMockedStudent(BobAndCourses);
             activity.setDb(db);
 
-            //click start to add Bob (without wave)
+            //first test if we have Bob without a wave
             activity.onStartSearchingClicked();
+            activity.getRealListener().onFound(new Message(studentWithCoursesBytesFactory.convert(BobAndCourses)));
+            Assert.assertTrue(db.studentsDao().get(2).isWavedAtMe() == false);
 
-            BobAndCourses.setWaveTarget(avaUUID);
-
-            //call listener to update list with Bob waving
+            //now test if we have Bob with a wave
+            BobAndCourses = new StudentWithCourses(Bob, bobCourses, avaUUID);
+            activity.setMockedStudent(BobAndCourses);
             activity.getRealListener().onFound(new Message(studentWithCoursesBytesFactory.convert(BobAndCourses)));
 
             Assert.assertTrue(db.studentsDao().get(2).isWavedAtMe());
-            Assert.assertTrue(activity.getStudentsViewAdapter().getStudents().get(0).equals(BobAndCourses.getStudent()));
         });
     }
 
+    /**
+     * Given that I (Ava) see Bob as a BoF from my class
+     * And that I see Casey as a BoF too
+     * And that Casey appear above Bob
+     * When Bob sends a wave to me
+     * Then I should see that Bob has waved to me
+     * And Bob should be above Casey in the list
+     */
     @Test
     public void testBobWavingIncreasesPriority() {
-        BobAndCourses.setWaveTarget(avaUUID);
-
         ActivityScenario<HomePageActivity> scenario =
                 ActivityScenario.launch(HomePageActivity.class);
 
@@ -202,17 +216,20 @@ public class WaveUnitTest {
 
         scenario.onActivity( activity -> {
             //use test db
-
-            activity.setMockedStudent(BobAndCourses);
             activity.setDb(db);
 
-            //click start to add Bob (without wave)
+            //add Bob to the homepage list
+            activity.setMockedStudent(BobAndCourses);
             activity.onStartSearchingClicked();
 
-            BobAndCourses.setWaveTarget(avaUUID);
+            //Bob is not waving
+            Assert.assertFalse(db.studentsDao().get(2).isWavedAtMe());
 
             //add Casey to the homepage list
             activity.getRealListener().onFound(new Message(studentWithCoursesBytesFactory.convert(CaseyAndCourses)));
+
+            //Casey is not waving
+            Assert.assertFalse(db.studentsDao().get(3).isWavedAtMe());
 
             //confirm Casey is at top
             Assert.assertEquals( 2,
@@ -221,6 +238,7 @@ public class WaveUnitTest {
                     activity.getStudentsViewAdapter().getStudents().get(0));
 
             //call listener to update list with Bob waving
+            BobAndCourses.setWaveTarget(avaUUID);
             activity.getRealListener().onFound(new Message(studentWithCoursesBytesFactory.convert(BobAndCourses)));
 
             //confirm Bob is now waving in db and at top of homepage list
@@ -228,4 +246,5 @@ public class WaveUnitTest {
             Assert.assertEquals( BobAndCourses.getStudent(),
                     activity.getStudentsViewAdapter().getStudents().get(0));        });
     }
+
 }

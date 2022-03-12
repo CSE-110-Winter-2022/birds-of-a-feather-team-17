@@ -210,6 +210,7 @@ public class HomePageActivity extends AppCompatActivity implements RenameDialogF
         realListener = new MessageListener() {
             @Override
             public void onFound(@NonNull Message message) {
+                Toast.makeText(getApplicationContext(), "Found message!",Toast.LENGTH_SHORT).show();
                 // Make StudentWithCourses from byte array received
                 Log.d(TAG, "found a (nonnull) message: " + new String(message.getContent()));
                 ByteArrayInputStream bis =
@@ -593,8 +594,8 @@ public class HomePageActivity extends AppCompatActivity implements RenameDialogF
     }
 
     /**
-     * Getter for Nearby MessageListener
-     * @return activity's realListener
+     * Get real listener for testing
+     * @return MessageListener
      */
     public MessageListener getRealListener() {
         return this.realListener;
