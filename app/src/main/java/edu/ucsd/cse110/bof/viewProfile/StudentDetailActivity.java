@@ -158,6 +158,7 @@ public class StudentDetailActivity extends AppCompatActivity {
             StudentWithCourses swc = new StudentWithCourses(userStudent, userCourses, student.getUUID());
             byte[] finalStudentWithCoursesBytes = studentWithCoursesBytesFactory.convert(swc);
             Message selfMessage = new Message(finalStudentWithCoursesBytes);
+            Log.d(TAG, "waveTarget has UUID: " + student.getUUID());
 
             //Send the new message of the current student with a WaveTo
             Log.d(TAG, "MessagesClient.publish ("+ Nearby.getMessagesClient(this).getClass().getSimpleName()+

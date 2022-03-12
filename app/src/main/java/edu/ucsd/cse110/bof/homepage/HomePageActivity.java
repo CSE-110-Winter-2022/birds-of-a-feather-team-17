@@ -191,7 +191,7 @@ public class HomePageActivity extends AppCompatActivity implements RenameDialogF
         // Initialize MessageListener for discovering nearby students
         realListener = new MessageListener() {
             @Override
-            public void onFound(@NonNull Message message) {
+            public void onFound(final Message message) {
                 Toast.makeText(getApplicationContext(), "Found message!",Toast.LENGTH_SHORT).show();
                 // Make StudentWithCourses from byte array received
                 Log.d(TAG, "found a (nonnull) message: " + new String(message.getContent()));
@@ -216,20 +216,12 @@ public class HomePageActivity extends AppCompatActivity implements RenameDialogF
                 updateLists();
             }
             @Override
-            public void onLost(@NonNull Message message) {
+            public void onLost(final Message message) {
                 Log.d(TAG, "Lost sight of message: " + new String(message.getContent()));
             }
         };
 
         Log.d(TAG, "realListener created");
-    }
-
-    /**
-     * Create and send out user's information on start
-     */
-    @Override
-    protected void onStart() {
-        super.onStart();
 
         // Create user's StudentWithCourses object to send to others via Bluetooth/Nearby API
         Log.d(TAG, "creating message to send through Nearby...");
@@ -242,6 +234,36 @@ public class HomePageActivity extends AppCompatActivity implements RenameDialogF
                 "): publishing selfMessage (StudentWithCourses)...");
         Nearby.getMessagesClient(this).publish(selfMessage);
         Log.d(TAG, "published selfMessage via Nearby API");
+    }
+
+    /**
+     * Create and send out user's information on start
+     */
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+//        // Create user's StudentWithCourses object to send to others via Bluetooth/Nearby API
+//        Log.d(TAG, "creating message to send through Nearby...");
+//        selfStudentWithCourses = new StudentWithCourses(thisStudent, thisStudentCourses, "");
+//        byte[] finalStudentWithCoursesBytes = studentWithCoursesBytesFactory.convert(selfStudentWithCourses);
+//        selfMessage = new Message(finalStudentWithCoursesBytes);
+//
+//        // Send the message through the NearbyMessages API
+//        Log.d(TAG, "MessagesClient.publish ("+Nearby.getMessagesClient(this).getClass().getSimpleName()+
+//                "): publishing selfMessage (StudentWithCourses)...");
+//        Nearby.getMessagesClient(this).publish(selfMessage);
+//        Log.d(TAG, "published selfMessage via Nearby API");
+    }
+
+    @Override
+    protected void onStop() {
+        Log.d(TAG, "onStop called...");
+        Log.d(TAG, "MessagesClient.unpublish ("+Nearby.getMessagesClient(this).getClass().getSimpleName()+
+                "): unpublishing selfMessage (StudentWithCourses)...");
+        Nearby.getMessagesClient(this).unpublish(selfMessage);
+        Log.d(TAG, "unpublished selfMessage");
+        super.onStop();
     }
 
     /**
@@ -449,13 +471,16 @@ public class HomePageActivity extends AppCompatActivity implements RenameDialogF
      */
     private void updateLists()  {
         Student newStudent = receivedStudentWithCourses.getStudent();
+        Log.d(TAG, "Received student id (before): " + newStudent.getStudentId());
         String newName = newStudent.getName();
+        newStudent.setStudentId(0);
+        Log.d(TAG, "Received student id (after): " + newStudent.getStudentId());
         int matchingIndex = -1; // Indicates that no student in existing list matches newStudent
 
         // GetMatchingStudent will throw NullPointerException if student doesn't exist
         try {
             matchingIndex = getMatchingStudent(newStudent);
-            Log.d(TAG, "Discovered matching student: " + matchingIndex);
+            Log.d(TAG, "Discovered matching student's index: " + matchingIndex);
         }
         catch (NullPointerException e) {
             Log.d(TAG, "No matching student");
