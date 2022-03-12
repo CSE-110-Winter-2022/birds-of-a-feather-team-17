@@ -13,6 +13,9 @@ import java.util.Locale;
 
 import edu.ucsd.cse110.bof.model.db.Student;
 
+/**
+ * Object for storing a session (class list)
+ */
 @Entity(tableName = "sessions")
 public class Session {
 
@@ -37,12 +40,12 @@ public class Session {
         this.dispName = dispName;
     }
 
-    //Set display name
+    // Set display name
     public void setDispName(String dispName) {
         this.dispName = dispName;
     }
 
-    // getters
+    // Getters
     public int getSessionID(){
         return sessionId;
     }
@@ -51,8 +54,8 @@ public class Session {
         return ListConverter.getListFromString(this.studentIDList);
     }
 
-    //Handles Name/creation time
-    //If display name has not be set, display the creation time as the session name
+    // Handles Name/creation time
+    // If display name has not be set, display the creation time as the session name
     public String toString(){
         if( dispName.equals("") ){
             return creationTime;

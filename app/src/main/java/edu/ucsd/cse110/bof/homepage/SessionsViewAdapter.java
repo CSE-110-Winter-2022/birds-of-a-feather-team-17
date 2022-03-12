@@ -18,6 +18,9 @@ import edu.ucsd.cse110.bof.R;
 import edu.ucsd.cse110.bof.model.db.AppDatabase;
 import edu.ucsd.cse110.bof.model.db.Session;
 
+/**
+ * Adapter for showing a list of sessions
+ */
 public class SessionsViewAdapter extends RecyclerView.Adapter<SessionsViewAdapter.ViewHolder> {
 
     private static final String TAG = "SessionsViewAdapterLog";
@@ -25,12 +28,23 @@ public class SessionsViewAdapter extends RecyclerView.Adapter<SessionsViewAdapte
     private final List<Session> sessions;
     private final AppDatabase db;
 
+    /**
+     * Setting up the adapter to grab data from the DB and a list of sessions
+     * @param sessions
+     * @param db
+     */
     public SessionsViewAdapter(List<Session> sessions, AppDatabase db) {
         super();
         this.db = db;
         this.sessions = sessions;
     }
 
+    /**
+     * Returns a new ViewHolder given the passed in data
+     * @param parent required for onCreateViewHolder
+     * @param viewType required for onCreateViewHolder
+     * @return ViewHolder
+     */
     @NonNull
     @Override
     public SessionsViewAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -41,16 +55,28 @@ public class SessionsViewAdapter extends RecyclerView.Adapter<SessionsViewAdapte
         return new ViewHolder(view, this.db);
     }
 
+    /**
+     * UI reactions to when the list updates
+     * @param holder
+     * @param position
+     */
     @Override
     public void onBindViewHolder(@NonNull SessionsViewAdapter.ViewHolder holder, int position) {
         holder.setSession(sessions.get(position));
     }
 
+    /**
+     * Returns the number of sessions in the RecyclerView
+     * @return the number of sessions shown
+     */
     @Override
     public int getItemCount() {
         return this.sessions.size();
     }
 
+    /**
+     * Inner class to support populating and showing the saved_session_row layout
+     */
     public static class ViewHolder
             extends RecyclerView.ViewHolder implements View.OnClickListener {
 
@@ -59,6 +85,11 @@ public class SessionsViewAdapter extends RecyclerView.Adapter<SessionsViewAdapte
         private final AppDatabase db;
         private Session session;
 
+        /**
+         * Constructor for showing the saved_session_row layout
+         * @param itemView required for viewHolder
+         * @param db the database we are using
+         */
         public ViewHolder(View itemView, AppDatabase db) {
             super(itemView);
             this.db = db;
@@ -71,18 +102,23 @@ public class SessionsViewAdapter extends RecyclerView.Adapter<SessionsViewAdapte
             itemView.setOnClickListener(this);
         }
 
+        /**
+         * Setter for the underlying session list
+         * @param session
+         */
         public void setSession(Session session){
             this.session = session;
             this.sessionNameView.setText(session.toString());
         }
 
+        /**
+         * Displays the details of the session upon clicking into a session row
+         * @param view required for onClickListeners
+         */
         @Override
         public void onClick(View view) {
             Context context = view.getContext();
             Intent intent = new Intent(context, SessionDetailActivity.class);
-
-            int session_id = this.session.getSessionID();
-
             intent.putExtra("session_id", this.session.getSessionID());
             context.startActivity(intent);
         }

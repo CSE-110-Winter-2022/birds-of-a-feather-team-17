@@ -15,7 +15,7 @@ import edu.ucsd.cse110.bof.model.IStudent;
 
 @Entity(tableName = "students")
 public class Student implements IStudent {
-    //add constant for putting wavedAtMe students on top while preserving inherent sorting order
+    // Add constant for putting wavedAtMe and fav students on top while preserving sorting order
     public static final int WAVE_CONSTANT = 2000000;
     public static final int FAV_CONSTANT = 1000000;
 
@@ -42,17 +42,11 @@ public class Student implements IStudent {
     @ColumnInfo(name = "recencyWeight")
     public int recencyWeight;
 
-    //TODO test: waves in DB
     @ColumnInfo(name = "wavedAtMe")
     public boolean wavedAtMe;
 
-    //TODO test: waves in DB
     @ColumnInfo(name = "wavedTo")
     public boolean wavedTo;
-
-    //TODO test: waves in DB
-    @ColumnInfo(name = "waveTarget")
-    public String waveTarget;
 
     @ColumnInfo(name = "isFav")
     public boolean isFav;
@@ -67,7 +61,6 @@ public class Student implements IStudent {
         this.recencyWeight = 0;
         this.wavedAtMe = false;
         this.wavedTo = false;
-        this.waveTarget = "";
         this.isFav = false;
     }
 
@@ -82,11 +75,10 @@ public class Student implements IStudent {
         this.recencyWeight = 0;
         this.wavedAtMe = false;
         this.wavedTo = false;
-        this.waveTarget = "";
         this.isFav = false;
     }
 
-    // getters and setters
+    // Getters and setters
     public int getStudentId() {
         return studentId;
     }
@@ -147,15 +139,7 @@ public class Student implements IStudent {
         this.wavedTo = wavedTo;
     }
 
-    public String getWaveTarget() {
-        return waveTarget;
-    }
-
-    public void setWaveTarget(String waveTarget) {
-        this.waveTarget = waveTarget;
-    }
-
-    //Get addition multiplier to keep regular sorting order but with wave on top
+    // Get addition multiplier to keep regular sorting order but with wave on top
     public int waveMultiplier() {
         if(wavedAtMe)
             return WAVE_CONSTANT;
@@ -163,6 +147,7 @@ public class Student implements IStudent {
             return 0;
     }
 
+    // Get addition multiplier to keep regular sorting order but fav provides higher weight
     public int favMultiplier() {
         if(isFav)
             return FAV_CONSTANT;
@@ -170,7 +155,7 @@ public class Student implements IStudent {
             return 0;
     }
 
-    // pass in a context to receive singleton database instance
+    // Pass in a context to receive singleton database instance
     public List<Course> getCourses(Context context) {
         AppDatabase db = AppDatabase.singleton(context);
         CoursesDao coursesDao = db.coursesDao();

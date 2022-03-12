@@ -210,4 +210,51 @@ public class SessionsTest {
             Assert.assertEquals(secondExpectedList, sessions.get(1).getStudentList());
         });
     }
+
+
+    // Creates a session and renames it,
+    @Test
+    public void createAndRenameSession() {
+        ActivityScenario<HomePageActivity> scenario =
+                ActivityScenario.launch(HomePageActivity.class);
+
+        // Make Bob and his courses to mock:
+        Student Bob = new Student("Bob", bobPhoto, someUUID);
+
+        List<Course> bobCourses = new ArrayList<>();
+        bobCourses.add(cse110WI22L);
+        bobCourses.add(cse210FA21S);
+
+        StudentWithCourses BobAndCourses = new StudentWithCourses(Bob,
+                bobCourses, "");
+
+        //move to CREATED to make necessary objects
+        scenario.moveToState(Lifecycle.State.CREATED);
+
+        scenario.onActivity(activity -> {
+            //use test db
+            activity.setDb(db);
+
+            // Mock Bob student then find him by starting search
+            // Stop Search, session created
+            activity.setMockedStudent(BobAndCourses);
+            activity.onStartSearchingClicked();
+            activity.onStopSearchingClicked();
+
+            //get session and then update name
+            List<Session> sessions = db.sessionsDao().getAll();
+            Session testSession = sessions.get(0);
+
+            String updatedName = "Test";
+
+            testSession.setDispName(updatedName);
+            db.sessionsDao().updateDispName(testSession.getSessionID(), updatedName);
+
+
+            //Assert if session name was updated correctly
+
+            Assert.assertEquals(updatedName, testSession.toString());
+
+        });
+    }
 }

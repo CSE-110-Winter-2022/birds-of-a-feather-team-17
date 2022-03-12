@@ -1,11 +1,11 @@
 package edu.ucsd.cse110.bof.model.db;
 
-import androidx.room.TypeConverter;
-
 import java.util.ArrayList;
 import java.util.List;
 
-//TODO: test
+/**
+ * Type converter for List <--> String
+ */
 public class ListConverter {
 
     public static List<Integer> getListFromString(String studentIDs) {

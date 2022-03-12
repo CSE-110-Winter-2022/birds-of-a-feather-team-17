@@ -47,7 +47,7 @@ public class PhotoActivity extends AppCompatActivity {
     public void submitPhoto(View view) {
         //use default if user leaves input empty
         if (photoInput.getText().toString().equals("")) {
-            photoURL = getResources().getString(R.string.default_photo_url);
+            photoURL = "https://lh3.googleusercontent.com/pw/AM-JKLXQ2ix4dg-PzLrPOSMOOy6M3PSUrijov9jCLXs4IGSTwN73B4kr-F6Nti_4KsiUU8LzDSGPSWNKnFdKIPqCQ2dFTRbARsW76pevHPBzc51nceZDZrMPmDfAYyI4XNOnPrZarGlLLUZW9wal6j-z9uA6WQ=w854-h924-no?authuser=0";
         }
         else {
             photoURL = photoInput.getText().toString();
