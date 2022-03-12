@@ -149,6 +149,7 @@ public class StudentsViewAdapter extends RecyclerView.Adapter<StudentsViewAdapte
             for (Student i : students) {
                 i.setIsFav(db.studentsDao().get(i.getStudentId()).getIsFav());
                 i.setWavedAtMe(db.studentsDao().get(i.getStudentId()).isWavedAtMe());
+                Log.d(TAG, "Student UUID: " + i.getUUID());
                 Log.d(TAG, "Student name: " + i.getName());
                 Log.d(TAG, "Student matches: " + i.getMatches());
                 Log.d(TAG, "Student class size weight: " + i.getClassSizeWeight());

@@ -3,6 +3,7 @@ package edu.ucsd.cse110.bof.viewProfile;
 //TODO get rid of unused imports
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.Image;
@@ -154,16 +155,23 @@ public class StudentDetailActivity extends AppCompatActivity {
 
             db.studentsDao().updateWaveTo(student.getStudentId(), true);
 
-            //Create a studentWithCourses, convert it into a byte array, and make it into a message
-            StudentWithCourses swc = new StudentWithCourses(userStudent, userCourses, student.getUUID());
-            byte[] finalStudentWithCoursesBytes = studentWithCoursesBytesFactory.convert(swc);
-            Message selfMessage = new Message(finalStudentWithCoursesBytes);
+//            //Create a studentWithCourses, convert it into a byte array, and make it into a message
+//            StudentWithCourses swc = new StudentWithCourses(userStudent, userCourses, student.getUUID());
+//            byte[] finalStudentWithCoursesBytes = studentWithCoursesBytesFactory.convert(swc);
+//            Message selfMessage = new Message(finalStudentWithCoursesBytes);
+            Log.d(TAG, "waveTarget has UUID: " + student.getUUID());
 
-            //Send the new message of the current student with a WaveTo
-            Log.d(TAG, "MessagesClient.publish ("+ Nearby.getMessagesClient(this).getClass().getSimpleName()+
-                    "): publishing selfMessage (StudentWithCourses)...");
-            Nearby.getMessagesClient(this).publish(selfMessage);
-            Log.d(TAG, "published selfMessage via Nearby API");
+            //edit waveTargetUUID in SharedPreferences to contain new wave target
+            SharedPreferences preferences = getPreferences(MODE_PRIVATE);
+            SharedPreferences.Editor editor = preferences.edit();
+            editor.putString("waveTargetUUID", student.getUUID());
+            editor.apply();
+
+//            //Send the new message of the current student with a WaveTo
+//            Log.d(TAG, "MessagesClient.publish ("+ Nearby.getMessagesClient(this).getClass().getSimpleName()+
+//                    "): publishing selfMessage (StudentWithCourses)...");
+//            Nearby.getMessagesClient(this).publish(selfMessage);
+//            Log.d(TAG, "published selfMessage via Nearby API");
 
             //Display a toast declaring wave was sent
             Toast.makeText(this, "Wave sent!", Toast.LENGTH_SHORT).show();
