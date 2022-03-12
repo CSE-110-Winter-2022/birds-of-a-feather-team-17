@@ -1,31 +1,38 @@
 package edu.ucsd.cse110.bof;
 
 import android.content.Context;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.FrameLayout;
 
-import androidx.lifecycle.Lifecycle;
-import androidx.test.core.app.ActivityScenario;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.core.app.ApplicationProvider;
-
-import com.google.android.gms.nearby.messages.Message;
 
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.robolectric.RobolectricTestRunner;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import edu.ucsd.cse110.bof.homepage.HomePageActivity;
+import edu.ucsd.cse110.bof.homepage.StudentsViewAdapter;
 import edu.ucsd.cse110.bof.model.StudentWithCourses;
 import edu.ucsd.cse110.bof.model.db.AppDatabase;
 import edu.ucsd.cse110.bof.model.db.Course;
+import edu.ucsd.cse110.bof.model.db.Session;
 import edu.ucsd.cse110.bof.model.db.Student;
 
+@RunWith(RobolectricTestRunner.class)
 public class FavoritesTest {
     private AppDatabase db;
     private static int courseId = 1;
     private static int userId = 1;
 
+    private List<Student> students = new ArrayList<>();
     private StudentWithCourses BobAndCourses;
     private StudentWithCourses CaseyAndCourses;
     private Context context;
@@ -137,4 +144,34 @@ public class FavoritesTest {
         CaseyAndCourses = new StudentWithCourses(Casey, caseyCourses, "");
     }
 
+    // tests clicking the favorite icon on Bob's ViewHolder
+    @Test
+    public void testFavoriteBob() {
+        RecyclerView srv = new RecyclerView(context);
+        RecyclerView.LayoutManager slm = new LinearLayoutManager(context);
+
+        StudentsViewAdapter sva = new StudentsViewAdapter(new ArrayList<>());
+        srv.setAdapter(sva);
+        srv.setLayoutManager(slm);
+
+        db.sessionsDao().insert(new Session("", "", ""));
+
+        sva.addStudent(BobAndCourses.getStudent());
+        BobAndCourses.getStudent().setStudentId(2);
+        sva.addStudent(CaseyAndCourses.getStudent());
+
+        ViewGroup vg = new FrameLayout(context);
+
+        View view = LayoutInflater
+                .from(context)
+                .inflate(R.layout.student_row, vg, false);
+
+        StudentsViewAdapter.ViewHolder bobViewHolder =
+                new StudentsViewAdapter.ViewHolder(view, db, context.getApplicationContext(), sva);
+        bobViewHolder.setStudent(BobAndCourses.getStudent());
+
+        bobViewHolder.getFavButton().callOnClick();
+
+        Assert.assertTrue(db.studentsDao().get(2).getIsFav());
+    }
 }

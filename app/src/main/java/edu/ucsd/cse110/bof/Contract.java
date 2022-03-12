@@ -1,4 +1,8 @@
 package edu.ucsd.cse110.bof;
+
+/**
+ * Design by contract integration
+ */
 public class Contract {
     public static boolean enabled = true;
 

@@ -79,8 +79,8 @@ public class StudentsViewAdapter extends RecyclerView.Adapter<StudentsViewAdapte
 
     /**
      * UI reactions to when the list updates
-     * @param holder
-     * @param position
+     * @param holder required for onBindViewHolder
+     * @param position the position of the ViewHolder
      */
     @Override
     public void onBindViewHolder(@NonNull StudentsViewAdapter.ViewHolder holder, int position) {
@@ -149,7 +149,7 @@ public class StudentsViewAdapter extends RecyclerView.Adapter<StudentsViewAdapte
      */
     public void sortList(String priority) {
         updateStudentList();
-        if(priority == null || priority == "") {
+        if(priority == null || priority.equals("")) {
             priority = this.priority;
         }
         else {
@@ -200,7 +200,7 @@ public class StudentsViewAdapter extends RecyclerView.Adapter<StudentsViewAdapte
 
     /**
      * Helper method for passing in the context
-     * @param contextD
+     * @param contextD the context to set
      */
     public void setContext(Context contextD) {
         this.context = contextD;
@@ -291,7 +291,7 @@ public class StudentsViewAdapter extends RecyclerView.Adapter<StudentsViewAdapte
 
         /**
          * Sets the student photo according to the bitmap parsed from the photo URL
-         * @param photoBitmap
+         * @param photoBitmap the bitmap to set the PhotoView to
          */
         public void setPhoto(Bitmap photoBitmap) {
             this.studentPhotoView.setImageBitmap(photoBitmap);
@@ -309,6 +309,10 @@ public class StudentsViewAdapter extends RecyclerView.Adapter<StudentsViewAdapte
 
             intent.putExtra("student_id", this.student.getStudentId());
             context.startActivity(intent);
+        }
+
+        public ImageButton getFavButton() {
+            return this.favButton;
         }
     }
 
