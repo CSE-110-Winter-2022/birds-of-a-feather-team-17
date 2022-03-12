@@ -131,14 +131,6 @@ public class HomePageActivity extends AppCompatActivity implements RenameDialogF
         thisStudent = db.studentsDao().get(1);
         thisStudentCourses = db.coursesDao().getForStudent(1);
 
-        // Initialize the RecyclerView layout for found BoFs
-        studentsRecyclerView = findViewById(R.id.students_view);
-        studentsLayoutManager = new LinearLayoutManager(this);
-        studentsRecyclerView.setLayoutManager(studentsLayoutManager);
-        studentsViewAdapter = new StudentsViewAdapter(new ArrayList<>());
-        studentsRecyclerView.setAdapter(studentsViewAdapter);
-        studentsViewAdapter.setContext(context);
-
         // Initialize UUID for current student
         UUID = thisStudent.getUUID();
         Log.d("UUID", UUID); //output UUID with tag UUID in console
@@ -164,7 +156,17 @@ public class HomePageActivity extends AppCompatActivity implements RenameDialogF
                     }
                 });
 
-        // Initialize listeners for the start/stop search button
+        // Set up RecyclerView
+        studentsRecyclerView = findViewById(R.id.students_view);
+
+        studentsLayoutManager = new LinearLayoutManager(this);
+        studentsRecyclerView.setLayoutManager(studentsLayoutManager);
+
+        studentsViewAdapter = new StudentsViewAdapter(new ArrayList<>());
+        studentsRecyclerView.setAdapter(studentsViewAdapter);
+        studentsViewAdapter.setContext(context);
+
+        // Set up listener for search button:
         toggleSearch = findViewById(R.id.search_button);
         toggleSearch.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if (isChecked) {
@@ -452,15 +454,13 @@ public class HomePageActivity extends AppCompatActivity implements RenameDialogF
                     //set existing student's waveAtMe to true on studentsViewAdapter
                     Log.d(TAG, "Discovered a matching wave");
 
-
                     Student matchingStudent = studentsViewAdapter.getStudents().get(matchingIndex);
                     boolean wavedAlready = db.studentsDao().get(matchingStudent.getStudentId()).isWavedTo();
-                    db.studentsDao().delete(matchingStudent);
 
                     matchingStudent.setWavedAtMe(true);
                     matchingStudent.setWavedTo(wavedAlready);
 
-                    db.studentsDao().insert(matchingStudent);
+                    db.studentsDao().updateWaveMe(matchingStudent.getStudentId(), true);
 
                     studentsViewAdapter.sortList(priority);
                 }
