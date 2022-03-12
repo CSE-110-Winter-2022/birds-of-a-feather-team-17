@@ -18,10 +18,17 @@ import com.google.android.gms.tasks.Task;
 
 import edu.ucsd.cse110.bof.R;
 
+/**
+ * Starting page of the app on first launch, handles user's Google login
+ */
 public class LoginActivity extends AppCompatActivity {
     GoogleSignInClient mGoogleSignInClient;
     final int RC_SIGN_IN = 1;
 
+    /**
+     * Sets up components of the sign-in procedure
+     * @param savedInstanceState required for onCreate
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,11 +51,21 @@ public class LoginActivity extends AppCompatActivity {
     }
 
 
+    /**
+     * Starts Google's sign in (Google's function)
+     * @param v required for GoogleSignIn
+     */
     public void GoogleSignIn(View v) {
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
         startActivityForResult(signInIntent, RC_SIGN_IN);
     }
 
+    /**
+     * Get sign in result from Google (Google's function)
+     * @param requestCode request
+     * @param resultCode result
+     * @param data data
+     */
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -62,6 +79,10 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Start NameActivity with user's given name in their Google account
+     * @param completedTask required for handleSignInResult
+     */
     private void handleSignInResult(Task<GoogleSignInAccount> completedTask) {
         try {
             GoogleSignInAccount account = completedTask.getResult(ApiException.class);

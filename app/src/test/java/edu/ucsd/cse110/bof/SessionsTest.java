@@ -216,7 +216,7 @@ public class SessionsTest {
         ActivityScenario<HomePageActivity> scenario =
                 ActivityScenario.launch(HomePageActivity.class);
 
-        //make Bob and his courses to mock:
+        // Make Bob and his courses to mock:
         Student Bob = new Student("Bob", bobPhoto, someUUID);
 
         List<Course> bobCourses = new ArrayList<>();
@@ -226,7 +226,7 @@ public class SessionsTest {
         StudentWithCourses BobAndCourses = new StudentWithCourses(Bob, bobCourses, "");
 
 
-        //make Carrie and her courses to mock:
+        // Make Carrie and her courses to mock:
         Student Carrie = new Student("Carrie", bobPhoto, someUUID);
 
         List<Course> carrieCourses = new ArrayList<>();

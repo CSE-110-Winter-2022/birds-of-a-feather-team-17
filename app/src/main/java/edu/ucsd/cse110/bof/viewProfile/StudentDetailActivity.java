@@ -1,7 +1,5 @@
 package edu.ucsd.cse110.bof.viewProfile;
 
-//TODO get rid of unused imports
-
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -21,8 +19,6 @@ import com.google.android.gms.nearby.Nearby;
 import com.google.android.gms.nearby.messages.Message;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
@@ -39,7 +35,9 @@ import edu.ucsd.cse110.bof.model.db.Course;
 import edu.ucsd.cse110.bof.model.db.Student;
 import edu.ucsd.cse110.bof.studentWithCoursesBytesFactory;
 
-
+/**
+ * Activity for viewing a student's detailed profile
+ */
 public class StudentDetailActivity extends AppCompatActivity {
 
     private static final String TAG = "StudentDetailActivityLog: ";
@@ -62,6 +60,10 @@ public class StudentDetailActivity extends AppCompatActivity {
     private ExecutorService backgroundThreadExecutor =
             Executors.newSingleThreadExecutor();
 
+    /**
+     * Initialize UI and backened components
+     * @param savedInstanceState required for onCreate
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
@@ -76,24 +78,25 @@ public class StudentDetailActivity extends AppCompatActivity {
         db = AppDatabase.singleton(this);
     }
 
-
+    /**
+     * Get the info of the student from DB
+     */
     @Override
     protected void onStart() {
         super.onStart();
-        //get student and their courses
+        // Get student and their courses
         student = db.studentsDao().get(studentID);
         courses = db.coursesDao().getForStudent(studentID);
         userStudent = db.studentsDao().get(1);
         userCourses = db.coursesDao().getForStudent(1);
 
-
-        //sets student name and picture
+        // Sets student name
         studentName = findViewById(R.id.profile_name);
         studentName.setText(student.getName());
 
-        //set image
-        studentImage = findViewById(R.id.student_profile_img); //finds imageview
+        studentImage = findViewById(R.id.student_profile_img);
 
+        // Sets student photo
         backgroundThreadExecutor.submit(() -> {
             URL photo_url = null;
             try {
@@ -117,18 +120,18 @@ public class StudentDetailActivity extends AppCompatActivity {
             });
         });
 
-        //finds recycler for courses list
+        // Finds recycler for courses list
         coursesRecyclerView = findViewById(R.id.list_classes_recycler);
 
-        //Sets RecyclerView layoutManager
+        // Sets RecyclerView layoutManager
         coursesLayoutManager = new LinearLayoutManager(this);
         coursesRecyclerView.setLayoutManager(coursesLayoutManager);
 
-        //uses CoursesViewAdapter class to set courses into recycler
+        // Uses CoursesViewAdapter class to set courses into recycler
         coursesListViewAdapter = new CoursesListViewAdapter(courses);
         coursesRecyclerView.setAdapter(coursesListViewAdapter);
 
-        //Set wave to be pre-filled if already waved
+        // Set wave to be pre-filled if already waved
         if(student.isWavedTo())
         {
             waveOn = true;
@@ -138,59 +141,51 @@ public class StudentDetailActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Go back to previous activity on back button pressed
+     * @param view required for onClickListener
+     */
     public void onBackClicked(View view) {
         finish();
     }
 
+    /**
+     * Show a toast, light the icon, and send a wave message when hollow hand is pressed
+     * @param view required for onClickListener
+     */
     public void onWaveClicked(View view) {
+        // Do not send waves more than once
         if(!waveOn) {
             waveOn = true;
 
-            //Change image icon and accompanying description
+            // Change image icon and accompanying description
             waveButton.setImageResource(R.drawable.wave_filled);
             waveButton.setContentDescription(getApplicationContext().getString(R.string.wave_on));
 
             db.studentsDao().updateWaveTo(student.getStudentId(), true);
 
-            //Create a studentWithCourses, convert it into a byte array, and make it into a message
+            // Create a studentWithCourses, convert it into a byte array, and make it into a message
             StudentWithCourses swc = new StudentWithCourses(userStudent, userCourses, student.getUUID());
             byte[] finalStudentWithCoursesBytes = studentWithCoursesBytesFactory.convert(swc);
             Message selfMessage = new Message(finalStudentWithCoursesBytes);
 
-            //Send the new message of the current student with a WaveTo
+            // Send the new message of the current student with a WaveTo
             Log.d(TAG, "MessagesClient.publish ("+ Nearby.getMessagesClient(this).getClass().getSimpleName()+
                     "): publishing selfMessage (StudentWithCourses)...");
             Nearby.getMessagesClient(this).publish(selfMessage);
             Log.d(TAG, "published selfMessage via Nearby API");
 
-            //Display a toast declaring wave was sent
+            // Display a toast declaring wave was sent
             Toast.makeText(this, "Wave sent!", Toast.LENGTH_SHORT).show();
         }
     }
 
-    public static Bitmap getBitmapFromURL(String src) {
-        try {
-            URL url = new URL(src);
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setDoInput(true);
-            connection.connect();
-            InputStream input = connection.getInputStream();
-            Bitmap myBitmap = BitmapFactory.decodeStream(input);
-            return myBitmap;
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-    // testing, need to set Db after onCreate to have views populate with
-    // test student
+    // Testing, need to set Db after onCreate to have views populate with test student
     public void setDb(AppDatabase db) {
         this.db = db;
     }
 
-    // testing, need to set id after onCreate to have views populate with
-    // test student
+    // Testing, need to set id after onCreate to have views populate with test student
     public void setStudentID(int studentID) {
         this.studentID = studentID;
     }

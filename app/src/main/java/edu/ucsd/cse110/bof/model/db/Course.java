@@ -8,6 +8,9 @@ import androidx.room.PrimaryKey;
 import java.io.Serializable;
 import java.util.Objects;
 
+/**
+ * Object for storing a course
+ */
 @Entity(tableName = "courses")
 public class Course implements Serializable {
 
@@ -33,7 +36,7 @@ public class Course implements Serializable {
         this.courseSize = courseSize;
     }
 
-    // getters and setters
+    // Getters and setters
     public int getCourseId() {
         return courseId;
     }
@@ -57,7 +60,7 @@ public class Course implements Serializable {
     }
 
 
-    //bottom two methods required to check common courses, neither check ids
+    // Bottom two methods required to check common courses, neither check ids
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

@@ -54,6 +54,9 @@ import edu.ucsd.cse110.bof.model.db.Student;
 import edu.ucsd.cse110.bof.studentWithCoursesBytesFactory;
 import edu.ucsd.cse110.bof.RenameDialogFragment;
 
+/**
+ * Driver activity of searching for BoFs
+ */
 public class HomePageActivity extends AppCompatActivity implements RenameDialogFragment.renameDialogListener {
     private AppDatabase db;                     //database
     private Student thisStudent;                //user
@@ -87,19 +90,19 @@ public class HomePageActivity extends AppCompatActivity implements RenameDialogF
     // receivedStudentWithCourses will refer to same object as mockedStudent
     private StudentWithCourses receivedStudentWithCourses = null;
 
-    //Student made on return from the NMMActivity
+    // Student made on return from the NMMActivity
     private StudentWithCourses mockedStudent = null;
 
-    //String received from NMMActivity
+    // String received from NMMActivity
     private String mockCSV = null;
 
-    //used to access this activity in other classes
+    // Used to access this activity in other classes
     private Context context;
 
-    //user's uuid
+    // User's uuid
     private String UUID;
 
-    //priority for sorting the list
+    // Priority for sorting the list
     private String priority;
 
     /**
@@ -140,7 +143,7 @@ public class HomePageActivity extends AppCompatActivity implements RenameDialogF
         UUID = thisStudent.getUUID();
         Log.d("UUID", UUID); //output UUID with tag UUID in console
 
-        //create spinner (drop-down menu) for priorities/sorting algorithms
+        // Create spinner (drop-down menu) for priorities/sorting algorithms
         p_spinner = findViewById(R.id.priority_spinner);
         ArrayAdapter<CharSequence> p_adapter = ArrayAdapter.createFromResource(this, R.array.priorities_array, android.R.layout.simple_spinner_item);
         p_adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -171,10 +174,10 @@ public class HomePageActivity extends AppCompatActivity implements RenameDialogF
             }
         });
 
-        //create SWC builder
+        // Create SWC builder
         builder = new StudentWithCoursesBuilder();
 
-        //create activityLauncher for getting csv from NMM
+        // Create activityLauncher for getting csv from NMM
         activityLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
                 new ActivityResultCallback<ActivityResult>() {
@@ -340,9 +343,7 @@ public class HomePageActivity extends AppCompatActivity implements RenameDialogF
         Log.d(TAG, "MessagesClient.unsubscribe: unsubscribing realListener...");
         Nearby.getMessagesClient(this).unsubscribe(realListener);
 
-        // Stop clicked, create session
         Log.d(TAG, "Stop clicked");
-        saveSession();
     }
 
     /**
@@ -558,7 +559,7 @@ public class HomePageActivity extends AppCompatActivity implements RenameDialogF
 
     /**
      * Simple setter for db
-     * @param db
+     * @param db the db to set to
      */
     public void setDb(AppDatabase db) {
         this.db = db;
@@ -574,7 +575,7 @@ public class HomePageActivity extends AppCompatActivity implements RenameDialogF
 
     /**
      * Saves the session when the session name is confirmed by the user
-     * @param dialog
+     * @param dialog the dialog that gets confirmed
      */
     @Override
     public void onDialogConfirmed(RenameDialogFragment dialog) {

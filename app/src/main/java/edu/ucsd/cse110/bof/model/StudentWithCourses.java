@@ -1,15 +1,14 @@
 package edu.ucsd.cse110.bof.model;
 
-import android.os.Parcel;
-import android.os.Parcelable;
-
 import java.io.Serializable;
 import java.util.List;
 
-import edu.ucsd.cse110.bof.model.IStudent;
 import edu.ucsd.cse110.bof.model.db.Course;
 import edu.ucsd.cse110.bof.model.db.Student;
 
+/**
+ * Object that packages a student, their courses, and their target for waving in UUID form
+ */
 public class StudentWithCourses implements Serializable {
     private Student student;
     private List<Course> courses;

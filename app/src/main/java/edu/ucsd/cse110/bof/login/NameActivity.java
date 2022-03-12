@@ -10,10 +10,17 @@ import android.widget.Toast;
 
 import edu.ucsd.cse110.bof.R;
 
+/**
+ * Handles user's name entry for their profile
+ */
 public class NameActivity extends AppCompatActivity {
     private String username;
     private EditText usernameInput;
 
+    /**
+     * Sets up components for name entry
+     * @param savedInstanceState required for onCreate
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -25,19 +32,23 @@ public class NameActivity extends AppCompatActivity {
         if (extras != null) {
             username = extras.getString("name");
         }
-        usernameInput.setText(username); //Prefill username with Google Login Info
+        usernameInput.setText(username); // Prefill username with Google Login Info
     }
 
+    /**
+     * Checks the user's entry and stores the name upon confirmation
+     * @param view required for onClickListener
+     */
     public void confirmName(View view) {
         username = usernameInput.getText().toString();
 
-        //no-blank string validity
+        // No-blank string validity
         if (username.equals("")) {
             Toast.makeText(this,"Invalid name", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        Intent intent = new Intent(this, PhotoActivity.class); //link to PhotoActivity
+        Intent intent = new Intent(this, PhotoActivity.class); //
         intent.putExtra("student_name", username);
         startActivity(intent);
         finish();
