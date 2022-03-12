@@ -170,6 +170,10 @@ public class HomePageActivity extends AppCompatActivity implements RenameDialogF
                         studentsViewAdapter.sortList(priority);
                         Log.d(TAG, "List sorted based on priority: "+priority);
 
+//                        Log.d(TAG, "subscribing to realListener!!!");
+//                        Nearby.getMessagesClient(getApplicationContext()).subscribe(realListener);
+//                        Log.d(TAG, "subscribed to realListener!!!");
+
                     }
                     @Override
                     public void onNothingSelected(AdapterView<?> parent) {
@@ -239,12 +243,18 @@ public class HomePageActivity extends AppCompatActivity implements RenameDialogF
     protected void onStart() {
         super.onStart();
 
+        if (toggleSearch.isChecked()) {
+            Log.d(TAG, "refresh messages...");
+            Nearby.getMessagesClient(this).unsubscribe(realListener);
+            Nearby.getMessagesClient(this).subscribe(realListener);
+        }
+
         // Create user's StudentWithCourses object to send to others via Bluetooth/Nearby API
         Log.d(TAG, "creating message to send through Nearby...");
 
         //retrieve current waveTargetUUID from SharedPreferences
-        SharedPreferences preferences = getPreferences(MODE_PRIVATE);
-        String currWaveTarget = preferences.getString("waveTargetUUID","");
+        SharedPreferences preferences = getSharedPreferences("DEFAULT", MODE_PRIVATE);
+        String currWaveTarget = preferences.getString("waveTargetUUID","hey");
         Log.d(TAG, "current wave target/ currWaveTarget is: " + currWaveTarget);
 
         selfStudentWithCourses = new StudentWithCourses(thisStudent, thisStudentCourses, currWaveTarget);

@@ -162,7 +162,7 @@ public class StudentDetailActivity extends AppCompatActivity {
             Log.d(TAG, "waveTarget has UUID: " + student.getUUID());
 
             //edit waveTargetUUID in SharedPreferences to contain new wave target
-            SharedPreferences preferences = getPreferences(MODE_PRIVATE);
+            SharedPreferences preferences = getSharedPreferences("DEFAULT",MODE_PRIVATE);
             SharedPreferences.Editor editor = preferences.edit();
             editor.putString("waveTargetUUID", student.getUUID());
             editor.apply();
