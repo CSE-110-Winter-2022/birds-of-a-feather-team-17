@@ -36,14 +36,11 @@ import edu.ucsd.cse110.bof.viewProfile.StudentDetailActivity;
 /* Given Olivia appears on Ava’s BoFs search screen
  * When Ava taps the hollow wave icon in Olivia's student profile
  * Then the hand icon should become solid
- * And a toast should display saying “Wave sent!”
  */
-
 public class WaveUITest {
 
     private static int courseId = 1;
     private static int userId = 1;
-    private View decorView;
     private static final String someUUID = "a4ca50b6-941b-11ec-b909-0242ac120002";
 
     private static final String bobPhoto = "https://upload.wikimedia" +
@@ -89,6 +86,7 @@ public class WaveUITest {
     public ActivityScenarioRule databaseAndASR() {
         Context context = ApplicationProvider.getApplicationContext();
         AppDatabase db = AppDatabase.useTestSingleton(context);
+
         //create Ava (user) and insert her into db, then get her dbID
         Student Ava = new Student();
         db.studentsDao().insert(Ava);
@@ -112,27 +110,13 @@ public class WaveUITest {
         return activityScenarioRule = new ActivityScenarioRule<>(intent);
     }
 
-    @Before
-    public void setup() {
-        activityScenarioRule.getScenario().onActivity(activity -> decorView
-                = activity.getWindow().getDecorView());
-    }
-
     @Test
-    public void waveAndToastShown() {
-        String waveToast = getApplicationContext().getString(R.string.wave_sent);
+    public void waveShown() {
         String waveOn = getApplicationContext().getString(R.string.wave_on);
 
         //Simulate wave button click
         onView(withId(R.id.wave_icon))
                 .perform(click());
-
-        //Check if toast is displayed with "Wave sent!"
-        /*
-        onView(withText(waveToast))
-                .inRoot(withDecorView(is(decorView)))
-                .check(matches(isDisplayed()));
-         */
 
         //Check if wave icon has changed
         onView(withId(R.id.wave_icon))
