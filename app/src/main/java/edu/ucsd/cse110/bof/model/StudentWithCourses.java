@@ -1,4 +1,4 @@
-package edu.ucsd.cse110.bof;
+package edu.ucsd.cse110.bof.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -18,7 +18,7 @@ public class StudentWithCourses implements Serializable {
     public StudentWithCourses(Student student, List<Course> courses, String waveTarget) {
         this.student = student;
         this.courses = courses;
-        this.waveTarget = waveTarget;
+        this.waveTarget = (waveTarget == null) ? "" : waveTarget;
     }
 
     public Student getStudent() {
@@ -33,6 +33,10 @@ public class StudentWithCourses implements Serializable {
 
     public void setCourses(List<Course> courses) {
         this.courses = courses;
+    }
+
+    public void setWaveTarget(String waveTarget) {
+        this.waveTarget = waveTarget;
     }
 }
 

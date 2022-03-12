@@ -7,17 +7,16 @@ import androidx.test.core.app.ActivityScenario;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
-import org.bouncycastle.jcajce.provider.symmetric.DES;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
 import edu.ucsd.cse110.bof.homepage.HomePageActivity;
+import edu.ucsd.cse110.bof.model.StudentWithCourses;
 import edu.ucsd.cse110.bof.model.db.AppDatabase;
 import edu.ucsd.cse110.bof.model.db.Course;
 import edu.ucsd.cse110.bof.model.db.Session;
@@ -31,6 +30,8 @@ public class SessionsTest {
     private static int userId = 1;
 
     ActivityScenario<HomePageActivity> scenario;
+
+    private static final String someUUID = "a4ca50b6-941b-11ec-b909-0242ac120002";
 
     private static final String bobPhoto = "https://upload.wikimedia" +
             ".org/wikipedia/en/c/c5/Bob_the_builder.jpg";
@@ -85,13 +86,14 @@ public class SessionsTest {
                 ActivityScenario.launch(HomePageActivity.class);
 
         //make Bob and his courses to mock:
-        Student Bob = new Student("Bob", bobPhoto);
+        Student Bob = new Student("Bob", bobPhoto, someUUID);
 
         List<Course> bobCourses = new ArrayList<>();
         bobCourses.add(cse110WI22L);
         bobCourses.add(cse210FA21S);
 
-        StudentWithCourses BobAndCourses = new StudentWithCourses(Bob, bobCourses);
+        StudentWithCourses BobAndCourses = new StudentWithCourses(Bob,
+                bobCourses, "");
 
         //move to CREATED to make necessary objects
         scenario.moveToState(Lifecycle.State.CREATED);
@@ -137,24 +139,102 @@ public class SessionsTest {
                 ActivityScenario.launch(HomePageActivity.class);
 
         //make Bob and his courses to mock:
-        Student Bob = new Student("Bob", bobPhoto);
+        Student Bob = new Student("Bob", bobPhoto, someUUID);
 
         List<Course> bobCourses = new ArrayList<>();
         bobCourses.add(cse110WI22L);
         bobCourses.add(cse210FA21S);
 
-        StudentWithCourses BobAndCourses = new StudentWithCourses(Bob, bobCourses);
+        StudentWithCourses BobAndCourses = new StudentWithCourses(Bob, bobCourses, "");
 
 
         //make Carrie and her courses to mock:
-        Student Carrie = new Student("Carrie", bobPhoto);
+        Student Carrie = new Student("Carrie", bobPhoto, someUUID);
 
         List<Course> carrieCourses = new ArrayList<>();
         carrieCourses.add(cse110WI22L);
         carrieCourses.add(cse210FA21S);
 
         StudentWithCourses CarrieAndCourses = new StudentWithCourses(Carrie,
-                carrieCourses);
+                carrieCourses, "");
+
+        //move to CREATED to make necessary objects
+        scenario.moveToState(Lifecycle.State.CREATED);
+
+        scenario.onActivity( activity -> {
+            //use test db
+            activity.setDb(db);
+
+            // Mock Bob and start searching to create a session: (only Bob)
+            activity.setMockedStudent(BobAndCourses);
+            activity.onStartSearchingClicked();
+            activity.onStopSearchingClicked();
+
+            //get Bob's database ID
+            BobAndCourses.getStudent().setStudentId(db.studentsDao().maxId());
+        });
+
+        scenario.recreate();
+        scenario.moveToState(Lifecycle.State.CREATED);
+
+        scenario.onActivity(activity -> {
+            //use test db
+            activity.setDb(db);
+
+            // now mock Carrie and start searching again to create another
+            // session: (only Carrie)
+            activity.setMockedStudent(CarrieAndCourses);
+            activity.onStartSearchingClicked();
+            activity.onStopSearchingClicked();
+
+            //get Carrie's database ID
+            CarrieAndCourses.getStudent().setStudentId(db.studentsDao().maxId());
+
+            List<Student> students = db.studentsDao().getAll();
+
+            // confirm that there are 2 sessions
+            List<Session> sessions = db.sessionsDao().getAll();
+            Assert.assertEquals(2, sessions.size());
+
+            //the first session found only Bob
+            List<Integer> firstExpectedList = new ArrayList<>();
+            firstExpectedList.add(BobAndCourses.getStudent().getStudentId());
+
+
+            Assert.assertEquals(firstExpectedList, sessions.get(0).getStudentList());
+
+            //the second session found only Carrie
+            List<Integer> secondExpectedList = new ArrayList<>();
+            secondExpectedList.add(CarrieAndCourses.getStudent().getStudentId());
+
+            Assert.assertEquals(secondExpectedList, sessions.get(1).getStudentList());
+        });
+    }
+
+    @Test
+    public void createAndRenameSession() {
+        ActivityScenario<HomePageActivity> scenario =
+                ActivityScenario.launch(HomePageActivity.class);
+
+        //make Bob and his courses to mock:
+        Student Bob = new Student("Bob", bobPhoto, someUUID);
+
+        List<Course> bobCourses = new ArrayList<>();
+        bobCourses.add(cse110WI22L);
+        bobCourses.add(cse210FA21S);
+
+        StudentWithCourses BobAndCourses = new StudentWithCourses(Bob, bobCourses, "");
+
+
+        //make Carrie and her courses to mock:
+        Student Carrie = new Student("Carrie", bobPhoto, someUUID);
+
+        List<Course> carrieCourses = new ArrayList<>();
+        carrieCourses.add(cse110WI22L);
+        carrieCourses.add(cse210FA21S);
+
+        StudentWithCourses CarrieAndCourses = new StudentWithCourses(Carrie,
+                carrieCourses, "");
 
         //move to CREATED to make necessary objects
         scenario.moveToState(Lifecycle.State.CREATED);

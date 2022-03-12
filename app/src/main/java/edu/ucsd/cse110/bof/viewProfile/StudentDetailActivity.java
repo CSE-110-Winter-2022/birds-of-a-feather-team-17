@@ -5,11 +5,9 @@ package edu.ucsd.cse110.bof.viewProfile;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.media.Image;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -34,13 +32,10 @@ import java.util.concurrent.Executors;
 
 import javax.net.ssl.HttpsURLConnection;
 
-import edu.ucsd.cse110.bof.InputCourses.CoursesViewAdapter;
 import edu.ucsd.cse110.bof.R;
-import edu.ucsd.cse110.bof.StudentWithCourses;
-import edu.ucsd.cse110.bof.model.IStudent;
+import edu.ucsd.cse110.bof.model.StudentWithCourses;
 import edu.ucsd.cse110.bof.model.db.AppDatabase;
 import edu.ucsd.cse110.bof.model.db.Course;
-import edu.ucsd.cse110.bof.viewProfile.CoursesListViewAdapter;
 import edu.ucsd.cse110.bof.model.db.Student;
 import edu.ucsd.cse110.bof.studentWithCoursesBytesFactory;
 
@@ -72,15 +67,19 @@ public class StudentDetailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_profile);
 
-        waveButton = findViewById(R.id.imageButton);
+        waveButton = findViewById(R.id.wave_icon);
 
         Intent intent = getIntent();
         studentID = intent.getIntExtra("student_id", 0); //get student id
 
         //get courses and student info from data base using studentID
         db = AppDatabase.singleton(this);
+    }
 
 
+    @Override
+    protected void onStart() {
+        super.onStart();
         //get student and their courses
         student = db.studentsDao().get(studentID);
         courses = db.coursesDao().getForStudent(studentID);
@@ -118,7 +117,6 @@ public class StudentDetailActivity extends AppCompatActivity {
             });
         });
 
-
         //finds recycler for courses list
         coursesRecyclerView = findViewById(R.id.list_classes_recycler);
 
@@ -152,7 +150,6 @@ public class StudentDetailActivity extends AppCompatActivity {
             waveButton.setImageResource(R.drawable.wave_filled);
             waveButton.setContentDescription(getApplicationContext().getString(R.string.wave_on));
 
-            //TODO: test database updates properly
             db.studentsDao().updateWaveTo(student.getStudentId(), true);
 
             //Create a studentWithCourses, convert it into a byte array, and make it into a message
@@ -169,5 +166,32 @@ public class StudentDetailActivity extends AppCompatActivity {
             //Display a toast declaring wave was sent
             Toast.makeText(this, "Wave sent!", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    public static Bitmap getBitmapFromURL(String src) {
+        try {
+            URL url = new URL(src);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setDoInput(true);
+            connection.connect();
+            InputStream input = connection.getInputStream();
+            Bitmap myBitmap = BitmapFactory.decodeStream(input);
+            return myBitmap;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    // testing, need to set Db after onCreate to have views populate with
+    // test student
+    public void setDb(AppDatabase db) {
+        this.db = db;
+    }
+
+    // testing, need to set id after onCreate to have views populate with
+    // test student
+    public void setStudentID(int studentID) {
+        this.studentID = studentID;
     }
 }

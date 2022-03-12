@@ -93,13 +93,13 @@ public class InputCourseActivity extends AppCompatActivity {
         //move to home page
         if (onHomePage) {
             Log.d(TAG, "Arrived from homepage, returning to HomePageActivity");
-            finish();
         }
         else {
             Intent intent = new Intent(this, HomePageActivity.class);
             startActivity(intent);
-            finish();
         }
+
+        finish();
     }
 
     public void onAddCourseClicked(View view) {

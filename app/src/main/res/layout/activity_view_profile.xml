@@ -64,10 +64,10 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageButton" />
+        app:layout_constraintTop_toBottomOf="@+id/wave_icon" />
 
     <ImageButton
-        android:id="@+id/imageButton"
+        android:id="@+id/wave_icon"
         android:layout_width="80dp"
         android:layout_height="80dp"
         android:layout_marginTop="20dp"

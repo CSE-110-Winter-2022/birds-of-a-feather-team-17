@@ -4,6 +4,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 
+import edu.ucsd.cse110.bof.model.StudentWithCourses;
+
 public class studentWithCoursesBytesFactory {
     public static byte[] convert(StudentWithCourses swc)
     {

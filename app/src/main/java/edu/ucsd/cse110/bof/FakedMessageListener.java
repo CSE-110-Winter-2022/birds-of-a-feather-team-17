@@ -5,17 +5,8 @@ import com.google.android.gms.nearby.messages.MessageListener;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
-import java.nio.charset.StandardCharsets;
 
-import java.util.List;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
-
-import edu.ucsd.cse110.bof.model.IStudent;
-
-import edu.ucsd.cse110.bof.model.db.Course;
-import edu.ucsd.cse110.bof.model.db.Student;
+import edu.ucsd.cse110.bof.model.StudentWithCourses;
 
 public class FakedMessageListener extends MessageListener {
     private final MessageListener messageListener;

@@ -50,6 +50,10 @@ public class Student implements IStudent {
     @ColumnInfo(name = "wavedTo")
     public boolean wavedTo;
 
+    //TODO test: waves in DB
+    @ColumnInfo(name = "waveTarget")
+    public String waveTarget;
+
     @ColumnInfo(name = "isFav")
     public boolean isFav;
 
@@ -63,6 +67,7 @@ public class Student implements IStudent {
         this.recencyWeight = 0;
         this.wavedAtMe = false;
         this.wavedTo = false;
+        this.waveTarget = "";
         this.isFav = false;
     }
 
@@ -77,6 +82,7 @@ public class Student implements IStudent {
         this.recencyWeight = 0;
         this.wavedAtMe = false;
         this.wavedTo = false;
+        this.waveTarget = "";
         this.isFav = false;
     }
 
@@ -141,6 +147,14 @@ public class Student implements IStudent {
         this.wavedTo = wavedTo;
     }
 
+    public String getWaveTarget() {
+        return waveTarget;
+    }
+
+    public void setWaveTarget(String waveTarget) {
+        this.waveTarget = waveTarget;
+    }
+
     //Get addition multiplier to keep regular sorting order but with wave on top
     public int waveMultiplier() {
         if(wavedAtMe)
@@ -174,6 +188,7 @@ public class Student implements IStudent {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Student student = (Student) o;
-        return name.equals(student.name) && photoURL.equals(student.photoURL) && UUID.equals(student.UUID);
+        return name.equals(student.name) && photoURL.equals(student.photoURL) &&
+                UUID.equals(student.UUID);
     }
 }

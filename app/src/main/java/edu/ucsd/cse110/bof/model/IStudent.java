@@ -18,6 +18,7 @@ public interface IStudent extends Serializable {
     int getRecencyWeight();
     boolean isWavedAtMe();
     boolean isWavedTo();
+    String getWaveTarget();
     int waveMultiplier();
     int favMultiplier();
     boolean getIsFav();
@@ -29,4 +30,5 @@ public interface IStudent extends Serializable {
     void setWavedAtMe(boolean waved);
     void setWavedTo(boolean waved);
     void setIsFav(boolean isFav);
+    void setWaveTarget(String waveTarget);
 }
